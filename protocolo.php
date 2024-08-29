@@ -7,10 +7,48 @@ $gender = isset($_GET['gender']) ? $_GET['gender'] : ' ';
 $insurance = isset($_GET['insurance']) ? $_GET['insurance'] : ' ';
 $diagnostic1 = isset($_GET['diagnostic1']) ? $_GET['diagnostic1'] : ' ';
 $diagnostic2 = isset($_GET['diagnostic2']) ? $_GET['diagnostic2'] : ' ';
-$definitiveDisease1 = isset($_GET['definitiveDisease1']) ? $_GET['definitiveDisease1'] : ' ';
-$definitiveDisease2 = isset($_GET['definitiveDisease2']) ? $_GET['definitiveDisease2'] : ' ';
+
+// Obtener los valores desde GET
+$definitiveDisease1 = isset($_GET['definitiveDisease1']) ? $_GET['definitiveDisease1'] : '';
+$definitiveDisease2 = isset($_GET['definitiveDisease2']) ? $_GET['definitiveDisease2'] : '';
 $definitiveDisease3 = isset($_GET['definitiveDisease3']) ? $_GET['definitiveDisease3'] : ' ';
-$projectProcedure = isset($_GET['projectProcedure']) ? $_GET['projectProcedure'] : ' ';
+
+// Separar las cadenas en arreglos usando " ," como delimitador
+$diseasesArray1 = explode(' ,', $definitiveDisease1);
+$diseasesArray2 = explode(' ,', $definitiveDisease2);
+$diseasesArray3 = explode(' ,', $definitiveDisease3);
+
+// Combinar los dos arreglos en uno solo
+$combinedDiseasesArray = array_merge($diseasesArray1, $diseasesArray2, $diseasesArray3);
+
+// Limitar el número de elementos en el arreglo combinado a un máximo de 3
+$limitedDiseasesArray = array_slice($combinedDiseasesArray, 0, 3);
+
+// Asignar diagnósticos a variables individuales de forma segura
+$diagnosticoPRE1 = isset($limitedDiseasesArray[0]) ? $limitedDiseasesArray[0] : '';
+$diagnosticoPRE2 = isset($limitedDiseasesArray[1]) ? $limitedDiseasesArray[1] : '';
+$diagnosticoPRE3 = isset($limitedDiseasesArray[2]) ? $limitedDiseasesArray[2] : '';
+
+// Ahora puedes usar $diagnostico1, $diagnostico2 y $diagnostico3 como necesites
+
+function cleanProcedureName($procedure)
+{
+    // Encontrar la posición del primer guion seguido de un espacio o letras mayúsculas seguidas de un guion
+    if (preg_match('/^[A-Z]+-[A-Z]+-\d+-(.+)/', $procedure, $matches) || preg_match('/^\d+-/', $procedure)) {
+        // Si se encuentra un patrón con guiones y números al inicio
+        $procedure = preg_replace('/^[A-Z]+-[A-Z]+-\d+-|^\d+-/', '', $procedure);
+    }
+    return $procedure;
+}
+
+// Ejemplo de uso
+$projectProcedure = isset($_GET['projectProcedure']) ? $_GET['projectProcedure'] : '';
+
+// Limpiar el nombre del procedimiento
+$cleanedProcedure = cleanProcedureName($projectProcedure);
+
+// Ahora puedes usar $cleanedProcedure para mostrar el nombre limpio del procedimiento
+
 $realizedProcedure = isset($_GET['realizedProcedure']) ? $_GET['realizedProcedure'] : ' ';
 $cirujanoPrincipal = isset($_GET['cirujano_principal']) ? $_GET['cirujano_principal'] : ' ';
 $ayudante = isset($_GET['ayudante']) ? $_GET['ayudante'] : ' ';
@@ -143,18 +181,18 @@ $edadPaciente = $ageInterval->y;
     <tr>
         <td colspan='2' width='18%' rowspan='3' class='verde_left'>Pre Operatorio:</td>
         <td class='verde_left' width='2%'>1.</td>
-        <td class='blanco_left' colspan='7'><?php echo substr($definitiveDisease1, 6); ?></td>
-        <td class='blanco' width='20%' colspan='2'><?php echo substr($definitiveDisease1, 0, 4); ?></td>
+        <td class='blanco_left' colspan='7'><?php echo substr($diagnosticoPRE1, 6); ?></td>
+        <td class='blanco' width='20%' colspan='2'><?php echo substr($diagnosticoPRE1, 0, 4); ?></td>
     </tr>
     <tr>
         <td class='verde_left' width='2%'>2.</td>
-        <td class='blanco_left' colspan='7'></td>
-        <td class='blanco' width='20%' colspan='2'>" . " " . "</td>
+        <td class='blanco_left' colspan='7'><?php echo substr($diagnosticoPRE2, 6); ?></td>
+        <td class='blanco' width='20%' colspan='2'><?php echo substr($diagnosticoPRE2, 0, 4); ?></td>
     </tr>
     <tr>
         <td class='verde_left' width='2%'>3.</td>
-        <td class='blanco_left' colspan='7'></td>
-        <td class='blanco' width='20%' colspan='2'></td>
+        <td class='blanco_left' colspan='7'><?php echo substr($diagnosticoPRE3, 6); ?></td>
+        <td class='blanco' width='20%' colspan='2'><?php echo substr($diagnosticoPRE3, 0, 4); ?></td>
     </tr>
     <tr>
         <td colspan='2' rowspan='3' class='verde_left'>Post Operatorio:</td>
@@ -185,7 +223,7 @@ $edadPaciente = $ageInterval->y;
     </tr>
     <tr>
         <td colspan='2' class='verde_left'>Proyectado:</td>
-        <td class='blanco_left' colspan='18'><?php echo $projectProcedure; ?></td>
+        <td class='blanco_left' colspan='18'><?php echo $cleanedProcedure; ?></td>
     </tr>
     <tr>
         <td colspan='2' class='verde_left'>Realizado:</td>

@@ -7,10 +7,38 @@ $gender = isset($_GET['gender']) ? $_GET['gender'] : ' ';
 $insurance = isset($_GET['insurance']) ? $_GET['insurance'] : ' ';
 $diagnostic1 = isset($_GET['diagnostic1']) ? $_GET['diagnostic1'] : ' ';
 $diagnostic2 = isset($_GET['diagnostic2']) ? $_GET['diagnostic2'] : ' ';
-$definitiveDisease1 = isset($_GET['definitiveDisease1']) ? $_GET['definitiveDisease1'] : ' ';
-$definitiveDisease2 = isset($_GET['definitiveDisease2']) ? $_GET['definitiveDisease2'] : ' ';
+
+// Obtener los valores desde GET
+$definitiveDisease1 = isset($_GET['definitiveDisease1']) ? $_GET['definitiveDisease1'] : '';
+$definitiveDisease2 = isset($_GET['definitiveDisease2']) ? $_GET['definitiveDisease2'] : '';
 $definitiveDisease3 = isset($_GET['definitiveDisease3']) ? $_GET['definitiveDisease3'] : ' ';
-$projectProcedure = isset($_GET['projectProcedure']) ? $_GET['projectProcedure'] : ' ';
+
+// Separar las cadenas en arreglos usando " ," como delimitador
+$diseasesArray1 = explode(' ,', $definitiveDisease1);
+$diseasesArray2 = explode(' ,', $definitiveDisease2);
+$diseasesArray3 = explode(' ,', $definitiveDisease3);
+
+// Combinar los dos arreglos en uno solo
+$combinedDiseasesArray = array_merge($diseasesArray1, $diseasesArray2, $diseasesArray3);
+
+// Limitar el número de elementos en el arreglo combinado a un máximo de 3
+$limitedDiseasesArray = array_slice($combinedDiseasesArray, 0, 3);
+
+// Asignar diagnósticos a variables individuales de forma segura
+$diagnosticoPRE1 = isset($limitedDiseasesArray[0]) ? $limitedDiseasesArray[0] : '';
+$diagnosticoPRE2 = isset($limitedDiseasesArray[1]) ? $limitedDiseasesArray[1] : '';
+$diagnosticoPRE3 = isset($limitedDiseasesArray[2]) ? $limitedDiseasesArray[2] : '';
+
+// Ahora puedes usar $diagnostico1, $diagnostico2 y $diagnostico3 como necesites
+
+// Ejemplo de uso
+$projectProcedure = isset($_GET['projectProcedure']) ? $_GET['projectProcedure'] : '';
+
+// Limpiar el nombre del procedimiento
+$cleanedProcedure = cleanProcedureName($projectProcedure);
+
+// Ahora puedes usar $cleanedProcedure para mostrar el nombre limpio del procedimiento
+
 $realizedProcedure = isset($_GET['realizedProcedure']) ? $_GET['realizedProcedure'] : ' ';
 $cirujanoPrincipal = isset($_GET['cirujano_principal']) ? $_GET['cirujano_principal'] : ' ';
 $ayudante = isset($_GET['ayudante']) ? $_GET['ayudante'] : ' ';
@@ -147,7 +175,7 @@ $edadPaciente = $ageInterval->y;
     </tr>
     <tr style="height: 35px">
         <td class="blanco" colspan="13"><?php echo $fechaDia . '/' . $fechaMes . '/' . $fechaAno; ?></td>
-        <td class="blanco" colspan="41"><?php echo $projectProcedure; ?></td>
+        <td class="blanco" colspan="41"><?php echo $cleanedProcedure; ?></td>
         <td class="blanco" colspan="16">1</td>
     </tr>
 </table>
@@ -1586,8 +1614,8 @@ $edadPaciente = $ageInterval->y;
     </tr>
     <tr>
         <td class="blanco" colspan="15">JENIFFER BAQUE Z.</td>
-        <td class="blanco" colspan="16">DR. CHOURIO ORTIZ ELADIO</td>
-        <td class="blanco" colspan="15">DR. VALLES EDERIC</td>
+        <td class="blanco" colspan="16">DR. <?php echo $cirujanoPrincipal; ?></td>
+        <td class="blanco" colspan="15">DR. <?php echo $anestesiologo; ?></td>
         <td class="blanco_unbordered" colspan="24"></td>
     </tr>
     <tr>
