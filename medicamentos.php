@@ -20,6 +20,15 @@ $instrumentista = isset($_GET['instrumentista']) ? $_GET['instrumentista'] : ' '
 $circulante = isset($_GET['circulante']) ? $_GET['circulante'] : ' ';
 
 // Nuevas variables
+$code = isset($_GET['code']) ? $_GET['code'] : ' ';
+// Utilizar explode para dividir la cadena
+$parts = explode('-', $code);
+
+// Asignar cada parte a una variable específica
+$idCirugia = isset($parts[0]) ? $parts[0] : ' ';
+$medicamentos = isset($parts[1]) ? $parts[1] : ' ';
+$cardex = isset($parts[2]) ? $parts[2] : ' ';
+
 $dieresis = isset($_GET['dieresis']) ? $_GET['dieresis'] : ' ';
 $exposicion = isset($_GET['exposicion']) ? $_GET['exposicion'] : ' ';
 $hallazgo = isset($_GET['hallazgo']) ? $_GET['hallazgo'] : ' ';
@@ -82,6 +91,25 @@ $ageInterval = $birthDateObj->diff($fechaInicioObj);
 $edadPaciente = $ageInterval->y;
 
 // Contenido de la primera página
+
+// Leer el archivo JSON
+$jsonData = file_get_contents('data/medicamentos.json');
+
+// Decodificar el JSON en un array asociativo
+$data = json_decode($jsonData, true);
+
+// Array para almacenar los medicamentos
+$medicamentosArray = [];
+
+// Buscar el procedimiento por ID
+foreach ($data['medicamentos']['procedimientos'] as $procedimiento) {
+    if ($procedimiento['id'] == $medicamentos) {
+        // Obtener la lista de medicamentos
+        $medicamentosArray = $procedimiento['medicamentos'];
+        break;
+    }
+}
+
 ?>
 <body>
 <TABLE>
@@ -174,298 +202,46 @@ $edadPaciente = $ageInterval->y;
         <td class="verde" colspan="6">HORA</td>
         <td class="verde" colspan="9">RESPONSABLE</td>
     </tr>
+    <?php
+    // Recorrer el array de medicamentos y generar la tabla para cada uno
+    foreach ($medicamentosArray as $medicamento) {
+        // Determinar quién administró el medicamento
+        $administradoPor = '';
+        if ($medicamento['administrado_por'] == 'Asistente') {
+            $administradoPor = $ayudante2;
+        } elseif ($medicamento['administrado_por'] == 'Anestesiólogo') {
+            $administradoPor = 'DR. ' . $anestesiologo;
+        } elseif ($medicamento['administrado_por'] == 'Cirujano Principal') {
+            $administradoPor = 'DR. ' . $cirujanoPrincipal;
+        }
+
+        echo "
     <tr>
-        <td class="blanco" colspan="17" rowspan="2">
-            CLORURO DE SODIO 0,9% LIQUIDO PARENTERAL (1000ML) 60 GOTAS POR
-            MINUTO, INTRAVENOSA, STAT.
+        <td class='blanco' colspan='17' rowspan='2'>
+            {$medicamento['nombre']}
         </td>
-        <td class="blanco" colspan="6"><?php echo $pot_hfinal; // Mostrar el nuevo valor de la hora?></td>
-        <td class="blanco"
-            colspan="9"><?php echo $anestesiologo; ?></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
+        <td class='blanco' colspan='6'>{$pot_halta}</td>
+        <td class='blanco' colspan='9'>{$administradoPor}</td>
+        <td class='blanco' colspan='6'></td>
+        <td class='blanco' colspan='9'></td>
+        <td class='blanco' colspan='6'></td>
+        <td class='blanco' colspan='9'></td>
+        <td class='blanco' colspan='6'></td>
+        <td class='blanco' colspan='9'></td>
     </tr>
     <tr>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-    </tr>
-    <tr>
-        <td class="blanco" colspan="17" rowspan="2">
-            MANITOL 20% LIQUIDO PARENTERAL 500 MILILITROS INTRAVENOSA, STAT.
-        </td>
-        <td class="blanco" colspan="6"><?php echo $pot_hfinal; // Mostrar el nuevo valor de la hora?></td>
-        <td class="blanco"
-            colspan="9"><?php echo $anestesiologo; ?></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-    </tr>
-    <tr>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-    </tr>
-    <tr>
-        <td class="blanco" colspan="17" rowspan="2">
-            MIDAZOLAM LIQUIDO PARENTERAL 5MG/ML (3ML) DOSIS: 2,5 MILIGRAMOS/0,5 MILILITRO, INTRAVENOSA,STAT.
-        </td>
-        <td class="blanco" colspan="6"><?php echo $pot_hfinal; // Mostrar el nuevo valor de la hora?></td>
-        <td class="blanco"
-            colspan="9"><?php echo $anestesiologo; ?></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-    </tr>
-    <tr>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-    </tr>
-    <tr>
-        <td class="blanco" colspan="17" rowspan="2">
-            FENTANILO LIQUIDO PARENTERAL 0,05MG/ ML (10ML) DOSIS: 60 MICROGRAMOS/ 1MILILITRO, INTRAVENOSO, STAT
-        </td>
-        <td class="blanco" colspan="6"><?php echo $pot_hfinal; // Mostrar el nuevo valor de la hora?></td>
-        <td class="blanco"
-            colspan="9"><?php echo $anestesiologo; ?></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-    </tr>
-    <tr>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-    </tr>
-    <tr>
-        <td class="blanco" colspan="17" rowspan="2">
-            CEFTRIAXONA SOLIDO PARENTERAL 1000MG DOSIS: 1000MILIGRAMOS DILUIDO EN 100MILILITROS DE CLORURO DE SODIO
-            AL 0,9% INTRAVENOSA, STAT
-        </td>
-        <td class="blanco" colspan="6"><?php echo $pot_hfinal; ?></td>
-        <td class="blanco"
-            colspan="9"><?php echo $anestesiologo; ?></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-    </tr>
-    <tr>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-    </tr>
-    <tr>
-        <td class="blanco" colspan="17" rowspan="2">
-            KETOROLACO LIQUIDO PARENTERAL 30MG/ML (1ML) DOSIS: 60MILIGRAMOS DILUIDO EN 100 MILILITROS DE CLORURO DE
-            SODIO AL 0,9%, INTRAVENOSA, STAT
-        </td>
-        <td class="blanco" colspan="6"><?php echo $pot_hfinal; ?></td>
-        <td class="blanco"
-            colspan="9"><?php echo $anestesiologo; ?></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-    </tr>
-    <tr>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-    </tr>
-    <tr>
-        <td class="blanco" colspan="17" rowspan="2">
-            LIDOCAINA CON EPINEFRINA, LIQUIDO PARENTERAL 2% + 1,200,000 (50ML), DOSIS: 80MILIGRAMO /4 MILILITRO, VIA
-            INFILTRATIVA, STAT.
-        </td>
-        <td class="blanco" colspan="6"><?php echo $pot_hfinal; // Mostrar el nuevo valor de la hora?></td>
-        <td class="blanco"
-            colspan="9"><?php echo $anestesiologo; ?></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-    </tr>
-    <tr>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-    </tr>
-    <tr>
-        <td class="blanco" colspan="17" rowspan="2">
-            BUPIVACAINA SIN EPINEFRINA, LIQUIDO PARENTERAL 0,5% (20ML), DOSIS: 20 MILIGRAMO /4MILILITRO, VIA
-            INFILTRATIVA, STAT.
-        </td>
-        <td class="blanco" colspan="6"><?php echo $pot_hfinal; // Mostrar el nuevo valor de la hora?></td>
-        <td class="blanco"
-            colspan="9"><?php echo $anestesiologo; ?></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-    </tr>
-    <tr>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-    </tr>
-    <tr>
-        <td class="blanco" colspan="17" rowspan="2">
-            GENTAMICINA LIQUIDO PARENTERAL 80MG/ML (2ML) DOSIS: 160MILIGRAMOS /2 MILILITROS, SUBCONJUNTIVAL, STAT.
-        </td>
-        <td class="blanco" colspan="6"><?php echo $pot_halta; ?></td>
-        <td class="blanco" colspan="9"><?php echo $cirujanoPrincipal; ?></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-    </tr>
-    <tr>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-    </tr>
-    <tr>
-        <td class="blanco" colspan="17" rowspan="2">
-            DEXAMETASONA LIQUIDO PARENTERAL 4MG/DL (2ML) DOSIS: 8MILIGRAMOS /2MILILITROS, SUBCONJUNTIVAL, STAT.
-        </td>
-        <td class="blanco" colspan="6"><?php echo $pot_halta; ?></td>
-        <td class="blanco" colspan="9"><?php echo $cirujanoPrincipal; ?></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-    </tr>
-    <tr>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-    </tr>
-    <tr>
-        <td class="blanco" colspan="17" rowspan="2">
-            DEXAMETASONA + TOBRAMICINA LIQUIDO OFTALMOLOGICO 0,1%+0,3% (5ML) DOSIS: 1 GOTA, VIA TOPICA, STAT.
-        </td>
-        <td class="blanco" colspan="6"><?php echo $pot_halta; ?></td>
-        <td class="blanco" colspan="9"><?php echo $cirujanoPrincipal; ?></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-    </tr>
-    <tr>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-    </tr>
-    <!--
-    <tr>
-        <td class="blanco" colspan="17" rowspan="2">
-            MITOMICINA SOLIDO PARENTERAL 20MG (20MILIGRAMOS DILUIDO EN 10 MILILITROS DE CLORURO DE SODIO AL 0,9%)
-            DOSIS: 1MILILITRO, VIA TOPIA, STAT.
-        </td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-    </tr>
-    <tr>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-        <td class="blanco" colspan="6"></td>
-        <td class="blanco" colspan="9"></td>
-    </tr>
-    -->
+        <td class='blanco' colspan='6'></td>
+        <td class='blanco' colspan='9'></td>
+        <td class='blanco' colspan='6'></td>
+        <td class='blanco' colspan='9'></td>
+        <td class='blanco' colspan='6'></td>
+        <td class='blanco' colspan='9'></td>
+        <td class='blanco' colspan='6'></td>
+        <td class='blanco' colspan='9'></td>
+    </tr>";
+    }
+
+    ?>
 </table>
 <table style="border: none">
     <TR>
@@ -477,4 +253,5 @@ $edadPaciente = $ageInterval->y;
         </TD>
     </TR>
 </table>
+
 </body>

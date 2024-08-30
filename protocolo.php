@@ -58,6 +58,15 @@ $instrumentista = isset($_GET['instrumentista']) ? $_GET['instrumentista'] : ' '
 $circulante = isset($_GET['circulante']) ? $_GET['circulante'] : ' ';
 
 // Nuevas variables
+$code = isset($_GET['code']) ? $_GET['code'] : ' ';
+// Utilizar explode para dividir la cadena
+$parts = explode('-', $code);
+
+// Asignar cada parte a una variable específica
+$idCirugia = isset($parts[0]) ? $parts[0] : ' ';
+$medicamentos = isset($parts[1]) ? $parts[1] : ' ';
+$cardex = isset($parts[2]) ? $parts[2] : ' ';
+
 $dieresis = isset($_GET['dieresis']) ? $_GET['dieresis'] : ' ';
 $exposicion = isset($_GET['exposicion']) ? $_GET['exposicion'] : ' ';
 $hallazgo = isset($_GET['hallazgo']) ? $_GET['hallazgo'] : ' ';

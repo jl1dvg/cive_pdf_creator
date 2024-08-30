@@ -181,19 +181,25 @@ $edadPaciente = $ageInterval->y;
 </table>
 <table>
     <tr>
-        <td class="morado" colspan="23" width="33.33%">C. ENTRADA<br><span
-                    style="font-size:8pt;font-family:Arial;font-weight:normal;">(Antes de la inducción de la anestesia)</span>
+        <td class="morado" colspan="23" width="33.33%"
+            style="border-bottom: 1px solid #808080; border-right: 1px solid #808080;">C. ENTRADA<br><span
+                    style=" font-size:8pt;font-family:Arial;font-weight:normal;
+        ">(Antes de la inducción de la anestesia)</span>
         </td>
-        <td class="morado" colspan="23" width="33.33%">D. PAUSA QUIRÚRGICA<br><span
-                    style="font-size:8pt;font-family:Arial;font-weight:normal;">(Antes de la incisión cutánea)</span>
+        <td class="morado" colspan="23" width="33.33%"
+            style="border-bottom: 1px solid #808080; border-right: 1px solid #808080;">D. PAUSA QUIRÚRGICA<br><span
+                    style=" font-size:8pt;font-family:Arial;font-weight:normal;
+        ">(Antes de la incisión cutánea)</span>
         </td>
-        <td class="morado" colspan="24" width="33.33%">E. SALIDA<br><span
+        <td class="morado" colspan="25" width="33.33%" style="border-bottom: 1px solid #808080;">E. SALIDA<br><span
                     style="font-size:8pt;font-family:Arial;font-weight:normal;">(Antes de que el paciente salga del quirófano)</span>
         </td>
     </tr>
     <tr>
-        <td class="blanco_unbordered" colspan="23"><b>El paciente ha confirmado</b></td>
-        <td class="blanco_unbordered" colspan="23"><b>Confirrmación que todos los miembros del equipo se han presentado
+        <td class="blanco_unbordered" colspan="23" style="border-right: 1px solid #808080;"><b>El paciente ha
+                confirmado</b></td>
+        <td class="blanco_unbordered" colspan="23" style="border-right: 1px solid #808080;"><b>Confirrmación que todos
+                los miembros del equipo se han presentado
                 por su nombre y función</b>
         </td>
         <td class="blanco_unbordered" colspan="24"><b>El responsable de la lista de chequeo confirma<br>verbalmente con
@@ -205,8 +211,8 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered" colspan="2">SI</td>
         <td class="blanco_unbordered" colspan="2">X</td>
         <td class="blanco_unbordered" colspan="2">NO</td>
-        <td class="blanco_unbordered" colspan="2"></td>
-        <td class="blanco_unbordered" colspan="23"></td>
+        <td class="blanco_unbordered" colspan="2" style="border-right: 1px solid #808080;"></td>
+        <td class="blanco_unbordered" colspan="23" style="border-right: 1px solid #808080;"></td>
         <td class="blanco_unbordered" colspan="24"></td>
     </tr>
     <tr>
@@ -214,8 +220,8 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered" colspan="2">OD</td>
         <td class="blanco_unbordered" colspan="2">X</td>
         <td class="blanco_unbordered" colspan="2">OI</td>
-        <td class="blanco_unbordered" colspan="2">X</td>
-        <td class="blanco_unbordered" colspan="23"></td>
+        <td class="blanco_unbordered" colspan="2" style="border-right: 1px solid #808080;">X</td>
+        <td class="blanco_unbordered" colspan="23" style="border-right: 1px solid #808080;"></td>
         <td class="blanco_unbordered" colspan="24" rowspan="3">El recuento FINAL de material blanco e<br>instrumental
             quirúrgico
             (previo al cierre) este<br>completo:
@@ -226,7 +232,7 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered" colspan="2">SI</td>
         <td class="blanco_unbordered" colspan="2">X</td>
         <td class="blanco_unbordered" colspan="2">NO</td>
-        <td class="blanco_unbordered" colspan="2"></td>
+        <td class="blanco_unbordered" colspan="2" style="border-right: 1px solid #808080;"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2">SI</td>
@@ -246,41 +252,20 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" style="border-right: 1px solid #808080;"></td>
     </tr>
     <tr>
         <td class="blanco_unbordered" colspan="15">Su consentimiento verbal y escrito</td>
         <td class="blanco_unbordered" colspan="2">SI</td>
         <td class="blanco_unbordered" colspan="2">X</td>
         <td class="blanco_unbordered" colspan="2">NO</td>
-        <td class="blanco_unbordered" colspan="2"></td>
-        <td class="blanco_unbordered" colspan="23"></td>
+        <td class="blanco_unbordered" colspan="2" style="border-right: 1px solid #808080;"></td>
+        <td class="blanco_unbordered" colspan="23" style="border-right: 1px solid #808080;"></td>
     </tr>
     <tr>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered" colspan="23" rowspan="2"><b>Responsable de la lista de chequeo confirma
+        <td class="blanco_unbordered" colspan="23" style="border-right: 1px solid #808080;"></td>
+        <td class="blanco_unbordered" colspan="23" rowspan="2" style="border-right: 1px solid #808080;"><b>Responsable
+                de la lista de chequeo confirma
                 verbalmente
                 con el
                 equipo quirúrgico:</b>
@@ -306,7 +291,8 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered"></td>
     </tr>
     <tr>
-        <td class="blanco_unbordered" colspan="23"><b>Demarcación del sitio quirúrgico</b></td>
+        <td class="blanco_unbordered" colspan="23" style="border-right: 1px solid #808080;"><b>Demarcación del sitio
+                quirúrgico</b></td>
         <td class="blanco_unbordered" colspan="24"></td>
     </tr>
     <tr>
@@ -319,61 +305,21 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered" colspan="8">NO PROCEDE</td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" colspan="2" style="border-right: 1px solid #808080;"></td>
+        <td class="blanco_unbordered" colspan="17"></td>
         <td class="blanco_unbordered" colspan="2">SI</td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2">NO</td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" style="border-right: 1px solid #808080;"></td>
         <td class="blanco_unbordered" colspan="24"><b>Hubo necesidad de empaquetar al paciente</b></td>
     </tr>
     <tr>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered" colspan="16">Identidad del paciente</td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" colspan="23" style="border-right: 1px solid #808080;"></td>
+        <td class="blanco_unbordered" colspan="17">Identidad del paciente</td>
         <td class="blanco_unbordered" colspan="2">X</td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" style="border-right: 1px solid #808080;"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
@@ -395,7 +341,8 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered"></td>
     </tr>
     <tr>
-        <td class="blanco_unbordered" colspan="23" rowspan="2"><b>Se ha completado el control formal del instrumental
+        <td class="blanco_unbordered" colspan="23" rowspan="2" style="border-right: 1px solid #808080;"><b>Se ha
+                completado el control formal del instrumental
                 anestésico,
                 medicación y riesgo anestésico</b>
         </td>
@@ -404,31 +351,8 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered" colspan="2">X</td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" style="border-right: 1px solid #808080;"></td>
+        <td class="blanco_unbordered" colspan="24"></td>
     </tr>
     <tr>
         <td class="blanco_unbordered" colspan="16">Procedimiento (lateralidad)</td>
@@ -436,80 +360,20 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered" colspan="2">X</td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" style="border-right: 1px solid #808080;"></td>
         <td class="blanco_unbordered" colspan="18"><b>Registre el número de compresas</b></td>
         <td class="blanco_unbordered" colspan="5"></td>
         <td class="blanco_unbordered"></td>
     </tr>
     <tr>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" colspan="16"></td>
         <td class="blanco_unbordered" colspan="2">SI</td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2">NO</td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" style="border-right: 1px solid #808080;"></td>
+        <td class="blanco_unbordered" colspan="23" style="border-right: 1px solid #808080;"></td>
+        <td class="blanco_unbordered" colspan="24"></td>
     </tr>
     <tr>
         <td class="blanco_unbordered" colspan="16">Equipo de intubación</td>
@@ -517,8 +381,9 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered" colspan="23"><b>Previsión de eventos críticos</b></td>
+        <td class="blanco_unbordered" style="border-right: 1px solid #808080;"></td>
+        <td class="blanco_unbordered" colspan="23" style="border-right: 1px solid #808080;"><b>Previsión de eventos
+                críticos</b></td>
         <td class="blanco_unbordered" colspan="24"><b>Nombre del procedimiento realizado</b></td>
     </tr>
     <tr>
@@ -527,16 +392,14 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" style="border-right: 1px solid #808080;"></td>
         <td class="blanco_unbordered" colspan="16">El cirujano expresa:</td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2">SI</td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2">NO</td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered" colspan="22"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" style="border-right: 1px solid #808080;"></td>
+        <td class="blanco_unbordered" colspan="24"></td>
     </tr>
     <tr>
         <td class="blanco_unbordered" colspan="16">Sistema de ventilación</td>
@@ -544,23 +407,17 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" style="border-right: 1px solid #808080;"></td>
         <td class="blanco_unbordered" colspan="16">Duración del procedimiento</td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2">X</td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered" colspan="22"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" style="border-right: 1px solid #808080;"></td>
+        <td class="blanco_unbordered" colspan="24"></td>
     </tr>
     <tr>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" colspan="5"></td>
         <td class="blanco_unbordered" colspan="9">Oxigeno</td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
@@ -568,23 +425,17 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" style="border-right: 1px solid #808080;"></td>
         <td class="blanco_unbordered" colspan="16">Pérdida prevista de sangre</td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2">X</td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered" colspan="22"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" style="border-right: 1px solid #808080;"></td>
+        <td class="blanco_unbordered" colspan="24"></td>
     </tr>
     <tr>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" colspan="5"></td>
         <td class="blanco_unbordered" colspan="9">Fármacos inhalados</td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
@@ -592,61 +443,12 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" style="border-right: 1px solid #808080;"></td>
+        <td class="blanco_unbordered" colspan="23" style="border-right: 1px solid #808080;"></td>
+        <td class="blanco_unbordered" colspan="24"></td>
     </tr>
     <tr>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" colspan="5"></td>
         <td class="blanco_unbordered" colspan="9">Medicación</td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
@@ -654,44 +456,21 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" style="border-right: 1px solid #808080;"></td>
         <td class="blanco_unbordered" colspan="16" rowspan="2">El anestesiólogo expresa algún problema específico</td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2">SI</td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2">NO</td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" style="border-right: 1px solid #808080;"></td>
         <td class="blanco_unbordered" colspan="24"><b>Clasificación de la herida</b></td>
     </tr>
     <tr>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" colspan="23" style="border-right: 1px solid #808080;"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2">X</td>
         <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered" colspan="2"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" colspan="3" style="border-right: 1px solid #808080;"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="10">Limpia</td>
         <td class="blanco_unbordered" colspan="2">X</td>
@@ -701,31 +480,10 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered"></td>
     </tr>
     <tr>
-        <td class="blanco_unbordered" colspan="23" rowspan="2"><b>Pulsoxímetro colocado en el paciente y funcionando
+        <td class="blanco_unbordered" colspan="23" rowspan="2" style="border-right: 1px solid #808080;"><b>Pulsoxímetro
+                colocado en el paciente y funcionando
         </td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" colspan="23" style="border-right: 1px solid #808080;"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="10">Limpia-contaminada</td>
         <td class="blanco_unbordered" colspan="2"></td>
@@ -735,7 +493,8 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered"></td>
     </tr>
     <tr>
-        <td class="blanco_unbordered" colspan="23" rowspan="2"><b>Equipo de enfermería y/o instrumentación<br>quirúrgica
+        <td class="blanco_unbordered" colspan="23" rowspan="2" style="border-right: 1px solid #808080;"><b>Equipo de
+                enfermería y/o instrumentación<br>quirúrgica
                 revisa:</b>
         </td>
         <td class="blanco_unbordered"></td>
@@ -782,7 +541,7 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" style="border-right: 1px solid #808080;"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="10">Toma de muestras</td>
         <td class="blanco_unbordered" colspan="2">SI</td>
@@ -796,77 +555,17 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered"></td>
     </tr>
     <tr>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" colspan="23" style="border-right: 1px solid #808080;"></td>
+        <td class="blanco_unbordered" colspan="17"></td>
         <td class="blanco_unbordered" colspan="2">SI</td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2">NO</td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" style="border-right: 1px solid #808080;"></td>
+        <td class="blanco_unbordered" colspan="24"></td>
     </tr>
     <tr>
-        <td class="blanco_unbordered" colspan="23"><b>Capnógrafo colocado y funcionando</b></td>
+        <td class="blanco_unbordered" colspan="23" style="border-right: 1px solid #808080;"><b>Capnógrafo colocado y
+                funcionando</b></td>
         <td class="blanco_unbordered" colspan="16" rowspan="3">Esterilidad (con resultado de<br>Indicadores e
             integradores<br>químicos
             internos y externos)
@@ -875,7 +574,7 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered" colspan="2">X</td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" style="border-right: 1px solid #808080;"></td>
         <td class="blanco_unbordered" colspan="24" rowspan="2"><b>Etiquetado de las muestras (nombres y apellidos<br>completos
                 del
                 paciente, historia clínica, fecha)</b>
@@ -892,69 +591,34 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2"></td>
         <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" style="border-right: 1px solid #808080;"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" style="border-right: 1px solid #808080;"></td>
     </tr>
     <tr>
+        <td class="blanco_unbordered" colspan="23" style="border-right: 1px solid #808080;"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" style="border-right: 1px solid #808080;"></td>
+        <td class="blanco_unbordered" colspan="5"></td>
         <td class="blanco_unbordered" colspan="2">SI</td>
-        <td class="blanco_unbordered" colspan="2"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" colspan="4"></td>
         <td class="blanco_unbordered" colspan="2">NO</td>
         <td class="blanco_unbordered" colspan="2"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" colspan="9"></td>
     </tr>
     <tr style="height: 19px">
-        <td class="blanco_unbordered" colspan="23"><b>Tiene el paciente alergias conocidas</b></td>
+        <td class="blanco_unbordered" colspan="23" style="border-right: 1px solid #808080;"><b>Tiene el paciente
+                alergias conocidas</b></td>
         <td class="blanco_unbordered" colspan="16" rowspan="2">Recuento INICIAL de material<br>blanco e Instrumental
             quirúrgico.
         </td>
@@ -962,34 +626,10 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered" colspan="2">X</td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" style="border-right: 1px solid #808080;"></td>
+        <td class="blanco_unbordered" colspan="24"></td>
     </tr>
     <tr>
-
         <td class="blanco_unbordered" colspan="2">SI</td>
         <td class="blanco_unbordered" colspan="2"></td>
         <td class="blanco_unbordered"></td>
@@ -997,40 +637,18 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered" colspan="2">X</td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="4">Cuales</td>
-        <td class="blanco_unbordered" colspan="9"></td>
+        <td class="blanco_unbordered" colspan="9" style="border-right: 1px solid #808080;"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" style="border-right: 1px solid #808080;"></td>
         <td class="blanco_unbordered" colspan="24"><b>Identifique el tipo de muestra a enviar</b></td>
     </tr>
     <tr>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" colspan="23" style="border-right: 1px solid #808080;"></td>
         <td class="blanco_unbordered" colspan="16" rowspan="2">Dudas o problemas relacionados<br>con el instrumental y
             equipos.
         </td>
@@ -1038,7 +656,7 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered" colspan="2">X</td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" style="border-right: 1px solid #808080;"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="6">Citoquímico</td>
         <td class="blanco_unbordered" colspan="2"></td>
@@ -1051,14 +669,15 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered"></td>
     </tr>
     <tr>
-        <td class="blanco_unbordered" colspan="23"><b>Vía aérea difícil / riesgo de aspiración</b></td>
+        <td class="blanco_unbordered" colspan="23" style="border-right: 1px solid #808080;"><b>Vía aérea difícil /
+                riesgo de aspiración</b></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" style="border-right: 1px solid #808080;"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="4">Nombre:</td>
         <td class="blanco_unbordered" colspan="18"></td>
@@ -1068,78 +687,21 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2"></td>
         <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered" colspan="19">SI, y hay instrumental y equipos disponibles</td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" colspan="19" style="border-right: 1px solid #808080;">SI, y hay instrumental y
+            equipos disponibles
+        </td>
+        <td class="blanco_unbordered" colspan="23" style="border-right: 1px solid #808080;"></td>
+        <td class="blanco_unbordered" colspan="24"></td>
     </tr>
     <tr>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2">NO</td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered" colspan="23" rowspan="2"><b>Se ha administrado profilaxis antibiótica en los<br>últimos
+        <td class="blanco_unbordered" colspan="17"></td>
+        <td class="blanco_unbordered" colspan="23" rowspan="2"
+            style="border-left: 1px solid #808080; border-right: 1px solid #808080"><b>Se ha administrado profilaxis
+                antibiótica en los<br>últimos
                 60
                 minutos</b>
         </td>
@@ -1178,14 +740,15 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" style="border-right: 1px solid #808080;"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="4">Nombre:</td>
         <td class="blanco_unbordered" colspan="18"></td>
         <td class="blanco_unbordered"></td>
     </tr>
     <tr>
-        <td class="blanco_unbordered" colspan="23" rowspan="2"><b>Riesgo de hemorragia &gt; 500 ml (7 ml/kg en
+        <td class="blanco_unbordered" colspan="23" rowspan="2" style="border-right: 1px solid #808080;"><b>Riesgo de
+                hemorragia &gt; 500 ml (7 ml/kg en
                 niños)</b></td>
         <td class="blanco_unbordered" colspan="2">SI</td>
         <td class="blanco_unbordered" colspan="2">X</td>
@@ -1196,56 +759,11 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered" colspan="9">NO PROCEDE</td>
         <td class="blanco_unbordered" colspan="2"></td>
         <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" style="border-right: 1px solid #808080;"></td>
+        <td class="blanco_unbordered" colspan="24"></td>
     </tr>
     <tr>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" colspan="23" style="border-right: 1px solid #808080;"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="10">Anatomopatológico</td>
         <td class="blanco_unbordered" colspan="2"></td>
@@ -1258,11 +776,13 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2"></td>
         <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered" colspan="19" rowspan="2">SI, y se ha previsto la disponibilidad de<br>acceso
+        <td class="blanco_unbordered" colspan="19" rowspan="2" style="border-right: 1px solid #808080;">SI, y se ha
+            previsto la disponibilidad de<br>acceso
             intravenoso y
             líquidos adecuados.
         </td>
-        <td class="blanco_unbordered" colspan="23" rowspan="2"><b>Dispone de imágenes diagnosticas esenciales<br>Para el
+        <td class="blanco_unbordered" colspan="23" rowspan="2" style="border-right: 1px solid #808080;"><b>Dispone de
+                imágenes diagnosticas esenciales<br>Para el
                 procedimiento quirúrgico</b>
         </td>
         <td class="blanco_unbordered"></td>
@@ -1321,7 +841,7 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" style="border-right: 1px solid #808080;"></td>
         <td class="blanco_unbordered" colspan="2">SI</td>
         <td class="blanco_unbordered" colspan="2">X</td>
         <td class="blanco_unbordered"></td>
@@ -1331,7 +851,7 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered" colspan="9">NO PROCEDE</td>
         <td class="blanco_unbordered" colspan="2"></td>
         <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" style="border-right: 1px solid #808080;"></td>
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="3">Otros:</td>
         <td class="blanco_unbordered"></td>
@@ -1356,114 +876,21 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered"></td>
     </tr>
     <tr>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered" colspan="22"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" colspan="23" style="border-right: 1px solid #808080;"></td>
+        <td class="blanco_unbordered" colspan="23" style="border-right: 1px solid #808080;"></td>
+        <td class="blanco_unbordered" colspan="24"></td>
     </tr>
     <tr>
-        <td class="blanco_unbordered" colspan="23" rowspan="2"><b>Se ha confirmado la reserva de hemoderivados con el
+        <td class="blanco_unbordered" colspan="23" rowspan="2" style="border-right: 1px solid #808080;"><b>Se ha
+                confirmado la reserva de hemoderivados con el
                 laboratorio</b>
         </td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered" colspan="22"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" colspan="23" style="border-right: 1px solid #808080;"></td>
+        <td class="blanco_unbordered" colspan="24"></td>
     </tr>
     <tr>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered" colspan="22"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" colspan="23" style="border-right: 1px solid #808080;"></td>
+        <td class="blanco_unbordered" colspan="24"></td>
     </tr>
     <tr>
         <td class="blanco_unbordered" colspan="2">SI</td>
@@ -1476,102 +903,13 @@ $edadPaciente = $ageInterval->y;
         <td class="blanco_unbordered"></td>
         <td class="blanco_unbordered" colspan="2">X</td>
         <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" style="border-right: 1px solid #808080;"></td>
+        <td class="blanco_unbordered" colspan="23" style="border-right: 1px solid #808080;"></td>
+        <td class="blanco_unbordered" colspan="24"></td>
     </tr>
     <tr>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
-        <td class="blanco_unbordered"></td>
+        <td class="blanco_unbordered" colspan="23" style="border-right: 1px solid #808080;"></td>
+        <td class="blanco_unbordered" colspan="23" style="border-right: 1px solid #808080;"></td>
         <td class="blanco_unbordered" colspan="24" rowspan="2"><b>Si hay problemas que resolver, relacionados con<br>el
                 instrumental
                 y los equipos</b>

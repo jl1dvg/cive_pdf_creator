@@ -1,0 +1,178 @@
+{
+  "medicamentos": {
+    "procedimientos": [
+      {
+        "id": 1,
+        "nombre": "Sutura Corneal",
+        "medicamentos": [
+          {
+            "nombre": "CLORURO DE SODIO 0,9% LIQUIDO PARENTERAL (500ML) 60 GOTAS POR MINUTO, INTRAVENOSA, STAT.",
+            "administrado_por": "Asistente"
+          },
+          {
+            "nombre": "MIDAZOLAM LIQUIDO PARENTERAL 5MG/ML (3ML) DOSIS: 2,5MILIGRAMO/0.5MILILITRO, INTRAVENOSA, STAT.",
+            "administrado_por": "Anestesiólogo"
+          },
+          {
+            "nombre": "FENTANILO LIQUIDO PARENTERAL 0,05MG/ML (10ML) DOSIS: 60MICROGRAMOS/1MILILITRO, INTRAVENOSA, STAT.",
+            "administrado_por": "Anestesiólogo"
+          },
+          {
+            "nombre": "PROPOFOL LIQUIDO PARENTERAL 10MG/ML (20ML) DOSIS: 100MILIGRAMOS/10 MILILITROS, INTRAVENOSA, STAT.",
+            "administrado_por": "Anestesiólogo"
+          },
+          {
+            "nombre": "DEXAMETASONA LIQUIDO PARENTERAL 4MG/ML (2ML) DOSIS: 8MILIGRAMOS/2 MILILITROS, INTRAVENOSA, STAT.",
+            "administrado_por": "Cirujano Principal"
+          },
+          {
+            "nombre": "DICLOFENACO LIQUIDO PARENTERAL 25MG/ML (3ML) DOSIS: 75MILIGRAMOS/3 MILILITROS, INTRAVENOSA, STAT.",
+            "administrado_por": "Asistente"
+          },
+          {
+            "nombre": "KETOROLACO LIQUIDO PARENTERAL 30MG/ML (1ML) DOSIS: 60MILIGRAMOS DILUIDO EN 100 MILILITRO DE CLORURO DE SODIO AL 0.9%, INTRAVENOSA, STAT.",
+            "administrado_por": "Asistente"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "nombre": "ICL",
+        "medicamentos": [
+          {
+            "nombre": "CLORURO DE SODIO 0,9% LIQUIDO PARENTERAL (1000ML) 60 GOTAS POR MINUTO, INTRAVENOSA, STAT.",
+            "administrado_por": "Asistente"
+          },
+          {
+            "nombre": "MIDAZOLAM LIQUIDO PARENTERAL 5MG/ML (3ML) DOSIS: 2,5MILIGRAMO/0.5MILILITRO, INTRAVENOSA, STAT.",
+            "administrado_por": "Anestesiólogo"
+          },
+          {
+            "nombre": "FENTANILO LIQUIDO PARENTERAL 0,05MG/ML (10ML) DOSIS: 60MICROGRAMOS/1MILILITRO, INTRAVENOSA, STAT.",
+            "administrado_por": "Anestesiólogo"
+          },
+          {
+            "nombre": "PROPOFOL LIQUIDO PARENTERAL 10MG/ML (20ML) DOSIS: 100MILIGRAMOS/10 MILILITROS, INTRAVENOSA, STAT.",
+            "administrado_por": "Anestesiólogo"
+          },
+          {
+            "nombre": "DEXAMETASONA LIQUIDO PARENTERAL 4MG/ML (2ML) DOSIS: 8MILIGRAMOS/2 MILILITROS, INTRAVENOSA, STAT.",
+            "administrado_por": "Cirujano Principal"
+          },
+          {
+            "nombre": "KETOROLACO LIQUIDO PARENTERAL 30MG/ML (1ML) DOSIS: 60MILIGRAMOS DILUIDO EN 100 MILILITRO DE CLORURO DE SODIO AL 0.9%, INTRAVENOSA, STAT.",
+            "administrado_por": "Asistente"
+          },
+          {
+            "nombre": "CEFTRIAXONA SOLIDO PARENTERAL 1000MG DOSIS: 1000MILIGRAMOS DILUIDO EN 100 MILILITROS DE CLORURO DE SODIO AL 0.9%, INTRAVENOSA, STAT.",
+            "administrado_por": "Asistente"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "nombre": "Anillos",
+        "medicamentos": [
+          {
+            "nombre": "CLORURO DE SODIO 0,9% LIQUIDO PARENTERAL (500ML) 60 GOTAS POR MINUTO, INTRAVENOSA, STAT.",
+            "administrado_por": "Asistente"
+          },
+          {
+            "nombre": "MIDAZOLAM LIQUIDO PARENTERAL 5MG/ML (3ML) DOSIS: 2,5MILIGRAMO/0.5MILILITRO, INTRAVENOSA, STAT.",
+            "administrado_por": "Anestesiólogo"
+          },
+          {
+            "nombre": "FENTANILO LIQUIDO PARENTERAL 0,05MG/ML (10ML) DOSIS: 60MICROGRAMOS/1MILILITRO, INTRAVENOSA, STAT.",
+            "administrado_por": "Anestesiólogo"
+          },
+          {
+            "nombre": "ALPRAZOLAM SOLIDO ORAL O,50 MILIGRAMOS VIA ORAL, STAT.",
+            "administrado_por": "Asistente"
+          },
+          {
+            "nombre": "LIDOCAINA CON EPINEFRINA, LIQUIDO PARENTERAL 2% + 1,200,000 (50ML), DOSIS: 100MILIGRAMO/5 MILILITRO, VIA INFILTRATIVA, STAT.",
+            "administrado_por": "Cirujano Principal"
+          },
+          {
+            "nombre": "BUPIVACAINA SIN EPINEFRINA, LIQUIDO PARENTERAL 0,5% (20ML), DOSIS: 30MILIGRAMO/5 MILILITRO, VIA INFILTRATIVA, STAT.",
+            "administrado_por": "Cirujano Principal"
+          },
+          {
+            "nombre": "KETOROLACO LIQUIDO PARENTERAL 30MG/ML (1ML) DOSIS: 60MILIGRAMOS DILUIDO EN 100 MILILITRO DE CLORURO DE SODIO AL 0.9%, INTRAVENOSA, STAT.",
+            "administrado_por": "Asistente"
+          },
+          {
+            "nombre": "DICLOFENACO LIQUIDO PARENTERAL 25MG/ML (3ML) DOSIS: 75MILIGRAMOS/3 MILILITROS, INTRAVENOSA, STAT.",
+            "administrado_por": "Asistente"
+          },
+          {
+            "nombre": "DEXAMETASONA + TOBRAMICINA LIQUIDO OFTALMICO 0,1%+0,3% (5ML) DOSIS: 1 GOTA, VIA TOPICA, STAT.",
+            "administrado_por": "Asistente"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "nombre": "Inyección",
+        "medicamentos": [
+          {
+            "nombre": "CLORURO DE SODIO 0,9% LIQUIDO PARENTERAL (500ML) 60 GOTAS POR MINUTO, INTRAVENOSA, STAT.",
+            "administrado_por": "Asistente"
+          },
+          {
+            "nombre": "MIDAZOLAM LIQUIDO PARENTERAL 5MG/ML (3ML) DOSIS: 2,5MILIGRAMO/0.5MILILITRO, INTRAVENOSA, STAT.",
+            "administrado_por": "Anestesiólogo"
+          },
+          {
+            "nombre": "FENTANILO LIQUIDO PARENTERAL 0,05MG/ML (10ML) DOSIS: 60MICROGRAMOS/1MILILITRO, INTRAVENOSA, STAT.",
+            "administrado_por": "Anestesiólogo"
+          },
+          {
+            "nombre": "BEVACIZUMAB LIQUIDO PARENTERAL 25MG/ML (5ML) DOSIS: 0,05 ML, INTRAVITREA",
+            "administrado_por": "Cirujano Principal"
+          },
+          {
+            "nombre": "LIDOCAINA SIN EPINEFRINA, LIQUIDO PARENTERAL 2% (50ML) DOSIS: 0,1MILILITRO, SUBCONJUNTIVAL, STAT.",
+            "administrado_por": "Cirujano Principal"
+          },
+          {
+            "nombre": "DEXAMETASONA + TOBRAMICINA LIQUIDO OFTALMICO 0,1%+0,3% (5ML) DOSIS: 1 GOTA, VIA TOPICA, STAT.",
+            "administrado_por": "Cirujano Principal"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "nombre": "catarata",
+        "medicamentos": [
+          {
+            "nombre": "CLORURO DE SODIO 0,9% LIQUIDO PARENTERAL (500ML) 60 GOTAS POR MINUTO, INTRAVENOSA, STAT.",
+            "administrado_por": "Asistente"
+          },
+          {
+            "nombre": "MIDAZOLAM LIQUIDO PARENTERAL 5MG/ML (3ML) DOSIS: 2,5MILIGRAMO/0.5MILILITRO, INTRAVENOSA, STAT.",
+            "administrado_por": "Anestesiólogo"
+          },
+          {
+            "nombre": "FENTANILO LIQUIDO PARENTERAL 0,05MG/ML (10ML) DOSIS: 60MICROGRAMOS/1MILILITRO, INTRAVENOSA, STAT.",
+            "administrado_por": "Anestesiólogo"
+          },
+          {
+            "nombre": "BEVACIZUMAB LIQUIDO PARENTERAL 25MG/ML (5ML) DOSIS: 0,05 ML, INTRAVITREA",
+            "administrado_por": "Cirujano Principal"
+          },
+          {
+            "nombre": "LIDOCAINA SIN EPINEFRINA, LIQUIDO PARENTERAL 2% (50ML) DOSIS: 0,1MILILITRO, SUBCONJUNTIVAL, STAT.",
+            "administrado_por": "Cirujano Principal"
+          },
+          {
+            "nombre": "DEXAMETASONA + TOBRAMICINA LIQUIDO OFTALMICO 0,1%+0,3% (5ML) DOSIS: 1 GOTA, VIA TOPICA, STAT.",
+            "administrado_por": "Cirujano Principal"
+          }
+        ]
+      }
+    ]
+  }
+}
+
+
