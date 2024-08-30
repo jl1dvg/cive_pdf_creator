@@ -39,10 +39,10 @@ use Mpdf\Mpdf;
 $mpdf = new Mpdf([
     'default_font_size' => 8,
     'default_font' => 'dejavusans',
-    'margin_left' => 10,
-    'margin_right' => 10,
-    'margin_top' => 8,
-    'margin_bottom' => 8,
+    'margin_left' => 5,
+    'margin_right' => 5,
+    'margin_top' => 5,
+    'margin_bottom' => 5,
     'orientation' => 'P',
     'shrink_tables_to_fit' => 1,
     'use_kwt' => true,
@@ -50,7 +50,7 @@ $mpdf = new Mpdf([
     'keep_table_proportions' => true
 ]);
 
-// Incluir el archivo CSS externo
+// Incluir el archivo CSS externo general
 $stylesheet = file_get_contents('styles.css');
 $mpdf->WriteHTML($stylesheet, 1);
 
@@ -67,7 +67,6 @@ $html = ob_get_clean();
 $mpdf->WriteHTML($html);
 $mpdf->AddPage();
 
-// Agrega más páginas según sea necesario
 ob_start();
 include '005.php';
 $html = ob_get_clean();
@@ -84,7 +83,21 @@ ob_start();
 include 'saveqx.php';
 $html = ob_get_clean();
 $mpdf->WriteHTML($html);
-$mpdf->AddPage();
+//$mpdf->AddPage();
+
+// Cambiar la orientación a horizontal para la página transanestesico
+$mpdf->AddPage('L'); // 'L' para Landscape
+
+// Incluir el CSS específico para transanestesico
+//$transanestesicoStylesheet = file_get_contents('css/transanestesico.css');
+//$mpdf->WriteHTML($transanestesicoStylesheet, 1);
+
+// Incluir el contenido de transanestesico.php
+ob_start();
+include 'transanestesico.php';
+$html = ob_get_clean();
+$mpdf->WriteHTML($html);
+//$mpdf->AddPage();
 
 // Mostrar el PDF en la misma página
 $mpdf->Output('informacion_paciente.pdf', 'I');
