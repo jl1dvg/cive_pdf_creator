@@ -1,134 +1,129 @@
 <?php
-// Obtener los parámetros desde GET
-$patientName = isset($_GET['patientName']) ? $_GET['patientName'] : ' ';
-$historyNumber = isset($_GET['historyNumber']) ? $_GET['historyNumber'] : ' ';
-$birthDate = isset($_GET['birthDate']) ? $_GET['birthDate'] : ' ';
-$gender = isset($_GET['gender']) ? $_GET['gender'] : ' ';
-$insurance = isset($_GET['insurance']) ? $_GET['insurance'] : ' ';
-$diagnostic1 = isset($_GET['diagnostic1']) ? $_GET['diagnostic1'] : ' ';
-$diagnostic2 = isset($_GET['diagnostic2']) ? $_GET['diagnostic2'] : ' ';
 
-// Obtener los valores desde GET
-$definitiveDisease1 = isset($_GET['definitiveDisease1']) ? $_GET['definitiveDisease1'] : '';
-$definitiveDisease2 = isset($_GET['definitiveDisease2']) ? $_GET['definitiveDisease2'] : '';
-$definitiveDisease3 = isset($_GET['definitiveDisease3']) ? $_GET['definitiveDisease3'] : ' ';
+require 'conexion.php';  // Asegúrate de tener la conexión a la base de datos configurada
 
-// Separar las cadenas en arreglos usando " ," como delimitador
-$diseasesArray1 = explode(' ,', $definitiveDisease1);
-$diseasesArray2 = explode(' ,', $definitiveDisease2);
-$diseasesArray3 = explode(' ,', $definitiveDisease3);
+// Obtener los parámetros enviados desde el enlace
+$form_id = $_GET['form_id'] ?? null;
+$hc_number = $_GET['hc_number'] ?? null;
 
-// Combinar los dos arreglos en uno solo
-$combinedDiseasesArray = array_merge($diseasesArray1, $diseasesArray2, $diseasesArray3);
+if ($form_id && $hc_number) {
+// Consulta para obtener los datos del protocolo y el paciente
+    $sql = "SELECT p.hc_number, p.fname, p.mname, p.lname, p.lname2, p.fecha_nacimiento, p.afiliacion, p.sexo, p.ciudad, 
+            pr.form_id, pr.fecha_inicio, pr.hora_inicio, pr.fecha_fin, pr.hora_fin, pr.cirujano_1, pr.instrumentista, 
+            pr.cirujano_2, pr.circulante, pr.primer_ayudante, pr.anestesiologo, pr.segundo_ayudante, 
+            pr.ayudante_anestesia, pr.tercer_ayudante, pr.membrete, pr.dieresis, pr.exposicion, pr.hallazgo, 
+            pr.operatorio, pr.complicaciones_operatorio, pr.datos_cirugia, pr.procedimientos, pr.lateralidad, 
+            pr.tipo_anestesia, pr.diagnosticos, pp.procedimiento_proyectado
+        FROM patient_data p 
+        INNER JOIN protocolo_data pr ON p.hc_number = pr.hc_number
+        LEFT JOIN procedimiento_proyectado pp ON pp.form_id = pr.form_id AND pp.hc_number = pr.hc_number
+        WHERE pr.form_id = ? AND p.hc_number = ?";
 
-// Limitar el número de elementos en el arreglo combinado a un máximo de 3
-$limitedDiseasesArray = array_slice($combinedDiseasesArray, 0, 3);
+    $stmt = $mysqli->prepare($sql);
+    $stmt->bind_param('ss', $form_id, $hc_number);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-// Asignar diagnósticos a variables individuales de forma segura
-$diagnosticoPRE1 = isset($limitedDiseasesArray[0]) ? $limitedDiseasesArray[0] : '';
-$diagnosticoPRE2 = isset($limitedDiseasesArray[1]) ? $limitedDiseasesArray[1] : '';
-$diagnosticoPRE3 = isset($limitedDiseasesArray[2]) ? $limitedDiseasesArray[2] : '';
+    if ($result->num_rows > 0) {
+        $protocol_data = $result->fetch_assoc();
 
-// Ahora puedes usar $diagnostico1, $diagnostico2 y $diagnostico3 como necesites
+        // Ahora también tienes la variable `procedimiento_proyectado`
+        $procedimientoProyectado = $protocol_data['procedimiento_proyectado'] ?? 'No data';  // Valor del procedimiento proyectado
+        // Dividir la cadena en partes usando " - " como delimitador
+        $parts = explode(' - ', $procedimientoProyectado);
 
-function cleanProcedureName($procedure)
-{
-    // Encontrar la posición del primer guion seguido de un espacio o letras mayúsculas seguidas de un guion
-    if (preg_match('/^[A-Z]+-[A-Z]+-\d+-(.+)/', $procedure, $matches) || preg_match('/^\d+-/', $procedure)) {
-        // Si se encuentra un patrón con guiones y números al inicio
-        $procedure = preg_replace('/^[A-Z]+-[A-Z]+-\d+-|^\d+-/', '', $procedure);
+        // Asignar la tercera parte como el nombre del procedimiento
+        $nombre_procedimiento_proyectado = isset($parts[2]) ? $parts[2] : '';
+
+        // Asignar los datos de `patient_data`
+        $fname = $protocol_data['fname'];
+        $mname = $protocol_data['mname'];
+        $lname = $protocol_data['lname'];
+        $lname2 = $protocol_data['lname2'];
+        $historyNumber = $protocol_data['hc_number'];
+        $birthDate = $protocol_data['fecha_nacimiento'];
+        $gender = $protocol_data['sexo'];
+        $insurance = $protocol_data['afiliacion'];
+        $city = $protocol_data['ciudad'];
+
+        // Asignar los datos de `protocolo_data`
+        $form_id = $protocol_data['form_id'];
+        $fechaInicio = $protocol_data['fecha_inicio'];
+        $horaInicio = $protocol_data['hora_inicio'];
+        $fechaFin = $protocol_data['fecha_fin'];
+        $horaFin = $protocol_data['hora_fin'];
+        $mainSurgeon = $protocol_data['cirujano_1'];
+        $assistantSurgeon1 = $protocol_data['cirujano_2'];
+        $instrumentista = $protocol_data['instrumentista'];
+        $circulante = $protocol_data['circulante'];
+        $ayudante = $protocol_data['primer_ayudante'];
+        $anestesiologo = $protocol_data['anestesiologo'];
+        $ayudante2 = $protocol_data['segundo_ayudante'];
+        $thirdAssistant = $protocol_data['tercer_ayudante'];
+        $ayudante_anestesia = $protocol_data['ayudante_anestesia'];
+        $tipoAnestesia = $protocol_data['tipo_anestesia'];
+        $realizedProcedure = $protocol_data['membrete'];
+        $dieresis = $protocol_data['dieresis'];
+        $exposicion = $protocol_data['exposicion'];
+        $hallazgo = $protocol_data['hallazgo'];
+        $operatorio = nl2br($protocol_data['operatorio']);
+        $surgicalDetails = $protocol_data['datos_cirugia'];
+        $procedures = $protocol_data['procedimientos'];
+        $lateralidad = $protocol_data['lateralidad'];
+        $diagnoses = $protocol_data['diagnosticos'];
+
+        // 1. Decodificar JSON de diagnósticos
+        $diagnosesArray = json_decode($diagnoses, true);
+
+        // Asignar diagnósticos y códigos CIE-10 a variables
+        $diagnostic1 = $diagnosesArray[0]['idDiagnostico'] ?? '';
+        $diagnostic2 = $diagnosesArray[1]['idDiagnostico'] ?? '';
+        $diagnostic3 = $diagnosesArray[2]['idDiagnostico'] ?? '';
+
+        // Decodificar el JSON de procedimientos
+        $proceduresArray = json_decode($procedures, true);
+
+        $codes = [];
+
+        // Verificar si el array de procedimientos es válido
+        if (is_array($proceduresArray)) {
+            foreach ($proceduresArray as $proc) {
+                if (isset($proc['procInterno'])) {
+                    // Separar la cadena en partes usando " - " como delimitador
+                    $parts = explode(' - ', $proc['procInterno']);
+                    // Verificar si existe la parte del código (la segunda parte)
+                    if (isset($parts[1])) {
+                        // Agregar el código al array de códigos
+                        $codes[] = $parts[1];
+                    }
+                }
+            }
+        }
+
+        // Unir todos los códigos con "/"
+        $codes_concatenados = implode('/', $codes);
     }
-    return $procedure;
 }
 
-// Ejemplo de uso
-$projectProcedure = isset($_GET['projectProcedure']) ? $_GET['projectProcedure'] : '';
+// 3. Calcular la edad del paciente
+$birthDateObj = new DateTime($birthDate);
+$fechaInicioObj = new DateTime($fechaInicio);
+$edadPaciente = $birthDateObj->diff($fechaInicioObj)->y;
 
-// Limpiar el nombre del procedimiento
-$cleanedProcedure = cleanProcedureName($projectProcedure);
+// Separar la fecha y la hora
+$fechaInicioParts = explode(' ', $fechaInicio); // Dividir la fecha y la hora
+$fechaPart = $fechaInicioParts[0];  // Parte de la fecha 'Y-m-d'
+// Separar la fecha en día, mes y año
+list($fechaAno, $fechaMes, $fechaDia) = explode('-', $fechaPart);
 
-// Ahora puedes usar $cleanedProcedure para mostrar el nombre limpio del procedimiento
-
-$realizedProcedure = isset($_GET['realizedProcedure']) ? $_GET['realizedProcedure'] : ' ';
-$cirujanoPrincipal = isset($_GET['cirujano_principal']) ? $_GET['cirujano_principal'] : ' ';
-$ayudante = isset($_GET['ayudante']) ? $_GET['ayudante'] : ' ';
-$ayudante2 = isset($_GET['ayudante2']) ? $_GET['ayudante2'] : ' ';
-$anestesiologo = isset($_GET['anestesiologo']) ? $_GET['anestesiologo'] : ' ';
-$instrumentista = isset($_GET['instrumentista']) ? $_GET['instrumentista'] : ' ';
-$circulante = isset($_GET['circulante']) ? $_GET['circulante'] : ' ';
-
-// Nuevas variables
-$code = isset($_GET['code']) ? $_GET['code'] : ' ';
-// Utilizar explode para dividir la cadena
-$parts = explode('-', $code);
-
-// Asignar cada parte a una variable específica
-$idCirugia = isset($parts[0]) ? $parts[0] : ' ';
-$medicamentos = isset($parts[1]) ? $parts[1] : ' ';
-$cardex = isset($parts[2]) ? $parts[2] : ' ';
-
-$dieresis = isset($_GET['dieresis']) ? $_GET['dieresis'] : ' ';
-$exposicion = isset($_GET['exposicion']) ? $_GET['exposicion'] : ' ';
-$hallazgo = isset($_GET['hallazgo']) ? $_GET['hallazgo'] : ' ';
-$operatorio = isset($_GET['operatorio']) ? $_GET['operatorio'] : ' ';
-$fechaInicio = isset($_GET['fechaInicio']) ? $_GET['fechaInicio'] : ' ';
-$horaInicio = isset($_GET['horaInicio']) ? $_GET['horaInicio'] : ' ';
-$fechaFin = isset($_GET['fechaFin']) ? $_GET['fechaFin'] : ' ';
-$horaFin = isset($_GET['horaFin']) ? $_GET['horaFin'] : ' ';
-$tipoAnestesia = isset($_GET['tipoAnestesia']) ? $_GET['tipoAnestesia'] : ' ';
-
-// Reemplazar %0A por <br> para los saltos de línea en el texto del procedimiento operatorio
-$operatorio = strtoupper(str_replace('%0A', '<br>', $operatorio));
-
-// Formatear fechas y horas
-$fechaInicioParts = explode('-', $fechaInicio);
-$fechaDia = isset($fechaInicioParts[2]) ? $fechaInicioParts[2] : ' ';
-$fechaMes = isset($fechaInicioParts[1]) ? $fechaInicioParts[1] : ' ';
-$fechaAno = isset($fechaInicioParts[0]) ? $fechaInicioParts[0] : ' ';
-
-// Suponiendo que ya tienes $fechaInicio y $horaInicio, $horaFin definidas como cadenas (strings)
-
-$prot_hini_timestamp = strtotime($fechaInicio . ' ' . $horaInicio); // Convertir la fecha y hora de inicio a timestamp
-$prot_hfinal_timestamp = strtotime($fechaInicio . ' ' . $horaFin); // Convertir la fecha y hora de finalización a timestamp
-
-// Calcular el timestamp para el tiempo preoperatorio (30 minutos antes del inicio)
-$prot_hpre_timestamp = $prot_hini_timestamp - 1800; // 1800 segundos = 30 minutos
-
-// Calcular el timestamp para el tiempo de alta (45 minutos después de la finalización)
-$prot_halta_timestamp = $prot_hfinal_timestamp + 2700; // 2700 segundos = 45 minutos
-
-// Formatear los timestamps en formato de hora (HH:MM)
-$pot_hinicio = date("H:i", $prot_hini_timestamp);
-$pot_hfinal = date("H:i", $prot_hfinal_timestamp);
-$pot_hpre = date("H:i", $prot_hpre_timestamp);
-$pot_halta = date("H:i", $prot_halta_timestamp);
-
-// Dividir el nombre completo en partes (asumiendo que son 2 apellidos y 2 nombres)
-$nameParts = explode(' ', $patientName);
-$lname = $nameParts[0] ?? '';
-$lname2 = $nameParts[1] ?? '';
-$fname = $nameParts[2] ?? '';
-$mname = $nameParts[3] ?? '';
-
-// Separar el contenido de $realizedProcedure por código (número seguido de un guion)
+// 5. Separar el contenido del procedimiento realizado por código
 $realizedProceduresArray = preg_split('/(?=\d{5}-)/', $realizedProcedure);
 $formattedRealizedProcedure = implode('<br>', $realizedProceduresArray);
 
-// Convertir las fechas a objetos DateTime
-$birthDateObj = new DateTime($birthDate);
-$fechaInicioObj = new DateTime($fechaInicio);
-
+// Datos adicionales (tensión, frecuencia, etc.)
 $sistolica = rand(110, 130);
 $diastolica = rand(110, 130);
 $fc = rand(110, 130);
-
-// Calcular la diferencia entre las dos fechas
-$ageInterval = $birthDateObj->diff($fechaInicioObj);
-
-// Obtener la edad en años
-$edadPaciente = $ageInterval->y;
-
-// Contenido de la primera página
 ?>
 <BODY>
 <TABLE>
@@ -190,18 +185,18 @@ $edadPaciente = $ageInterval->y;
     <tr>
         <td colspan='2' width='18%' rowspan='3' class='verde_left'>Pre Operatorio:</td>
         <td class='verde_left' width='2%'>1.</td>
-        <td class='blanco_left' colspan='7'><?php echo substr($diagnosticoPRE1, 6); ?></td>
-        <td class='blanco' width='20%' colspan='2'><?php echo substr($diagnosticoPRE1, 0, 4); ?></td>
+        <td class='blanco_left' colspan='7'></td>
+        <td class='blanco' width='20%' colspan='2'></td>
     </tr>
     <tr>
         <td class='verde_left' width='2%'>2.</td>
-        <td class='blanco_left' colspan='7'><?php echo substr($diagnosticoPRE2, 6); ?></td>
-        <td class='blanco' width='20%' colspan='2'><?php echo substr($diagnosticoPRE2, 0, 4); ?></td>
+        <td class='blanco_left' colspan='7'></td>
+        <td class='blanco' width='20%' colspan='2'></td>
     </tr>
     <tr>
         <td class='verde_left' width='2%'>3.</td>
-        <td class='blanco_left' colspan='7'><?php echo substr($diagnosticoPRE3, 6); ?></td>
-        <td class='blanco' width='20%' colspan='2'><?php echo substr($diagnosticoPRE3, 0, 4); ?></td>
+        <td class='blanco_left' colspan='7'></td>
+        <td class='blanco' width='20%' colspan='2'></td>
     </tr>
     <tr>
         <td colspan='2' rowspan='3' class='verde_left'>Post Operatorio:</td>
@@ -232,11 +227,12 @@ $edadPaciente = $ageInterval->y;
     </tr>
     <tr>
         <td colspan='2' class='verde_left'>Proyectado:</td>
-        <td class='blanco_left' colspan='18'><?php echo $cleanedProcedure; ?></td>
+        <td class='blanco_left' colspan='18'><?php echo $nombre_procedimiento_proyectado . ' ' . $lateralidad; ?></td>
     </tr>
     <tr>
         <td colspan='2' class='verde_left'>Realizado:</td>
-        <td class='blanco_left' colspan='18'><?php echo $formattedRealizedProcedure; ?></td>
+        <td class='blanco_left'
+            colspan='18'><?php echo strtoupper($formattedRealizedProcedure) . ' ' . $codes_concatenados; ?></td>
     </tr>
 </table>
 <table>
@@ -245,7 +241,7 @@ $edadPaciente = $ageInterval->y;
     </tr>
     <tr>
         <td class='verde_left' colspan='3'>Cirujano 1:</td>
-        <td class='blanco' colspan='7'><?php echo $cirujanoPrincipal; ?></td>
+        <td class='blanco' colspan='7'><?php echo $mainSurgeon; ?></td>
         <td class='verde_left' colspan='3'>Instrumentista:</td>
         <td class='blanco' colspan='7'><?php echo $instrumentista; ?></td>
     </tr>
@@ -265,7 +261,7 @@ $edadPaciente = $ageInterval->y;
         <td class='verde_left' colspan='3'>Segundo Ayudante:</td>
         <td class='blanco' colspan='7'></td>
         <td class='verde_left' colspan='3'>Ayudante Anestesia:</td>
-        <td class='blanco' colspan='7'><?php echo $ayudante2; ?></td>
+        <td class='blanco' colspan='7'><?php echo $ayudante_anestesia; ?></td>
     </tr>
     <tr>
         <td class='verde_left' colspan='3'>Tercer Ayudante:</td>
@@ -451,7 +447,7 @@ $edadPaciente = $ageInterval->y;
             <td class='verde' style='width: 100' colspan='5'>SELLO Y NÚMERO DE DOCUMENTO DE IDENTIFICACIÓN</td>
         </tr>
         <tr>
-            <td class='blanco' style='height: 60' colspan='5'><?php echo $cirujanoPrincipal; ?></td>
+            <td class='blanco' style='height: 60' colspan='5'><?php echo $mainSurgeon; ?></td>
             <td class='blanco' colspan='5'></td>
             <td class='blanco' colspan='5'></td>
             <td class='blanco' colspan='5'></td>

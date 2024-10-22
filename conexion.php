@@ -13,4 +13,3 @@ if ($mysqli->connect_error) {
     die("Error en la conexión a la base de datos: " . $mysqli->connect_error);
 }
 ?>
-<?php

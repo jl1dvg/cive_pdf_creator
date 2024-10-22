@@ -1,36 +1,6 @@
 <?php
 session_start();
 
-// Asegúrate de que el usuario esté autenticado
-if (!isset($_SESSION['user_id'])) {
-    die("Acceso denegado. Por favor, inicie sesión.");
-}
-
-// Conectarse a la base de datos
-require 'conexion.php';
-
-// Verificar conexión
-if ($mysqli->connect_error) {
-    die("Connection failed: " . $mysqli->connect_error);
-}
-
-// Obtener el ID del usuario autenticado
-$user_id = $_SESSION['user_id'];
-
-// Consulta para verificar si el usuario tiene una suscripción activa y está aprobado
-$sql = "SELECT is_subscribed, is_approved FROM users WHERE id = ?";
-$stmt = $mysqli->prepare($sql);
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$stmt->bind_result($is_subscribed, $is_approved);
-$stmt->fetch();
-$stmt->close();
-
-// Verificar si el usuario tiene acceso
-if (!$is_subscribed || !$is_approved) {
-    die("No tiene una suscripción activa o no está aprobado para usar esta función.");
-}
-
 require 'vendor/autoload.php';
 
 use Mpdf\Mpdf;
@@ -43,64 +13,46 @@ $mpdf = new Mpdf([
     'margin_right' => 5,
     'margin_top' => 5,
     'margin_bottom' => 5,
-    'orientation' => 'P',
+    'orientation' => 'P',  // Orientación predeterminada en vertical
     'shrink_tables_to_fit' => 1,
     'use_kwt' => true,
     'autoScriptToLang' => true,
-    'keep_table_proportions' => true
+    'keep_table_proportions' => true,
 ]);
+
+// Función para cargar HTML desde un archivo
+function cargarHTML($archivo) {
+    ob_start();
+    include $archivo;
+    return ob_get_clean();
+}
 
 // Incluir el archivo CSS externo general
 $stylesheet = file_get_contents('styles.css');
-$mpdf->WriteHTML($stylesheet, 1);
+$mpdf->WriteHTML($stylesheet, \Mpdf\HTMLParserMode::HEADER_CSS);
 
-// Incluir el contenido de las páginas/formularios
-ob_start();
-include 'page1.php';
-$html = ob_get_clean();
-$mpdf->WriteHTML($html);
-//$mpdf->AddPage();
+// Páginas/formularios en el PDF
+$paginas = ['protocolo.php', '005.php', 'medicamentos.php', 'saveqx.php'];
 
-ob_start();
-include 'protocolo.php';
-$html = ob_get_clean();
-$mpdf->WriteHTML($html);
-$mpdf->AddPage();
+// Incluir cada página y agregar una nueva página solo si no es la última
+$totalPaginas = count($paginas);
+foreach ($paginas as $index => $pagina) {
+    $html = cargarHTML($pagina);
+    $mpdf->WriteHTML($html);
 
-ob_start();
-include '005.php';
-$html = ob_get_clean();
-$mpdf->WriteHTML($html);
-$mpdf->AddPage();
+    // Solo agregar una nueva página si no es la última página en el ciclo
+    if ($index < $totalPaginas - 1) {
+        $mpdf->AddPage();
+    }
+}
 
-ob_start();
-include 'medicamentos.php';
-$html = ob_get_clean();
-$mpdf->WriteHTML($html);
-$mpdf->AddPage();
-
-ob_start();
-include 'saveqx.php';
-$html = ob_get_clean();
-$mpdf->WriteHTML($html);
-//$mpdf->AddPage();
-
-// Cambiar la orientación a horizontal para la página transanestesico
-$mpdf->AddPage('L'); // 'L' para Landscape
-
-// Incluir el CSS específico para transanestesico
-//$transanestesicoStylesheet = file_get_contents('css/transanestesico.css');
-//$mpdf->WriteHTML($transanestesicoStylesheet, 1);
+// Cambiar la orientación a horizontal (Landscape) para la página 'transanestesico'
+$mpdf->AddPage('L');  // Cambia a horizontal
 
 // Incluir el contenido de transanestesico.php
-ob_start();
-include 'transanestesico.php';
-$html = ob_get_clean();
-$mpdf->WriteHTML($html);
-//$mpdf->AddPage();
+$htmlTransanestesico = cargarHTML('transanestesico.php');
+$mpdf->WriteHTML($htmlTransanestesico);
 
-// Mostrar el PDF en la misma página
+// Generar y mostrar el PDF
 $mpdf->Output('informacion_paciente.pdf', 'I');
-
-$mysqli->close();
 ?>
