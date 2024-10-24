@@ -8,10 +8,10 @@ $(function () {
 
     'use strict';
 
-var options = {
+    var options = {
         series: [{
-        name: 'Procedimientos',
-        data: procedimientos_membrete  // Datos dinámicos de procedimientos
+            name: 'Procedimientos',
+            data: procedimientos_membrete  // Datos dinámicos de procedimientos
         }],
         chart: {
             type: 'bar',
@@ -39,9 +39,9 @@ var options = {
             width: 2,
             colors: ['transparent']
         },
-    colors: ['#5156be'],
+        colors: ['#5156be'],
         xaxis: {
-        categories: membretes,  // Los membretes dinámicos desde PHP
+            categories: membretes,  // Los membretes dinámicos desde PHP
         },
         yaxis: {},
         legend: {
@@ -54,7 +54,7 @@ var options = {
         tooltip: {
             y: {
                 formatter: function (val) {
-                return val + " procedimientos";
+                    return val + " procedimientos";
                 }
             },
             marker: {
@@ -67,53 +67,24 @@ var options = {
     chart.render();
 
 
+    // Configuración del gráfico de pastel
     var options = {
-        series: [
-            {
-                name: "Heart",
-                data: [12, 22, 14, 18, 22, 13, 17]
-            },
-            {
-                name: "Fracture",
-                data: [28, 39, 23, 36, 45, 32, 43]
-            },
-            {
-                name: "Cold",
-                data: [17, 12, 28, 12, 33, 26, 23]
-            }
-        ],
+        series: [incompletos, revisados, no_revisados],  // Datos dinámicos de estados
         chart: {
-            height: 260,
-            type: 'line',
-            foreColor: "#bac0c7",
-            dropShadow: {
-                enabled: true,
-                color: '#000',
-                top: 18,
-                left: 7,
-                blur: 10,
-                opacity: 0.2
-            },
-            toolbar: {
-                show: false
-            }
+            type: 'pie',
+            height: 300
         },
-        colors: ['#5156be', '#da123b', '#ffa800'],
-        dataLabels: {
-            enabled: false,
-        },
-        stroke: {
-            curve: 'smooth'
-        },
-        grid: {
-            borderColor: '#e7e7e7',
-        },
-        xaxis: {
-            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-        },
+        labels: ['Incompletos', 'Revisados', 'No Revisados'],  // Etiquetas del gráfico
+        colors: ['#FF6347', '#32CD32', '#FFD700'],  // Colores personalizables para cada estado
         legend: {
-            show: true,
-            position: 'top',
+            position: 'bottom'
+        },
+        tooltip: {
+            y: {
+                formatter: function (val) {
+                    return val + " procedimientos";
+                }
+            }
         }
     };
 
@@ -122,7 +93,7 @@ var options = {
 
 
     // Gráfico de procedimientos por día
-var options = {
+    var options = {
         series: [{
             name: 'Procedimientos por Día',
             type: 'column',

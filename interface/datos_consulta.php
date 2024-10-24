@@ -44,21 +44,29 @@ if (isset($data['hcNumber'], $data['form_id'], $data['motivoConsulta'])) {
         $examenFisico = $data['examenFisico'] ?? null;
         $plan = $data['plan'] ?? null;
 
-        // SQL para insertar o actualizar los datos de la consulta
+        // Convertir diagnósticos a JSON
+        $diagnosticos = json_encode($data['diagnosticos'] ?? []);
+
+        // Convertir exámenes a JSON (si se requiere)
+        $examenes = json_encode($data['examenes'] ?? []);
+
+        // SQL para insertar o actualizar los datos de la consulta, incluyendo diagnósticos y exámenes
         $sqlConsulta = "INSERT INTO consulta_data (
-            hc_number, form_id, fecha, motivo_consulta, enfermedad_actual, examen_fisico, plan
-        ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            hc_number, form_id, fecha, motivo_consulta, enfermedad_actual, examen_fisico, plan, diagnosticos, examenes
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE
             fecha = VALUES(fecha),
             motivo_consulta = VALUES(motivo_consulta),
             enfermedad_actual = VALUES(enfermedad_actual),
             examen_fisico = VALUES(examen_fisico),
-            plan = VALUES(plan)";
+            plan = VALUES(plan),
+            diagnosticos = VALUES(diagnosticos),
+            examenes = VALUES(examenes)";
 
         $stmtConsulta = $mysqli->prepare($sqlConsulta);
         $stmtConsulta->bind_param(
-            "sssssss",
-            $hcNumber, $form_id, $fechaActual, $motivoConsulta, $enfermedadActual, $examenFisico, $plan
+            "sssssssss",
+            $hcNumber, $form_id, $fechaActual, $motivoConsulta, $enfermedadActual, $examenFisico, $plan, $diagnosticos, $examenes
         );
 
         if ($stmtConsulta->execute()) {

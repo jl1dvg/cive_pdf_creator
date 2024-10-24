@@ -12,14 +12,15 @@ $data = json_decode(file_get_contents('php://input'), true);
 
 if (isset($data['hcNumber'])) {
     $hcNumber = $data['hcNumber'];
-    $lname = $data['lname'];
-    $lname2 = $data['lname2'];
-    $fname = $data['fname'];
-    $mname = $data['mname'];
-    $afiliacion = $data['afiliacion'];
+    $lname = $data['lname'] ?? null;
+    $lname2 = $data['lname2'] ?? null;
+    $fname = $data['fname'] ?? null;
+    $mname = $data['mname'] ?? null;
+    $afiliacion = $data['afiliacion'] ?? null;
     $fechaCaducidad = $data['fechaCaducidad'] ?? null;
-    $form_id = $data['form_id'] ?? null;  // Nuevo campo
-    $procedimiento_proyectado = $data['procedimiento_proyectado'] ?? null;
+    $form_id = $data['form_id'];
+    $doctor = $data['doctor'] ?? null;
+    $procedimiento_proyectado = $data['procedimiento_proyectado'];
 
     // Insertar o actualizar en patient_data
     $sqlPatient = "
@@ -37,16 +38,16 @@ if (isset($data['hcNumber'])) {
     $stmtPatient->bind_param("sssssss", $hcNumber, $lname, $lname2, $fname, $mname, $afiliacion, $fechaCaducidad);
 
     if ($stmtPatient->execute()) {
-        // Insertar en procedimiento_proyectado
-        if ($form_id && $procedimiento_proyectado) {
+        // Insertar o actualizar procedimiento_proyectado
             $sqlProcedimiento = "
-                INSERT INTO procedimiento_proyectado (form_id, procedimiento_proyectado, hc_number) 
-                VALUES (?, ?, ?)
+                INSERT INTO procedimiento_proyectado (form_id, procedimiento_proyectado, doctor, hc_number) 
+                VALUES (?, ?, ?, ?)
                 ON DUPLICATE KEY UPDATE 
-                    procedimiento_proyectado = VALUES(procedimiento_proyectado)";
+                    procedimiento_proyectado = VALUES(procedimiento_proyectado),
+                    doctor = VALUES(doctor)";
 
             $stmtProcedimiento = $mysqli->prepare($sqlProcedimiento);
-            $stmtProcedimiento->bind_param("iss", $form_id, $procedimiento_proyectado, $hcNumber);
+            $stmtProcedimiento->bind_param("isss", $form_id, $procedimiento_proyectado, $doctor, $hcNumber);
 
             if ($stmtProcedimiento->execute()) {
                 echo json_encode(["success" => true, "message" => "Datos guardados correctamente"]);
@@ -55,16 +56,13 @@ if (isset($data['hcNumber'])) {
             }
 
             $stmtProcedimiento->close();
-        } else {
-            echo json_encode(["success" => false, "message" => "form_id o procedimiento_proyectado faltante"]);
-        }
     } else {
         echo json_encode(["success" => false, "message" => "Error al guardar los datos del paciente: " . $stmtPatient->error]);
     }
 
     $stmtPatient->close();
 } else {
-    echo json_encode(["success" => false, "message" => "Datos no válidos"]);
+    echo json_encode(["success" => false, "message" => "Datos faltantes o incompletos. Verifique hcNumber, form_id, y procedimiento_proyectado."]);
 }
 
 $mysqli->close();
