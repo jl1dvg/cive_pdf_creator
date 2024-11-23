@@ -16,8 +16,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (password_verify($password, $user['password'])) {
             // Guardar la sesión
             $_SESSION['user_id'] = $user['id'];
-            $_SESSION['test_value'] = 'Sesión iniciada correctamente';
-            $_SESSION['session_active'] = true;  // Agregar un indicador de control
+            $_SESSION['session_active'] = true;
+            $_SESSION['session_start_time'] = time(); // Momento en que la sesión se inició
+            $_SESSION['last_activity_time'] = time(); // Última actividad (inicialmente igual al inicio)
 
             session_write_close();
             // Redirigir pasando el ID de sesión en la URL

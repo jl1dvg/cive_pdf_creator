@@ -102,6 +102,9 @@ if ($form_id && $hc_number) {
 
         // Unir todos los códigos con "/"
         $codes_concatenados = implode('/', $codes);
+
+        $anestesiologo_data = buscarUsuarioPorNombre($anestesiologo, $mysqli);
+
     }
 }
 
@@ -119,6 +122,11 @@ list($fechaAno, $fechaMes, $fechaDia) = explode('-', $fechaPart);
 // Convertir las horas a objetos DateTime
 $horaInicioObj = new DateTime($horaInicio);
 $horaFinObj = new DateTime($horaFin);
+$horaFinObj2 = new DateTime($horaFin);
+
+$horaInicioAnestesia = new DateTime($horaInicio);
+$horaFinAnestesia = new DateTime($horaFin);
+$horaFinAnestesia2 = new DateTime($horaFin);
 
 // Restar 45 minutos a $horaInicio
 $horaInicioObj->modify('-45 minutes');
@@ -130,14 +138,32 @@ $horaFinObj->modify('+30 minutes');
 $horaInicioModificada = $horaInicioObj->format('H:i');
 $horaFinModificada = $horaFinObj->format('H:i');
 
+// Calcular la diferencia de tiempo entre la hora de inicio y la hora de fin
+$interval = $horaInicioAnestesia->diff($horaFinAnestesia);
+
+// Convertir la diferencia a un formato amigable para obtener el total de horas
+$totalHoras = $interval->format('%h horas y %i minutos');
+
+// Calcular el total de horas menos 15 minutos
+$horaFinAnestesia2->sub(new DateInterval('PT15M')); // Restar 15 minutos de la hora de fin
+
+// Calcular nuevamente la diferencia con la hora de inicio
+$intervalConDescuento = $horaInicioAnestesia->diff($horaFinAnestesia2);
+
+// Convertir la diferencia a un formato amigable para obtener el total de horas menos 15 minutos
+$totalHorasConDescuento = $intervalConDescuento->format('%h horas y %i minutos');
+
 // 5. Separar el contenido del procedimiento realizado por código
 $realizedProceduresArray = preg_split('/(?=\d{5}-)/', $realizedProcedure);
 $formattedRealizedProcedure = implode('<br>', $realizedProceduresArray);
 
 // Datos adicionales (tensión, frecuencia, etc.)
 $sistolica = rand(110, 130);
-$diastolica = rand(110, 130);
-$fc = rand(110, 130);
+$diastolica = rand(70, 83);
+$fc = rand(75, 100);
+
+$idProcedimiento = obtenerIdProcedimiento($realizedProcedure, $mysqli);
+$diagnosticosPrevios = obtenerDiagnosticosAnteriores($hc_number, $form_id, $mysqli, $idProcedimiento);
 ?>
 <body>
 <table class="trans">
@@ -214,19 +240,20 @@ $fc = rand(110, 130);
         <td class="verde_left_tr" colspan="13">DIAGNÓSTICO PREOPERATORIO</td>
         <td class="blanco_tr" style="text-align: left"
             colspan="29">
-            <?php
-            echo 'no lo tengo';
-            ?>
+            <?php echo strtoupper(substr($diagnosticosPrevios[0], 6)); ?>
         </td>
         <td class="verde_left_tr" colspan="3">CIE</td>
         <td class="blanco_tr" style="text-align: left" colspan="16">
-            <?php
-            echo 'npi';
-            ?>
+            <?php echo strtoupper(substr($diagnosticosPrevios[0], 0, 4)); ?>
         </td>
         <td class="verde_left_tr" colspan="11">CIRUGÍA PROPUESTA</td>
         <td class="blanco_tr" style="text-align: left" colspan="38">
-            <?php echo $nombre_procedimiento_proyectado; ?>
+            <?php
+            echo strtoupper(
+                $nombre_procedimiento_proyectado
+                    ? $nombre_procedimiento_proyectado . ' ' . $lateralidad
+                    : $protocol_data['membrete']
+            ); ?>
         </td>
         <td class="verde_left_tr" colspan="8">ESPECIALIDAD</td>
         <td class="verde_left_tr" colspan="11" rowspan="4">PRIORIDAD</td>
@@ -236,12 +263,12 @@ $fc = rand(110, 130);
     <tr style="height: 11px">
         <td class="verde_left_tr" colspan="13">DIAGNÓSTICO POSTOPERATORIO</td>
         <td class="blanco_left_tr" style="text-align: left" colspan="29"><?php
-            echo $diagnostic1;
+            echo substr($diagnostic1, 6);
             ?>
         </td>
         <td class="verde_left_tr" colspan="3">CIE</td>
         <td class="blanco_left_tr" style="text-align: left" colspan="16"><?php
-            echo $diagnostic1;
+            echo substr($diagnostic1, 0, 4);
             ?>
         </td>
         <td class="verde_left_tr" colspan="11">CIRUGÍA REALIZADA</td>
@@ -258,7 +285,7 @@ $fc = rand(110, 130);
         <td class="blanco_left_tr" style="text-align: left"
             colspan="35"><?php echo $anestesiologo; ?></td>
         <td class="verde_left_tr" colspan="6">AYUDANTE (S)</td>
-        <td class="blanco_left_tr" colspan="24"></td>
+        <td class="blanco_left_tr" colspan="24"><?php echo $ayudante_anestesia; ?></td>
         <td class="verde_left_tr" colspan="19">INSTRUMENTISTA</td>
         <td class="blanco_left_tr" colspan="19">
             <?php
@@ -5368,64 +5395,74 @@ $fc = rand(110, 130);
 </table>
 <table class="trans">
     <tr style="height: 18px">
-        <td class="morado_tr" colspan="138">E. DROGAS ADMINISTRADAS</td>
+        <td class="morado_tr" colspan="8">E. DROGAS ADMINISTRADAS</td>
     </tr>
-    <tr style="height: 12px">
-        <td class="blanco_left_tr">1</td>
-        <td class="blanco_left_tr" colspan="18">MIDAZOLAM 1 MG</td>
-        <td class="blanco_left_tr">5</td>
-        <td class="blanco_left_tr" colspan="22">KETOROLACO 60MG</td>
-        <td class="blanco_left_tr">9</td>
-        <td class="blanco_left_tr" colspan="24">GENTAMICINA 80MG/ML</td>
-        <td class="blanco_left_tr">13</td>
-        <td class="blanco_left_tr" colspan="24"></td>
-        <td class="blanco_left_tr">17</td>
-        <td class="blanco_left_tr" colspan="21"></td>
-        <td class="blanco_left_tr">21</td>
-        <td class="blanco_left_tr" colspan="23"></td>
-    </tr>
-    <tr style="height: 12px">
-        <td class="blanco_left_tr">2</td>
-        <td class="blanco_left_tr" colspan="18">FENTALINO 25MG</td>
-        <td class="blanco_left_tr">6</td>
-        <td class="blanco_left_tr" colspan="22">ONDASETRON 4MG</td>
-        <td class="blanco_left_tr">10</td>
-        <td class="blanco_left_tr" colspan="24"></td>
-        <td class="blanco_left_tr">14</td>
-        <td class="blanco_left_tr" colspan="24"></td>
-        <td class="blanco_left_tr">18</td>
-        <td class="blanco_left_tr" colspan="21"></td>
-        <td class="blanco_left_tr">22</td>
-        <td class="blanco_left_tr" colspan="23"></td>
-    </tr>
-    <tr style="height: 12px">
-        <td class="blanco_left_tr">3</td>
-        <td class="blanco_left_tr" colspan="18">LIDOCAINA 2% 40MG</td>
-        <td class="blanco_left_tr">7</td>
-        <td class="blanco_left_tr" colspan="22">DEXAMETASONA 4MG</td>
-        <td class="blanco_left_tr">11</td>
-        <td class="blanco_left_tr" colspan="24"></td>
-        <td class="blanco_left_tr">15</td>
-        <td class="blanco_left_tr" colspan="24"></td>
-        <td class="blanco_left_tr">19</td>
-        <td class="blanco_left_tr" colspan="21"></td>
-        <td class="blanco_left_tr">23</td>
-        <td class="blanco_left_tr" colspan="23"></td>
-    </tr>
-    <tr style="height: 12px">
-        <td class="blanco_left_tr">4</td>
-        <td class="blanco_left_tr" colspan="18">BUPIVACAINA 0,5% 10MG</td>
-        <td class="blanco_left_tr">8</td>
-        <td class="blanco_left_tr" colspan="22">CEXFTRIAXONA 1G</td>
-        <td class="blanco_left_tr">12</td>
-        <td class="blanco_left_tr" colspan="24"></td>
-        <td class="blanco_left_tr">16</td>
-        <td class="blanco_left_tr" colspan="24"></td>
-        <td class="blanco_left_tr">20</td>
-        <td class="blanco_left_tr" colspan="21"></td>
-        <td class="blanco_left_tr">24</td>
-        <td class="blanco_left_tr" colspan="23"></td>
-    </tr>
+    <?php
+    // Verificar si se encontró el procedimiento
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+
+        // Buscar en la tabla kardex con el procedimiento_id obtenido
+        $sql_kardex = "SELECT medicamentos FROM kardex WHERE procedimiento_id = ?";
+        if ($stmt_kardex = $mysqli->prepare($sql_kardex)) {
+            $stmt_kardex->bind_param("s", $idProcedimiento);
+            $stmt_kardex->execute();
+            $result_kardex = $stmt_kardex->get_result();
+
+            if ($result_kardex->num_rows > 0) {
+                $row_kardex = $result_kardex->fetch_assoc();
+                $medicamentos_json = $row_kardex['medicamentos'];
+
+                // Decodificar el JSON de medicamentos
+                $medicamentosArray = json_decode($medicamentos_json, true);
+
+                if (json_last_error() === JSON_ERROR_NONE && is_array($medicamentosArray)) {
+                    // Recorrer el array de medicamentos y generar la tabla para cada uno
+                    $contadorFila = 1;
+                    $columnaActual = 1;
+                    foreach ($medicamentosArray as $medicamento) {
+                        // Filtrar solo los medicamentos administrados por el anestesiólogo o el asistente
+                        if (($medicamento['responsable'] == 'Anestesiólogo' || $medicamento['responsable'] == 'Asistente') &&
+                            (stripos($medicamento['via_administracion'], 'TOPICA') === false)) {
+                            $nombre_medicamento = $medicamento['medicamento'] ?? 'N/A';
+
+                            // Determinar si necesitamos iniciar una nueva fila
+                            if ($columnaActual == 1) {
+                                echo "<tr style='height: 12px'>";
+                            }
+
+                            // Imprimir el formato requerido
+                            echo "<td class='blanco_left_tr'>{$contadorFila}</td>";
+                            echo "<td class='blanco_left_tr'>" . htmlspecialchars($nombre_medicamento) . "</td>";
+
+                            // Verificar si hemos llenado 4 columnas y cerrar la fila si es necesario
+                            if ($columnaActual == 4) {
+                                echo "</tr>";
+                                $columnaActual = 1;
+                            } else {
+                                $columnaActual++;
+                            }
+
+                            $contadorFila++;
+                        }
+                    }
+
+                    // Cerrar la fila si no se completaron las 4 columnas
+                    if ($columnaActual != 1) {
+                        for ($i = $columnaActual; $i <= 4; $i++) {
+                            echo "<td class='blanco_left_tr'></td><td class='blanco_left_tr'></td>";
+                        }
+                        echo "</tr>";
+                    }
+                } else {
+                    echo "Error al decodificar el JSON de medicamentos.";
+                }
+            }
+
+            $stmt_kardex->close();
+        }
+    }
+    ?>
 </table>
 <table class="trans">
     <tr style="height: 17px">
@@ -5959,7 +5996,7 @@ $fc = rand(110, 130);
             <td class="blanco_left_tr" colspan="12">SS 0.9%</td>
             <td class="blanco_tr" colspan="12"><b>1000 ML</b></td>
             <td class="blanco_left_tr" colspan="12" rowspan="2">OTROS</td>
-            <td class="blanco_left_tr" colspan="12"><b>MANITOL 20% 100ML</b></td>
+            <td class="blanco_left_tr" colspan="12"><b></b></td>
             <td class="blanco_left_tr" colspan="12"></td>
             <td class="blanco_left_tr" colspan="12"></td>
             <td class="blanco_left_tr" colspan="12"></td>
@@ -5984,7 +6021,7 @@ $fc = rand(110, 130);
             <td class="blanco_left_tr" colspan="12">EXPANSORES</td>
             <td class="blanco_left_tr" colspan="12"></td>
             <td class="blanco_left_tr" colspan="12"><b>TOTAL</b></td>
-            <td class="blanco_tr" colspan="12"><b>1100 ML</b></td>
+            <td class="blanco_tr" colspan="12"><b>1000 ML</b></td>
             <td class="blanco_left_tr" colspan="12">BALANCE</td>
             <td class="blanco_left_tr" colspan="12"></td>
             <td class="blanco_left_tr" colspan="12"></td>
@@ -6145,12 +6182,12 @@ $fc = rand(110, 130);
             <td class="verde_tr" colspan="14">DURACIÓN ANESTESIA</td>
             <td class="blanco_left_tr" colspan="14">
                 <?php
-                echo $horaInicioModificada;
+                echo $totalHoras;
                 ?>
             </td>
             <td class="verde_tr" colspan="13">DURACIÓN DE CIRUGÍA</td>
             <td class="blanco_left_tr" colspan="27">
-                <?php echo $horaFinModificada;
+                <?php echo $totalHorasConDescuento;
                 ?>
             </td>
             <td class="blanco_left_tr" colspan="12"></td>
@@ -6657,14 +6694,16 @@ $fc = rand(110, 130);
         </tr>
         <tr style="height: 50px">
             <td class="verde_tr" style="height: 40px" colspan="3">HORA</td>
-            <td class="blanco_tr" colspan="5"></td>
+            <td class="blanco_tr" colspan="5"><?php echo $horaInicio; ?></td>
             <td class="verde_tr" colspan="12">NOMBRE Y APELLIDO DEL PROFESIONAL</td>
             <td class="blanco_tr"
-                colspan="18"><?php echo $anestesiologo; ?></td>
+                colspan="18"><?php echo $anestesiologo_data['nombre']; ?></td>
             <td class="verde_tr" colspan="4">FIRMA</td>
-            <td class="blanco_tr" colspan="12"></td>
+            <td class="blanco_tr"
+                colspan="12"><?php echo "<img src='" . htmlspecialchars($anestesiologo_data['firma']) . "' alt='Imagen de la firma' style='max-height: 70px;'>";
+                ?></td>
             <td class="verde_tr" colspan="4">SELLO Y CÓDIGO</td>
-            <td class="blanco_tr" colspan="10"></td>
+            <td class="blanco_tr" colspan="10"><?php echo $anestesiologo_data['cedula']; ?></td>
         </tr>
     </table>
     <table style="border: none">

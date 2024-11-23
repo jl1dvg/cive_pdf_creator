@@ -4,9 +4,9 @@ p {
 
 table {
     width: 100%;
-    border: 5px solid #808080;
+    border: 3px solid #808080;
     border-collapse: collapse;
-    margin-bottom: 5px;
+    margin-bottom: 2px;
     table-layout: fixed;
 }
 
@@ -14,69 +14,84 @@ td.morado {
     text-align: left;
     vertical-align: middle;
     background-color: #CCCCFF;
-    font-size: 8pt;
+    font-size: 5pt;
     font-weight: bold;
-    height: 20px;
+    height: 12px;
+}
+
+td.morado_border {
+    font-size: 5pt;
+    font-weight: bold;
+    height: 12px;
+    text-align: center;
+    vertical-align: middle;
+    border-top: 1.0pt solid #5F5F5F;
+    border-right: .5pt solid #5F5F5F;
+    border-bottom: .5pt solid #5F5F5F;
+    border-left: 1.0pt solid #5F5F5F;
+    background: #CCCCFF;
 }
 
 td.verde {
-    height: 20px;
+    height: 12px;
     text-align: center;
     vertical-align: middle;
     background-color: #CCFFCC;
-    font-size: 6pt;
+    font-size: 5pt;
     font-weight: bold;
     border-top: 1px solid #808080;
     border-right: 1px solid #808080;
 }
 
 td.verde_left {
-    height: 20px;
+    height: 12px;
     text-align: left;
     vertical-align: middle;
     background-color: #CCFFCC;
-    font-size: 6pt;
+    font-size: 5pt;
     font-weight: bold;
     border-top: 1px solid #808080;
     border-right: 1px solid #808080;
 }
 
-td.cyan_left {
-    text-align: left;
-    vertical-align: middle;
-    background: #CCFFFF;
-    font-size: 5pt;
-    border-top: 1px solid #808080;
-    border-right: 1px solid #808080;
-}
-
-td.cyan_vert {
-    height: 20px;
-    vertical-align: middle;
-    background: #CCFFFF;
-    font-size: 5pt;
-    border-top: 1px solid #808080;
-    border-right: 1px solid #808080;
-    writing-mode: vertical-rl;
-}
-
 td.verde_normal {
-    height: 20px;
+    height: 12px;
     text-align: center;
     vertical-align: middle;
     background-color: #CCFFCC;
-    font-size: 6pt;
+    font-size: 5pt;
     border-top: 1px solid #808080;
     border-right: 1px solid #808080;
+}
+
+td.cyan_normal {
+    font-size: 4.0pt;
+    height: 8px;
+    vertical-align: middle;
+    border-top: .5pt solid #5F5F5F;
+    border-right: .5pt solid #5F5F5F;
+    border-bottom: .5pt solid #5F5F5F;
+    border-left: 1.0pt solid #5F5F5F;
+    background: #CCFFFF;
+}
+
+td.marcado {
+    color: red;
+    font-size: 5.0pt;
+    height: 8px;
+    text-align: center;
+    vertical-align: middle;
+    border: .5pt solid #5F5F5F;
+    background: white;
 }
 
 td.blanco {
     border-top: 1px solid #808080;
     border-right: 1px solid #808080;
-    height: 20px;
+    height: 12px;
     text-align: center;
     vertical-align: middle;
-    font-size: 6pt;
+    font-size: 4pt;
 }
 
 td.blanco_unbordered {
@@ -89,37 +104,20 @@ td.blanco_unbordered {
 td.blanco_break {
     border-left: 3px solid #808080;
     border-right: 3px solid #808080;
-    height: 20px;
+    height: 14px;
     text-align: center;
     vertical-align: middle;
-    font-size: 6pt;
+    font-size: 4pt;
 }
 
 td.blanco_left {
     border-top: 1px solid #808080;
     border-right: 1px solid #808080;
-    height: 20px;
+    border-left: 1px solid #808080;
+    height: 12px;
     text-align: left;
     vertical-align: middle;
-    font-size: 6pt;
-}
-
-td.blanco_left_mini {
-    border-top: 1px solid #808080;
-    border-right: 1px solid #808080;
-    height: 11px;
-    text-align: left;
-    vertical-align: middle;
-    font-size: 6pt;
-}
-
-td.blanco_left_remini {
-    border-top: 1px solid #808080;
-    border-right: 1px solid #808080;
-    height: 5px;
-    text-align: left;
-    vertical-align: middle;
-    font-size: 6pt;
+    font-size: 4pt;
 }
 
 table.trans {
@@ -157,11 +155,10 @@ td.verde_left_tr {
 }
 
 td.blanco_tr {
-    border-top: 1px solid #808080;
-    border-right: 1px solid #808080;
     text-align: center;
     vertical-align: middle;
     font-size: 5pt;
+    font-weight: bold;
 }
 
 td.blanco_break_tr {
@@ -223,7 +220,7 @@ a {
     text-align: left;
     color: #000000;
     font-family: 'docs-Noto Sans Symbols', Arial;
-    font-size: 8pt;
+    font-size: 5pt;
     vertical-align: bottom;
     white-space: nowrap;
     direction: ltr;
@@ -510,7 +507,7 @@ a {
     text-align: left;
     color: #000000;
     font-family: 'docs-Noto Sans Symbols', Arial;
-    font-size: 8pt;
+    font-size: 5pt;
     vertical-align: bottom;
     white-space: nowrap;
     direction: ltr;
@@ -607,7 +604,7 @@ a {
     text-align: left;
     color: #000000;
     font-family: 'docs-Noto Sans Symbols', Arial;
-    font-size: 8pt;
+    font-size: 5pt;
     vertical-align: bottom;
     white-space: nowrap;
     direction: ltr;

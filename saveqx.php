@@ -102,6 +102,11 @@ if ($form_id && $hc_number) {
 
         // Unir todos los códigos con "/"
         $codes_concatenados = implode('/', $codes);
+
+        $cirujano_data = buscarUsuarioPorNombre($mainSurgeon, $mysqli);
+        $cirujano2_data = buscarUsuarioPorNombre($assistantSurgeon1, $mysqli);
+        $ayudante_data = buscarUsuarioPorNombre($ayudante, $mysqli);
+        $anestesiologo_data = buscarUsuarioPorNombre($anestesiologo, $mysqli);
     }
 }
 
@@ -115,20 +120,6 @@ $fechaInicioParts = explode(' ', $fechaInicio); // Dividir la fecha y la hora
 $fechaPart = $fechaInicioParts[0];  // Parte de la fecha 'Y-m-d'
 // Separar la fecha en día, mes y año
 list($fechaAno, $fechaMes, $fechaDia) = explode('-', $fechaPart);
-
-// Convertir las horas a objetos DateTime
-$horaInicioObj = new DateTime($horaInicio);
-$horaFinObj = new DateTime($horaFin);
-
-// Restar 45 minutos a $horaInicio
-$horaInicioObj->modify('-45 minutes');
-
-// Agregar 30 minutos a $horaFin
-$horaFinObj->modify('+30 minutes');
-
-// Formatear las horas para imprimirlas en el formato deseado (por ejemplo, HH:mm)
-$horaInicioModificada = $horaInicioObj->format('H:i');
-$horaFinModificada = $horaFinObj->format('H:i');
 
 // 5. Separar el contenido del procedimiento realizado por código
 $realizedProceduresArray = preg_split('/(?=\d{5}-)/', $realizedProcedure);
@@ -203,7 +194,13 @@ $fc = rand(110, 130);
     </tr>
     <tr style="height: 35px">
         <td class="blanco" colspan="13"><?php echo $fechaDia . '/' . $fechaMes . '/' . $fechaAno; ?></td>
-        <td class="blanco" colspan="41"><?php echo $nombre_procedimiento_proyectado; ?></td>
+        <td class="blanco" colspan="41"><?php
+            echo strtoupper(
+                $nombre_procedimiento_proyectado
+                    ? $nombre_procedimiento_proyectado . ' ' . $lateralidad
+                    : $protocol_data['membrete']
+            );
+            ?></td>
         <td class="blanco" colspan="16">1</td>
     </tr>
 </table>
@@ -994,8 +991,12 @@ $fc = rand(110, 130);
     </tr>
     <tr>
         <td class="blanco" colspan="15" rowspan="5"></td>
-        <td class="blanco" colspan="16" rowspan="5"></td>
-        <td class="blanco" colspan="15" rowspan="5"></td>
+        <td class="blanco" colspan="16"
+            rowspan="5"><?php echo "<img src='" . htmlspecialchars($cirujano_data['firma']) . "' alt='Imagen de la firma' style='max-height: 70px;'>";
+            ?></td>
+        <td class="blanco" colspan="15"
+            rowspan="5"><?php echo "<img src='" . htmlspecialchars($anestesiologo_data['firma']) . "' alt='Imagen de la firma' style='max-height: 70px;'>";
+            ?></td>
     </tr>
     <tr>
         <td class="blanco"></td>

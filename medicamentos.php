@@ -140,29 +140,7 @@ $sistolica = rand(110, 130);
 $diastolica = rand(110, 130);
 $fc = rand(110, 130);
 
-// Asignar cada parte a una variable específica
-$idCirugia = 'faco';
-$medicamentos = 5;
-$cardex = 5;
-
-// Leer el archivo JSON
-$jsonData = file_get_contents('data/medicamentos.json');
-
-// Decodificar el JSON en un array asociativo
-$data = json_decode($jsonData, true);
-
-// Array para almacenar los medicamentos
-$medicamentosArray = [];
-
-// Buscar el procedimiento por ID
-foreach ($data['medicamentos']['procedimientos'] as $procedimiento) {
-    if ($procedimiento['id'] == $medicamentos) {
-        // Obtener la lista de medicamentos
-        $medicamentosArray = $procedimiento['medicamentos'];
-        break;
-    }
-}
-
+$idProcedimiento = obtenerIdProcedimiento($realizedProcedure, $mysqli);
 ?>
 <body>
 <TABLE>
@@ -256,44 +234,74 @@ foreach ($data['medicamentos']['procedimientos'] as $procedimiento) {
         <td class="verde" colspan="9">RESPONSABLE</td>
     </tr>
     <?php
-    // Recorrer el array de medicamentos y generar la tabla para cada uno
-    foreach ($medicamentosArray as $medicamento) {
-        // Determinar quién administró el medicamento
-        $administradoPor = '';
-        if ($medicamento['administrado_por'] == 'Asistente') {
-            $administradoPor = $ayudante2;
-        } elseif ($medicamento['administrado_por'] == 'Anestesiólogo') {
-            $administradoPor = 'DR. ' . $anestesiologo;
-        } elseif ($medicamento['administrado_por'] == 'Cirujano Principal') {
-            $administradoPor = 'DR. ' . $mainSurgeon;
+    // Verificar si se encontró el procedimiento
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+
+        // Buscar en la tabla kardex con el procedimiento_id obtenido
+        $sql_kardex = "SELECT medicamentos FROM kardex WHERE procedimiento_id = ?";
+        if ($stmt_kardex = $mysqli->prepare($sql_kardex)) {
+            $stmt_kardex->bind_param("s", $idProcedimiento);
+            $stmt_kardex->execute();
+            $result_kardex = $stmt_kardex->get_result();
+
+            if ($result_kardex->num_rows > 0) {
+                $row_kardex = $result_kardex->fetch_assoc();
+                $medicamentos_json = $row_kardex['medicamentos'];
+
+                // Decodificar el JSON de medicamentos
+                $medicamentosArray = json_decode($medicamentos_json, true);
+
+                if (json_last_error() === JSON_ERROR_NONE && is_array($medicamentosArray)) {
+                    // Recorrer el array de medicamentos y generar la tabla para cada uno
+                    $horaActual = new DateTime($horaInicioModificada);
+                    foreach ($medicamentosArray as $medicamento) {
+                        $dosis = $medicamento['dosis'] ?? 'N/A';
+                        $frecuencia = $medicamento['frecuencia'] ?? 'N/A';
+                        $nombre_medicamento = $medicamento['medicamento'] ?? 'N/A';
+                        $responsable = '';
+                        if ($medicamento['responsable'] == 'Asistente') {
+                            $responsable = 'ENF. ' . substr($ayudante_anestesia, 0, 1) . '. ' . substr(explode(' ', $ayudante_anestesia)[1] ?? '', 0, 1) . '. ' . substr(explode(' ', $ayudante_anestesia)[2] ?? '', 0, 1) . '. ' . substr(explode(' ', $ayudante_anestesia)[3] ?? '', 0, 1) . '.';
+                        } elseif ($medicamento['responsable'] == 'Anestesiólogo') {
+                            $responsable = 'ANEST. ' . substr($anestesiologo, 0, 1) . '. ' . substr(explode(' ', $anestesiologo)[1] ?? '', 0, 1) . '. ' . substr(explode(' ', $anestesiologo)[2] ?? '', 0, 1) . '. ' . substr(explode(' ', $anestesiologo)[3] ?? '', 0, 1) . '.';
+                        } elseif ($medicamento['responsable'] == 'Cirujano Principal') {
+                            $responsable = 'OFTAL. ' . substr($mainSurgeon, 0, 1) . '. ' . substr(explode(' ', $mainSurgeon)[1] ?? '', 0, 1) . '. ' . substr(explode(' ', $mainSurgeon)[2] ?? '', 0, 1) . '. ' . substr(explode(' ', $mainSurgeon)[3] ?? '', 0, 1) . '.';
+                        }
+                        $via_administracion = $medicamento['via_administracion'] ?? 'N/A';
+                        $hora_administracion = $medicamento['hora_administracion'] ?? 'N/A';
+
+                        echo "<tr>
+                                    <td class='blanco_left' colspan='17' rowspan='2'>" . htmlspecialchars($nombre_medicamento) . ", " . htmlspecialchars($dosis) . ", " . htmlspecialchars($via_administracion) . ", " . htmlspecialchars($frecuencia) . "</td>
+                                    <td class='blanco' colspan='6'>{$horaActual->format('H:i')}</td>
+                                    <td class='blanco' colspan='9'>" . htmlspecialchars($responsable) . "</td>
+                                    <td class='blanco' colspan='6'></td>
+                                    <td class='blanco' colspan='9'></td>
+                                    <td class='blanco' colspan='6'></td>
+                                    <td class='blanco' colspan='9'></td>
+                                    <td class='blanco' colspan='6'></td>
+                                    <td class='blanco' colspan='9'></td>
+                                </tr>
+                                <tr>
+                                    <td class='blanco' colspan='6'></td>
+                                    <td class='blanco' colspan='9'></td>
+                                    <td class='blanco' colspan='6'></td>
+                                    <td class='blanco' colspan='9'></td>
+                                    <td class='blanco' colspan='6'></td>
+                                    <td class='blanco' colspan='9'></td>
+                                    <td class='blanco' colspan='6'></td>
+                                    <td class='blanco' colspan='9'></td>
+                                </tr>";
+                        // Aumentar la hora en 5 minutos
+                        $horaActual->modify('+5 minutes');
+                    }
+                } else {
+                    echo "Error al decodificar el JSON de medicamentos.";
+                }
+            }
+
+            $stmt_kardex->close();
         }
-
-        echo "
-    <tr>
-        <td class='blanco' colspan='17' rowspan='2'>
-            {$medicamento['nombre']}
-        </td>
-        <td class='blanco' colspan='6'>{$horaFinModificada}</td>
-        <td class='blanco' colspan='9'>{$administradoPor}</td>
-        <td class='blanco' colspan='6'></td>
-        <td class='blanco' colspan='9'></td>
-        <td class='blanco' colspan='6'></td>
-        <td class='blanco' colspan='9'></td>
-        <td class='blanco' colspan='6'></td>
-        <td class='blanco' colspan='9'></td>
-    </tr>
-    <tr>
-        <td class='blanco' colspan='6'></td>
-        <td class='blanco' colspan='9'></td>
-        <td class='blanco' colspan='6'></td>
-        <td class='blanco' colspan='9'></td>
-        <td class='blanco' colspan='6'></td>
-        <td class='blanco' colspan='9'></td>
-        <td class='blanco' colspan='6'></td>
-        <td class='blanco' colspan='9'></td>
-    </tr>";
     }
-
     ?>
 </table>
 <table style="border: none">

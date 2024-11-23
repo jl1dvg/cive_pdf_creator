@@ -1,6 +1,6 @@
 <?php
-
 require 'conexion.php';  // Asegúrate de tener la conexión a la base de datos configurada
+require 'library/forms.php';
 
 // Obtener los parámetros enviados desde el enlace
 $form_id = $_GET['form_id'] ?? null;
@@ -102,8 +102,15 @@ if ($form_id && $hc_number) {
 
         // Unir todos los códigos con "/"
         $codes_concatenados = implode('/', $codes);
+
+        $cirujano_data = buscarUsuarioPorNombre($mainSurgeon, $mysqli);
+        $cirujano2_data = buscarUsuarioPorNombre($assistantSurgeon1, $mysqli);
+        $ayudante_data = buscarUsuarioPorNombre($ayudante, $mysqli);
+        $anestesiologo_data = buscarUsuarioPorNombre($anestesiologo, $mysqli);
+
     }
 }
+
 
 // 3. Calcular la edad del paciente
 $birthDateObj = new DateTime($birthDate);
@@ -124,6 +131,9 @@ $formattedRealizedProcedure = implode('<br>', $realizedProceduresArray);
 $sistolica = rand(110, 130);
 $diastolica = rand(110, 130);
 $fc = rand(110, 130);
+
+$idProcedimiento = obtenerIdProcedimiento($realizedProcedure, $mysqli);
+$diagnosticosPrevios = obtenerDiagnosticosAnteriores($hc_number, $form_id, $mysqli, $idProcedimiento);
 ?>
 <BODY>
 <TABLE>
@@ -185,18 +195,18 @@ $fc = rand(110, 130);
     <tr>
         <td colspan='2' width='18%' rowspan='3' class='verde_left'>Pre Operatorio:</td>
         <td class='verde_left' width='2%'>1.</td>
-        <td class='blanco_left' colspan='7'></td>
-        <td class='blanco' width='20%' colspan='2'></td>
+        <td class='blanco_left' colspan='7'><?php echo strtoupper(substr($diagnosticosPrevios[0], 6)); ?></td>
+        <td class='blanco' width='20%' colspan='2'><?php echo substr($diagnosticosPrevios[0], 0, 4); ?></td>
     </tr>
     <tr>
         <td class='verde_left' width='2%'>2.</td>
-        <td class='blanco_left' colspan='7'></td>
-        <td class='blanco' width='20%' colspan='2'></td>
+        <td class='blanco_left' colspan='7'><?php echo strtoupper(substr($diagnosticosPrevios[1], 6)); ?></td>
+        <td class='blanco' width='20%' colspan='2'><?php echo substr($diagnosticosPrevios[1], 0, 4); ?></td>
     </tr>
     <tr>
         <td class='verde_left' width='2%'>3.</td>
-        <td class='blanco_left' colspan='7'></td>
-        <td class='blanco' width='20%' colspan='2'></td>
+        <td class='blanco_left' colspan='7'><?php echo strtoupper(substr($diagnosticosPrevios[2], 6)); ?></td>
+        <td class='blanco' width='20%' colspan='2'><?php echo substr($diagnosticosPrevios[2], 0, 4); ?></td>
     </tr>
     <tr>
         <td colspan='2' rowspan='3' class='verde_left'>Post Operatorio:</td>
@@ -211,8 +221,8 @@ $fc = rand(110, 130);
     </tr>
     <tr>
         <td class='verde_left'>3.</td>
-        <td class='blanco_left' colspan='7'></td>
-        <td class='blanco' colspan='2'></td>
+        <td class='blanco_left' colspan='7'><?php echo substr($diagnostic3, 6); ?></td>
+        <td class='blanco' colspan='2'><?php echo substr($diagnostic3, 0, 4); ?></td>
     </tr>
 </table>
 <table>
@@ -227,7 +237,15 @@ $fc = rand(110, 130);
     </tr>
     <tr>
         <td colspan='2' class='verde_left'>Proyectado:</td>
-        <td class='blanco_left' colspan='18'><?php echo $nombre_procedimiento_proyectado . ' ' . $lateralidad; ?></td>
+        <td class='blanco_left' colspan='18'>
+            <?php
+            echo strtoupper(
+                $nombre_procedimiento_proyectado
+                    ? $nombre_procedimiento_proyectado . ' ' . $lateralidad
+                    : $protocol_data['membrete']
+            );
+            ?>
+        </td>
     </tr>
     <tr>
         <td colspan='2' class='verde_left'>Realizado:</td>
@@ -247,7 +265,7 @@ $fc = rand(110, 130);
     </tr>
     <tr>
         <td class='verde_left' colspan='3'>Cirujano 2:</td>
-        <td class='blanco' colspan='7'></td>
+        <td class='blanco' colspan='7'><?php echo $assistantSurgeon1; ?></td>
         <td class='verde_left' colspan='3'>Circulante:</td>
         <td class='blanco' colspan='7'><?php echo $circulante; ?></td>
     </tr>
@@ -433,6 +451,9 @@ $fc = rand(110, 130);
         </tr>
         <tr>
             <td class='blanco' height='100px'>
+                <?php
+                echo mostrarImagenProcedimiento($idProcedimiento, $mysqli);;
+                ?>
             </td>
         </tr>
     </table>
@@ -447,34 +468,48 @@ $fc = rand(110, 130);
             <td class='verde' style='width: 100' colspan='5'>SELLO Y NÚMERO DE DOCUMENTO DE IDENTIFICACIÓN</td>
         </tr>
         <tr>
-            <td class='blanco' style='height: 60' colspan='5'><?php echo $mainSurgeon; ?></td>
-            <td class='blanco' colspan='5'></td>
-            <td class='blanco' colspan='5'></td>
-            <td class='blanco' colspan='5'></td>
+            <td class='blanco' style='height: 75' colspan='5'><?php echo strtoupper($cirujano_data['nombre']); ?></td>
+            <td class='blanco' colspan='5'><?php echo strtoupper($cirujano_data['especialidad']); ?></td>
+            <td class='blanco' colspan='5'><?php echo $cirujano_data['cedula']; ?></td>
+            <td class='blanco'
+                colspan='5'><?php echo "<img src='" . htmlspecialchars($cirujano_data['firma']) . "' alt='Imagen de la firma' style='max-height: 70px;'>";
+                ?></td>
         </tr>
         <tr>
-            <td class='blanco' style='height: 60'
-                colspan='5'><?php echo $ayudante; ?>
-            </td>
+            <td class='blanco' style='height: 75' colspan='5'><?php
+                if (empty($cirujano2_data['nombre'])) {
+                    echo strtoupper($ayudante_data['nombre']);
+                } else {
+                    echo strtoupper($cirujano2_data['nombre']);
+                } ?></td>
+            <td class='blanco' colspan='5'><?php
+                if (empty($cirujano2_data['especialidad'])) {
+                    echo strtoupper($ayudante_data['especialidad']);
+                } else {
+                    echo strtoupper($cirujano2_data['especialidad']);
+                } ?></td>
+            <td class='blanco' colspan='5'><?php
+                if (empty($cirujano2_data['cedula'])) {
+                    echo $ayudante_data['cedula'];
+                } else {
+                    echo $cirujano2_data['cedula'];
+                } ?></td>
             <td class='blanco'
-                colspan='5'></td>
-            <td class='blanco'
-                colspan='5'></td>
-            <td class='blanco'
-                colspan='5'></td>
+                colspan='5'><?php if (empty($cirujano2_data['firma'])) {
+                    echo "<img src='" . htmlspecialchars($ayudante_data['firma']) . "' alt='Imagen de la firma' style='max-height: 70px;'>";
+                } else {
+                    echo "<img src='" . htmlspecialchars($cirujano2_data['firma']) . "' alt='Imagen de la firma' style='max-height: 70px;'>";
+                } ?></td>
         </tr>
         <tr>
-            <td class='blanco' style='height: 60'
-                colspan='5'><?php echo $anestesiologo; ?>
-            </td>
+            <td class='blanco' style='height: 75'
+                colspan='5'><?php echo strtoupper($anestesiologo_data['nombre']); ?></td>
+            <td class='blanco' colspan='5'><?php echo strtoupper($anestesiologo_data['especialidad']); ?></td>
+            <td class='blanco' colspan='5'><?php echo $anestesiologo_data['cedula']; ?></td>
             <td class='blanco'
-                colspan='5'></td>
-            <td class='blanco'
-                colspan='5'></td>
-            <td class='blanco'
-                colspan='5'></td>
+                colspan='5'><?php echo "<img src='" . htmlspecialchars($anestesiologo_data['firma']) . "' alt='Imagen de la firma' style='max-height: 70px;'>";
+                ?></td>
         </tr>
-
     </table>
     <table style='border: none'>
         <TR>

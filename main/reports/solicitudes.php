@@ -54,13 +54,15 @@ $stmt->close();
             <div class="content-header">
                 <div class="d-flex align-items-center">
                     <div class="me-auto">
-                        <h3 class="page-title">Reporte de Cirugías</h3>
+                        <h3 class="page-title">Reporte de Solicitudes de Cirugías</h3>
                         <div class="d-inline-block align-items-center">
                             <nav>
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-home-outline"></i></a>
                                     </li>
-                                    <li class="breadcrumb-item active" aria-current="page">Reporte de Cirugías</li>
+                                    <li class="breadcrumb-item active" aria-current="page">Reporte de Solicitudes de
+                                        Cirugías
+                                    </li>
                                 </ol>
                             </nav>
                         </div>
@@ -70,169 +72,147 @@ $stmt->close();
             </div>
 
             <!-- Main content -->
+            <?php
+            // Consulta para obtener los datos de solicitudes de procedimiento
+            $sql = "SELECT 
+            sp.id,
+            sp.hc_number, 
+            sp.form_id,
+            CONCAT(pd.fname, ' ', pd.lname, ' ', pd.lname2) AS full_name, 
+            sp.tipo,
+            pd.afiliacion,
+            sp.procedimiento,
+            sp.doctor,
+            sp.fecha,
+            sp.duracion,
+            sp.ojo,
+            sp.prioridad,
+            sp.producto,
+            sp.observacion,
+            sp.created_at,
+            pd.fecha_caducidad,
+            cd.diagnosticos
+        FROM solicitud_procedimiento sp
+        INNER JOIN patient_data pd ON sp.hc_number = pd.hc_number
+        LEFT JOIN consulta_data cd ON sp.hc_number = cd.hc_number AND sp.form_id = cd.form_id
+        WHERE sp.procedimiento != 'SELECCIONE' AND sp.doctor != 'SELECCIONE'
+        ORDER BY sp.fecha DESC";
+
+            $result = $mysqli->query($sql);
+
+            if (!$result) {
+                die("Error en la consulta: " . $mysqli->error);
+            }
+            ?>
+
             <section class="content">
                 <div class="row">
                     <div class="col-12">
                         <div class="box">
                             <div class="box-body">
-                                <h4 class="box-title">Cirugías Realizadas</h4>
-                                <div class="table-responsive">
-                                    <table id="surgeryTable" class="table table-striped table-hover">
+                                <div class="table-responsive rounded card-table">
+                                    <table class="table border-no" id="surgeryTable">
                                         <thead>
                                         <tr>
-                                            <th class="bb-2">No.</th>
-                                            <th class="bb-2">C.I.</th>
-                                            <th class="bb-2">Nombre</th>
-                                            <th class="bb-2">Afiliación</th>
-                                            <th class="bb-2">Fecha de Inicio</th>
-                                            <th class="bb-2">Procedimiento</th>
-                                            <th class="bb-2">Duración</th>
-                                            <th class="bb-2">Status</th>
-                                            <th class="bb-2">Result</th>
-                                            <th class="bb-2">Impreso</th>
+                                            <th>No.</th>
+                                            <th>C.I.</th>
+                                            <th>Nombre</th>
+                                            <th>Afiliación</th>
+                                            <th>Fecha de Solicitud</th>
+                                            <th>Procedimiento</th>
+                                            <th>Doctor</th>
+                                            <th>Ojo</th>
+                                            <th>Días Restantes</th>
+                                            <th>Acciones</th>
                                         </tr>
                                         </thead>
                                         <tbody id="patientTableBody">
                                         <?php
-                                        // Ejecutar la consulta SQL
-                                        $sql = "SELECT p.hc_number, p.fname, p.lname, p.lname2, p.fecha_nacimiento, p.ciudad, p.afiliacion, 
-                                                pr.fecha_inicio, pr.id, pr.membrete, pr.form_id, pr.hora_inicio, pr.hora_fin, pr.printed,
-                                                pr.dieresis, pr.exposicion, pr.hallazgo, pr.operatorio, pr.complicaciones_operatorio, pr.datos_cirugia, 
-                                                pr.procedimientos, pr.lateralidad, pr.tipo_anestesia, pr.diagnosticos, pp.procedimiento_proyectado,
-                                                pr.cirujano_1, pr.instrumentista, pr.cirujano_2, pr.circulante, pr.primer_ayudante, pr.anestesiologo, 
-                                                pr.segundo_ayudante, pr.ayudante_anestesia, pr.tercer_ayudante, pr.status
-                                                FROM patient_data p 
-                                                INNER JOIN protocolo_data pr ON p.hc_number = pr.hc_number
-                                                LEFT JOIN procedimiento_proyectado pp ON pp.form_id = pr.form_id AND pp.hc_number = pr.hc_number
-                                                ORDER BY pr.fecha_inicio DESC, pr.id DESC";
-                                        $result = $mysqli->query($sql);
+                                        if ($result->num_rows > 0) {
+                                            $counter = 1;
+                                            while ($row = $result->fetch_assoc()) {
+                                                // Procesar procedimiento para mostrar solo el nombre
+                                                $procedimiento_parts = explode(' - ', $row['procedimiento']);
+                                                $nombre_procedimiento = ucwords(strtolower(end($procedimiento_parts)));
 
-                                        // Verificar si hay resultados
-                                        $counter = 1; // Inicializar un contador para enumerar las filas
-                                        while ($row = $result->fetch_assoc()) {
-                                            // Convertir hora_inicio y hora_fin a objetos DateTime para hacer la diferencia
-                                            $hora_inicio = new DateTime($row['hora_inicio']);
-                                            $hora_fin = new DateTime($row['hora_fin']);
-                                            $duracion = $hora_inicio->diff($hora_fin); // Calcular la diferencia
-                                            // Obtener el valor de la columna "printed"
-                                            $printed = $row['printed'] ?? 0;  // Si no existe, por defecto es 0
-                                            $buttonClass = $printed ? 'active' : '';  // Si $printed es 1, el botón estará activo (on)
+                                                // Convertir el nombre del doctor en tipo título
+                                                $nombre_paciente = ucwords(strtolower($row['full_name']));
+                                                $doctor = ucwords(strtolower($row['doctor']));
 
-                                            // Condiciones para determinar el estado
-                                            $requiredFields = [$row['membrete'], $row['dieresis'], $row['exposicion'], $row['hallazgo'], $row['operatorio'],
-                                                $row['complicaciones_operatorio'], $row['datos_cirugia'], $row['procedimientos'], $row['lateralidad'],
-                                                $row['tipo_anestesia'], $row['diagnosticos'], $row['procedimiento_proyectado'], $row['fecha_inicio'],
-                                                $row['hora_inicio'], $row['hora_fin']];
-
-                                            $staffFields = [$row['cirujano_1'], $row['instrumentista'], $row['cirujano_2'], $row['circulante'],
-                                                $row['primer_ayudante'], $row['anestesiologo'], $row['segundo_ayudante'],
-                                                $row['ayudante_anestesia'], $row['tercer_ayudante']];
-
-                                            $requiredFieldsFilled = true;  // Suponemos que los campos requeridos están llenos y válidos
-                                            $staffCount = 0;  // Contador del staff válido
-                                            $invalidFields = false;  // Indicador de campos inválidos (que contienen "CENTER" o "undefined")
-
-// Lista de valores no permitidos
-                                            $invalidValues = ['CENTER', 'undefined'];
-
-                                            // Si el status es 1, directamente asignamos "revisado" y omitimos otras condiciones
-                                            if ($row['status'] == 1) {
-                                                $estado = 'revisado';
-                                            } else {
-                                                // Verificar si todos los campos requeridos están llenos y no contienen valores no permitidos
-                                                foreach ($requiredFields as $field) {
-                                                    if (!empty($field)) {
-                                                        foreach ($invalidValues as $invalidValue) {
-                                                            if (stripos($field, $invalidValue) !== false) {  // Busca la palabra prohibida
-                                                                $invalidFields = true;
-                                                                break 2;  // Salir de ambos bucles si se encuentra un valor no permitido
-                                                            }
+                                                // Procesar diagnósticos
+                                                $diagnosticos_string = [];
+                                                if (!empty($row['diagnosticos'])) {
+                                                    $diagnosticos = json_decode($row['diagnosticos'], true);
+                                                    if (is_array($diagnosticos)) {
+                                                        foreach ($diagnosticos as $diagnostico) {
+                                                            $diagnosticos_string[] = htmlspecialchars($diagnostico['idDiagnostico']) . ' (' . htmlspecialchars($diagnostico['ojo']) . ')';
                                                         }
                                                     }
                                                 }
+                                                $diagnosticos_formateados = implode(', ', $diagnosticos_string);
 
-                                                // Verificar que `cirujano_1` esté lleno y al menos otros 4 del staff estén completos y válidos
-                                                if (!empty($row['cirujano_1'])) {
-                                                    foreach ($staffFields as $staff) {
-                                                        // Si el campo está lleno, verificar si contiene valores no permitidos
-                                                        if (!empty($staff)) {
-                                                            foreach ($invalidValues as $invalidValue) {
-                                                                if (stripos($staff, $invalidValue) !== false) {
-                                                                    $invalidFields = true;  // Campo lleno pero no válido
-                                                                    break 2;  // Salir de ambos bucles si se encuentra un valor no permitido
-                                                                }
-                                                            }
-                                                            // Si es válido, contamos el campo
-                                                            $staffCount++;
-                                                        }
+                                                // Calcular días restantes para fecha de caducidad
+                                                $badgeClass = "badge-success-light";
+                                                $dias_restantes = "N/A";
+                                                if (!empty($row['fecha_caducidad'])) {
+                                                    $fecha_caducidad = new DateTime($row['fecha_caducidad']);
+                                                    $hoy = new DateTime();
+                                                    $dias_restantes = (int)$hoy->diff($fecha_caducidad)->format('%r%a');
+
+                                                    // Asignar clases de badge según el estado de caducidad
+                                                    if ($dias_restantes < 0) {
+                                                        // Fecha de caducidad ya pasó
+                                                        $badgeClass = "badge-danger-light";
+                                                    } elseif ($dias_restantes <= 30) {
+                                                        // Próximo a caducar (30 días o menos)
+                                                        $badgeClass = "badge-warning-light";
                                                     }
-                                                } else {
-                                                    $invalidFields = true;  // cirujano_1 no puede estar vacío
                                                 }
+                                                if (!empty($nombre_procedimiento)) {
+                                                    echo "<tr class='hover-primary'>";
+                                                    echo "<td>" . $counter++ . "</td>";
+                                                    echo "<td>" . htmlspecialchars($row['hc_number']) . "</td>";
+                                                    echo "<td>" . htmlspecialchars($nombre_paciente) . "</td>";
+                                                    echo "<td>" . htmlspecialchars($row['afiliacion']) . "</td>";
+                                                    echo "<td>" . date('d/m/Y', strtotime($row['created_at'])) . "</td>";
 
-                                                // Determinar el estado basado en los campos y el staff
-                                                if (!$invalidFields && $requiredFieldsFilled && $staffCount >= 5) {
-                                                    $estado = 'no revisado';  // Si todo está lleno y válido pero el status es 0
-                                                } else {
-                                                    $estado = 'incompleto';  // Si hay campos inválidos o el staff no cumple con los requisitos
+                                                    // Solo imprimir la línea del procedimiento si no está vacío
+                                                    echo "<td>" . htmlspecialchars($nombre_procedimiento) . "</td>";
+
+                                                    echo "<td>" . htmlspecialchars($doctor) . "</td>";
+                                                    echo "<td>" . htmlspecialchars($row['ojo']) . "</td>";
+                                                    echo "<td><span class='badge $badgeClass'>" . htmlspecialchars($dias_restantes) . "</span></td>";
+
+                                                    // Columna de acciones con menú desplegable
+                                                    echo "<td>";
+                                                    echo "<div class='btn-group'>";
+                                                    echo "<a class='hover-primary dropdown-toggle no-caret' data-bs-toggle='dropdown'><i class='fa fa-ellipsis-h'></i></a>";
+                                                    echo "<div class='dropdown-menu'>";
+                                                    echo "<a class='dropdown-item' href='solicitud_quirurgica/solicitud_qx_pdf.php?hc_number=" . urlencode($row['hc_number']) . "&form_id=" . urlencode($row['form_id']) . "' target='_blank'>Generar PDF</a>";
+                                                    echo "<a class='dropdown-item' href='#'>View Details</a>";
+                                                    echo "<a class='dropdown-item' href='#'>Edit</a>";
+                                                    echo "<a class='dropdown-item' href='#'>Delete</a>";
+                                                    echo "<div class='dropdown-divider'></div>";
+                                                    echo "<a class='dropdown-item text-muted' href='#'>Diagnósticos: " . htmlspecialchars($diagnosticos_formateados) . "</a>";
+                                                    echo "<a class='dropdown-item text-muted' href='#'>Observación: " . htmlspecialchars($row['observacion']) . "</a>";
+                                                    echo "</div>";
+                                                    echo "</div>";
+                                                    echo "</td>";
+
+                                                    echo "</tr>";
                                                 }
                                             }
-
-                                            // Asignar la clase CSS basada en el estado
-                                            $badgeClass = '';
-                                            switch ($estado) {
-                                                case 'revisado':
-                                                    $badgeClass = 'badge-success';
-                                                    break;
-                                                case 'no revisado':
-                                                    $badgeClass = 'badge-warning';
-                                                    break;
-                                                case 'incompleto':
-                                                    $badgeClass = 'badge-danger';
-                                                    break;
-                                            }
-
-                                            // Mostrar los datos en la tabla
-                                            echo "<tr>";
-                                            echo "<td>" . $counter++ . "</td>";
-                                            echo "<td>" . htmlspecialchars($row['hc_number']) . "</td>";
-                                            echo "<td>" . htmlspecialchars($row['fname']) . " " . htmlspecialchars($row['lname']) . " " . htmlspecialchars($row['lname2']) . "</td>";
-                                            echo "<td>" . htmlspecialchars($row['afiliacion']) . "</td>";
-                                            echo "<td>" . date('d/m/Y', strtotime($row['fecha_inicio'])) . "</td>";
-                                            echo "<td>" . htmlspecialchars($row['membrete']) . "</td>";
-
-                                            // Mostrar la duración en el formato HH:MM
-                                            echo "<td>" . $duracion->format('%H:%I') . "</td>";
-
-                                            // Columna Status (usando el badge basado en el estado)
-                                            echo "<td><span class='badge $badgeClass'>" . ucfirst($estado) . "</span></td>";
-
-                                            // Enlace para abrir el modal con datos
-                                            echo "<td>
-                                                <a href='#' data-bs-toggle='modal' data-bs-target='#resultModal' onclick='loadResult(" . json_encode($row) . ")' class='text-info'>Result</a>
-                                                        <a href='#' data-bs-toggle='modal' data-bs-target='#comment-dialog' class='text-info'>Comment </a>
-                                                      </td>";
-
-                                            // Columna Signed (botón interactivo)
-                                            echo "<td>
-                                                        <button type='button' class='btn btn-sm btn-toggle $buttonClass' data-bs-toggle='button' aria-pressed='" . ($printed ? "true" : "false") . "' autocomplete='off'
-                                                                onclick='togglePrintStatus(" . $row['form_id'] . ", \"" . $row['hc_number'] . "\", this, " . $printed . ")'>
-                                                            <div class='handle'></div>
-                                                        </button>
-                                                      </td>";
-                                            echo "</tr>";
                                         }
                                         ?>
+
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
-                            <!-- /.box-body -->
                         </div>
                     </div>
                 </div>
-            </section>
-            <!-- /.content -->
+            </section>            <!-- /.content -->
 
         </div>
     </div>
@@ -244,7 +224,6 @@ $stmt->close();
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="result-proyectado">Resultados</h4>
                     <h4 class="modal-title" id="result-popup">Resultados</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -340,8 +319,7 @@ $stmt->close();
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger pull-right" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-info pull-right" onclick="redirectToEditProtocol()">Editar
-                    </button>
+                    <button type="button" class="btn btn-info pull-right">Imprimir</button>
                     <button type="button" class="btn btn-success pull-right" onclick="updateProtocolStatus()">Guardar
                     </button>
                 </div>
@@ -810,13 +788,142 @@ $stmt->close();
 
     let currentFormId;  // Variable para almacenar el form_id actual
     let currentHcNumber;  // Variable para almacenar el hc_number actual
+    function loadResult(rowData) {
+        // Guardar form_id y hc_number para uso posterior
+        currentFormId = rowData.form_id;
+        currentHcNumber = rowData.hc_number;
 
-    function redirectToEditProtocol() {
-        // Construir la URL de edición
-        const url = `../edit_protocol.php?form_id=${encodeURIComponent(currentFormId)}&hc_number=${encodeURIComponent(currentHcNumber)}`;
+        // Actualizar el contenido del modal con los datos de la fila seleccionada
+        document.getElementById('result-popup').innerHTML = "QX realizada - " + rowData.membrete;
+        document.getElementById('lab-order-id').innerHTML = "Protocolo: " + rowData.form_id;
 
-        // Redirigir al usuario
-        window.location.href = url;
+        // Marcar o desmarcar el checkbox basado en el estado del protocolo (status)
+        const markAsReviewedCheckbox = document.getElementById('markAsReviewed');
+        markAsReviewedCheckbox.checked = rowData.status == 1 ? true : false;  // Si el estado es 1, marcar el checkbox
+
+        // Procesar los diagnósticos
+        let diagnosticoData = JSON.parse(rowData.diagnosticos);  // Asegurarse de que esté en formato JSON
+        let diagnosticoTable = '';
+
+        diagnosticoData.forEach(diagnostico => {
+            let cie10 = '';
+            let detalle = '';
+
+            // Dividir el campo idDiagnostico en código y detalle
+            if (diagnostico.idDiagnostico) {
+                const parts = diagnostico.idDiagnostico.split(' - ', 2);  // Separar por " - "
+                cie10 = parts[0];  // CIE10 Code
+                detalle = parts[1];  // Detail
+            }
+
+            // Agregar una fila a la tabla
+            diagnosticoTable += `
+                <tr>
+                    <td>${cie10}</td>
+                    <td>${detalle}</td>
+                </tr>
+            `;
+        });
+
+        // Insertar la tabla de diagnóstico en el modal
+        document.getElementById('diagnostico-table').innerHTML = diagnosticoTable;
+
+        // Procesar los procedimientos
+        let procedimientoData = JSON.parse(rowData.procedimientos);  // Convertir a JSON
+        let procedimientoTable = '';
+
+        procedimientoData.forEach(procedimiento => {
+            let codigo = '';
+            let nombre = '';
+
+            // Dividir el campo procInterno en código y nombre
+            if (procedimiento.procInterno) {
+                const parts = procedimiento.procInterno.split(' - ', 3);  // Separar por " - "
+                codigo = parts[1];  // Código del procedimiento
+                nombre = parts[2];  // Nombre del procedimiento
+            }
+
+            // Agregar una fila a la tabla de procedimientos
+            procedimientoTable += `
+                <tr>
+                    <td>${codigo}</td>
+                    <td>${nombre}</td>
+                </tr>
+            `;
+        });
+
+        // Insertar la tabla de procedimientos en el modal
+        document.getElementById('procedimientos-table').innerHTML = procedimientoTable;
+
+
+        // Llenar otras tablas como antes (resultados, tiempos, staff, etc.)
+        document.getElementById('result-table').innerHTML = `
+                <tr>
+                    <td>Dieresis</td>
+                <td>${rowData.dieresis}</td>
+            </tr>
+                <tr>
+                    <td>Exposición</td>
+                <td>${rowData.exposicion}</td>
+            </tr>
+                <tr>
+                    <td>Hallazgo</td>
+                <td>${rowData.hallazgo}</td>
+            </tr>
+                <tr>
+                    <td>Operatorio</td>
+                <td>${rowData.operatorio}</td>
+            </tr>
+            `;
+
+        // Calcular la duración entre hora_inicio y hora_fin
+        let horaInicio = new Date('1970-01-01T' + rowData.hora_inicio + 'Z');
+        let horaFin = new Date('1970-01-01T' + rowData.hora_fin + 'Z');
+        let diff = new Date(horaFin - horaInicio);  // Diferencia de tiempo
+
+        let duration = `${diff.getUTCHours().toString().padStart(2, '0')}:${diff.getUTCMinutes().toString().padStart(2, '0')}`;
+
+        // Actualizar la fila con la fecha de inicio, hora de inicio, hora de fin y duración
+        document.getElementById('timing-row').innerHTML = `
+            <td>${rowData.fecha_inicio}</td>
+            <td>${rowData.hora_inicio}</td>
+            <td>${rowData.hora_fin}</td>
+            <td>${duration}</td>
+        `;
+
+        // Inicializar el staffTable vacía
+        let staffTable = '';
+
+        // Campos del staff que queremos mostrar si no están vacíos
+        const staffFields = {
+            'Cirujano Principal': rowData.cirujano_1,
+            'Instrumentista': rowData.instrumentista,
+            'Cirujano Asistente': rowData.cirujano_2,
+            'Circulante': rowData.circulante,
+            'Primer Ayudante': rowData.primer_ayudante,
+            'Anestesiólogo': rowData.anestesiologo,
+            'Segundo Ayudante': rowData.segundo_ayudante,
+            'Ayudante de Anestesia': rowData.ayudante_anestesia,
+            'Tercer Ayudante': rowData.tercer_ayudante
+        };
+
+        // Iterar sobre los campos del staff y añadir solo los que no están vacíos
+        for (const [label, value] of Object.entries(staffFields)) {
+            if (value && value.trim() !== '') {
+                staffTable += `
+                    <tr>
+                        <td>${label}</td>
+                        <td>${value}</td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Agregar el contenido del staff al modal
+        document.getElementById('staff-table').innerHTML = staffTable;
+
+        // Actualizar los comentarios y las firmas
+        document.querySelector('.comment-here').innerHTML = rowData.complicaciones_operatorio || 'Sin comentarios';
     }
 
     function updateProtocolStatus() {
@@ -872,13 +979,13 @@ $stmt->close();
 
 
 <!-- Vendor JS -->
-<script src="js/qx_repoorts.js"></script>
 <script src="../js/vendors.min.js"></script>
 <script src="../js/pages/chat-popup.js"></script>
 <script src="../../assets/icons/feather-icons/feather.min.js"></script>
 <script src="../../assets/vendor_components/datatable/datatables.min.js"></script>
 
 <script>
+    // Custom sorting for dd/mm/yyyy format
     $.fn.dataTable.ext.type.order['dd-mm-yyyy-pre'] = function (d) {
         if (!d) {
             return 0;
@@ -887,32 +994,38 @@ $stmt->close();
         return new Date(parts[2], parts[1] - 1, parts[0]).getTime();
     };
 
+    // Custom sorting for "Días Restantes" column
+    $.fn.dataTable.ext.type.order['dias-restantes-pre'] = function (d) {
+        if (d === "N/A") {
+            return Infinity; // Coloca "N/A" al final al ordenar ascendente
+        }
+        return parseInt(d.trim(), 10); // Convierte el valor a un entero
+    };
+
     $(document).ready(function () {
         $('#surgeryTable').DataTable({
             "paging": true,
-            "lengthChange": true,
+            "lengthChange": false,
             "searching": true,
             "ordering": true,
             "info": true,
-            "autoWidth": false,
-            "pageLength": 25,
             "columnDefs": [
                 {
-                    "targets": 4,  // Índice de la columna "Fecha de Inicio"
-                    "type": "dd-mm-yyyy"  // Tipo personalizado para ordenar fechas dd/mm/yyyy
+                    "targets": 4, // Índice de columna para la fecha de solicitud (ajustar si es necesario)
+                    "type": "dd-mm-yyyy"
+                },
+                {
+                    "targets": 9, // Índice de columna para "Días Restantes" (ajustar si es necesario)
+                    "type": "dias-restantes" // Tipo de ordenación personalizada
                 }
             ]
         });
     });
 </script>
 
-
 <!-- Doclinic App -->
 <script src="../js/jquery.smartmenus.js"></script>
 <script src="../js/menus.js"></script>
 <script src="../js/template.js"></script>
-<script src="../js/pages/appointments.js"></script>
-
-
 </body>
 </html>

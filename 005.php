@@ -102,6 +102,7 @@ if ($form_id && $hc_number) {
 
         // Unir todos los códigos con "/"
         $codes_concatenados = implode('/', $codes);
+
     }
 }
 
@@ -136,8 +137,15 @@ $formattedRealizedProcedure = implode('<br>', $realizedProceduresArray);
 
 // Datos adicionales (tensión, frecuencia, etc.)
 $sistolica = rand(110, 130);
-$diastolica = rand(110, 130);
-$fc = rand(110, 130);
+$diastolica = rand(70, 83);
+$fc = rand(75, 100);
+// Llamada a la función
+$idProcedimiento = obtenerIdProcedimiento($realizedProcedure, $mysqli);
+$diagnosticosPrevios = obtenerDiagnosticosAnteriores($hc_number, $form_id, $mysqli, $idProcedimiento);
+$previousDiagnostic1 = $diagnosticosPrevios[0];
+$previousDiagnostic2 = $diagnosticosPrevios[1];
+$previousDiagnostic3 = $diagnosticosPrevios[2];
+$procedimientoProyectadoNow = $nombre_procedimiento_proyectado;
 ?>
 <body>
 <TABLE>
@@ -208,190 +216,215 @@ $fc = rand(110, 130);
         <td class='morado' colspan='28' style='text-align: center'>2. PRESCRIPCIONES</td>
     </tr>
     <tr>
-        <td class='verde' colspan='6'>FECHA<br><span style='font-size:6pt;font-family:Arial;font-weight:normal;'>(aaaa-mm-dd)</span>
+        <td class='verde' colspan='6' width="8%">FECHA<br><span
+                    style='font-size:6pt;font-family:Arial;font-weight:normal;'>(aaaa-mm-dd)</span>
         </td>
         <td class='verde' colspan='3'>HORA<br><span
                     style='font-size:6pt;font-family:Arial;font-weight:normal;'>(hh:mm)</span></td>
-        <td class='verde' colspan='29'>NOTAS DE EVOLUCIÓN</td>
+        <td class='verde' colspan='29' width="40%">NOTAS DE EVOLUCIÓN</td>
         <td class='blanco_break'></td>
-        <td class='verde' colspan='23'>FARMACOTERAPIA E INDICACIONES<span
+        <td class='verde' colspan='23' width="35%">FARMACOTERAPIA E INDICACIONES<span
                     style='font-size:6pt;font-family:Arial;font-weight:normal;'><br>(Para enfermería y otro profesional de salud)</span>
         </td>
         <td class='verde' colspan='5'><span style='font-size:6pt;font-family:Arial;font-weight:normal;'>ADMINISTR. <br>FÁRMACOS<br>DISPOSITIVO</span>
         </td>
     </tr>
-    <tr>
-        <td class='blanco_left' colspan='6'><?php echo $fechaDia . '/' . $fechaMes . '/' . $fechaAno; ?></td>
-        <td class='blanco_left' colspan='3'><?php echo $horaInicioModificada; ?></td>
-        <td class='blanco_left' colspan='29' style='text-align: center'>PRE-OPERATORIO</td>
-        <td class='blanco_break'></td>
-        <td class='blanco_left' colspan='23' style='text-align: center'>PRE-OPERATORIO</td>
-        <td class='blanco_left' colspan='5'></td>
-    </tr>
-    <tr>
-        <td class='blanco_left' colspan='6'></td>
-        <td class='blanco_left' colspan='3'></td>
-        <td class='blanco_left' colspan='29'>
-            Paciente de <?php echo $edadPaciente; ?> años de edad, conciente, orientado
-        </td>
-        <td class='blanco_break'></td>
-        <td class='blanco_left' colspan='23'>Se recibe paciente en el área; se procede a:</td>
-        <td class='blanco_left' colspan='5'></td>
-    </tr>
-    <tr>
-        <td class='blanco_left' colspan='6'></td>
-        <td class='blanco_left' colspan='3'></td>
-        <td class='blanco_left' colspan='29'>
-            en tiempo y espacio es recibido en el área de preoperatorio
-        </td>
-        <td class='blanco_break'></td>
-        <td class='blanco_left' colspan='23'>Colocar anestesia tópica:</td>
-        <td class='blanco_left' colspan='5'></td>
-    </tr>
-    <tr>
-        <td class='blanco_left' colspan='6'></td>
-        <td class='blanco_left' colspan='3'></td>
-        <td class='blanco_left' colspan='29'>
-            hemodinámicamente activo, con diagnóstico de:
-        </td>
-        <td class='blanco_break'></td>
-        <td class='blanco_left' colspan='23'>-Proximetacaína 0.5%</td>
-        <td class='blanco_left' colspan='5'></td>
-    </tr>
-    <tr>
-        <td class='blanco_left' colspan='6'></td>
-        <td class='blanco_left' colspan='3'></td>
-        <td class='blanco_left' colspan='29'>
-            -<?php echo $diagnostic1 . ' ' . $diagnostic2 . ' ' . $diagnostic3; ?>
-        </td>
-        <td class='blanco_break'></td>
-        <td class='blanco_left' colspan='23'>Cateterización de acceso venoso periférico en</td>
-        <td class='blanco_left' colspan='5'></td>
-    </tr>
-    <tr>
-        <td class='blanco_left' colspan='6'></td>
-        <td class='blanco_left' colspan='3'></td>
-        <td class='blanco_left' colspan='29'>
-            Se realiza canalización de vía periférica con Cloruro de Sodio al 0.9%, Manitol el 20%
-        </td>
-        <td class='blanco_break'></td>
-        <td class='blanco_left' colspan='23'>Miembro superior con:</td>
-        <td class='blanco_left' colspan='5'></td>
-    </tr>
-    <tr>
-        <td class='blanco_left' colspan='6'></td>
-        <td class='blanco_left' colspan='3'></td>
-        <td class='blanco_left' colspan='29'>
-            colocación de anestesia tópica con Proximetacaína al 0.5%
-        </td>
-        <td class='blanco_break'></td>
-        <td class='blanco_left' colspan='23'>-Catéter calibre 22G</td>
-        <td class='blanco_left' colspan='5'></td>
-    </tr>
-    <tr>
-        <td class='blanco_left' colspan='6'></td>
-        <td class='blanco_left' colspan='3'></td>
-        <td class='blanco_left' colspan='29'>
-            Se indica oxigenoterapia
-        </td>
-        <td class='blanco_break'></td>
-        <td class='blanco_left' colspan='23'>-Equipo de venoclisis para administración de solución endovenosa</td>
-        <td class='blanco_left' colspan='5'></td>
-    </tr>
-    <tr>
-        <td class='blanco_left' colspan='6'></td>
-        <td class='blanco_left' colspan='3'></td>
-        <td class='blanco_left' colspan='29'>
-            bajo anestesia local (Proximetacaína) y sedación se efectúa anestesia retrobulbar
-        </td>
-        <td class='blanco_break'></td>
-        <td class='blanco_left' colspan='23'>Fijación con Tegaderm IV</td>
-        <td class='blanco_left' colspan='5'></td>
-    </tr>
-    <tr>
-        <td class='blanco_left' colspan='6'></td>
-        <td class='blanco_left' colspan='3'></td>
-        <td class='blanco_left' colspan='29'>
-            Monitoreo de signos vitales:
-        </td>
-        <td class='blanco_break'></td>
-        <td class='blanco_left' colspan='23'>Signos Vitales</td>
-        <td class='blanco_left' colspan='5'></td>
-    </tr>
-    <tr>
-        <td class='blanco_left' colspan='6'></td>
-        <td class='blanco_left' colspan='3'></td>
-        <td class='blanco_left' colspan='29'>
-            T.A.: <?php echo $sistolica . '/' . $diastolica . ' F.C.: ' . $fc; ?> SATO2: 100%
-        </td>
-        <td class='blanco_break'></td>
-        <td class='blanco_left' colspan='23'></td>
-        <td class='blanco_left' colspan='5'></td>
-    </tr>
-    <tr>
-        <td class='blanco_left' colspan='6'></td>
-        <td class='blanco_left' colspan='3'></td>
-        <td class='blanco_left' colspan='29'></td>
-        <td class='blanco_break'></td>
-        <td class='blanco_left' colspan='23'></td>
-        <td class='blanco_left' colspan='5'></td>
-    </tr>
-    <tr>
-        <td class='blanco_left' colspan='6'></td>
-        <td class='blanco_left' colspan='3'></td>
-        <td class='blanco_left' colspan='29'></td>
-        <td class='blanco_break'></td>
-        <td class='blanco_left' colspan='23'></td>
-        <td class='blanco_left' colspan='5'></td>
-    </tr>
-    <tr>
-        <td class='blanco_left' colspan='6'></td>
-        <td class='blanco_left' colspan='3'><?php echo $horaFinModificada; ?></td>
-        <td class='blanco_left' colspan='29' style='text-align: center'>POST-OPERATORIO</td>
-        <td class='blanco_break'></td>
-        <td class='blanco_left' colspan='23' style='text-align: center'>POST-OPERATORIO</td>
-        <td class='blanco_left' colspan='5'></td>
-    </tr>
-    <tr>
-        <td class='blanco_left' colspan='6'></td>
-        <td class='blanco_left' colspan='3'></td>
-        <td class='blanco_left' colspan='29'>
-            Paciente que sale de cirugía al momento conciente, orientado en tiempo y espacio
-        </td>
-        <td class='blanco_break'></td>
-        <td class='blanco_left' colspan='23'>Ketorolaco líquido parenteral 30mg en 100ml de cloruro de sodio al 0.9%
-        </td>
-        <td class='blanco_left' colspan='5'></td>
-    </tr>
-    <tr>
-        <td class='blanco_left' colspan='6'></td>
-        <td class='blanco_left' colspan='3'></td>
-        <td class='blanco_left' colspan='29'>
-            Hemodinámicamente activo, se administra analgésico más corticoides y antagonista
-        </td>
-        <td class='blanco_break'></td>
-        <td class='blanco_left' colspan='23'>Ceftriaxona sólido parenteral 1000 mg en cloruro de sodio 0.9% líquido
-            parenteral 1000ml
-        </td>
-        <td class='blanco_left' colspan='5'></td>
-    </tr>
-    <tr>
-        <td class='blanco_left' colspan='6'></td>
-        <td class='blanco_left' colspan='3'></td>
-        <td class='blanco_left' colspan='29'>
-            Cruza post operatorio inmediato sin complicaciones
-        </td>
-        <td class='blanco_break'></td>
-        <td class='blanco_left' colspan='23'>Dexametasona 4mg líquido parenteral</td>
-        <td class='blanco_left' colspan='5'></td>
-    </tr>
-    <tr>
-        <td class='blanco_left' colspan='6'></td>
-        <td class='blanco_left' colspan='3'></td>
-        <td class='blanco_left' colspan='29'><?php echo $mainSurgeon; ?></td>
-        <td class='blanco_break'></td>
-        <td class='blanco_left' colspan='23'></td>
-        <td class='blanco_left' colspan='5'></td>
-    </tr>
-</table>
+    <?php
+    // Verificar si se encontró el procedimiento
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+
+        // Buscar en la tabla evolucion005 con el procedimiento_id obtenido
+        $sql_evolucion = "SELECT pre_evolucion, pre_indicacion, post_evolucion, post_indicacion, alta_evolucion, alta_indicacion FROM evolucion005 WHERE id = ?";
+        if ($stmt_evolucion = $mysqli->prepare($sql_evolucion)) {
+            $stmt_evolucion->bind_param("s", $idProcedimiento);
+            $stmt_evolucion->execute();
+            $result_evolucion = $stmt_evolucion->get_result();
+
+            if ($result_evolucion->num_rows > 0) {
+                $row_evolucion = $result_evolucion->fetch_assoc();
+
+                // Asignar valores a las variables
+                $text = eval("return \"" . addslashes($row_evolucion['pre_evolucion']) . "\";");
+                $text2 = $row_evolucion['pre_indicacion'];
+                $text3 = eval("return \"" . addslashes($row_evolucion['post_evolucion']) . "\";");
+                $text4 = $row_evolucion['post_indicacion'];
+                $text5 = eval("return \"" . addslashes($row_evolucion['alta_evolucion']) . "\";");
+                $text6 = $row_evolucion['alta_indicacion'];
+
+                // Dividir el texto en líneas cada 100 caracteres
+                $lines1 = wordwrap($text, 70, "\n", true);
+                $lines1 = explode("\n", $lines1);
+                $lines2 = wordwrap($text2, 80, "\n", true);
+                $lines2 = explode("\n", $lines2);
+                $lines3 = wordwrap($text3, 70, "\n", true);
+                $lines3 = explode("\n", $lines3);
+                $lines4 = wordwrap($text4, 60, "\n", true);
+                $lines4 = explode("\n", $lines4);
+                $lines5 = wordwrap($text5, 70, "\n", true);
+                $lines5 = explode("\n", $lines5);
+                $lines6 = wordwrap($text6, 60, "\n", true);
+                $lines6 = explode("\n", $lines6);
+
+                // Determinar el número máximo de líneas entre todos los textos
+                $maxLines = max(count($lines1), count($lines2), count($lines3), count($lines4), count($lines5), count($lines6));
+                // Iniciar la tabla
+                ?>
+                <tr>
+                    <td class='blanco_left'
+                        colspan='6'><?php echo $fechaDia . '/' . $fechaMes . '/' . $fechaAno; ?></td>
+                    <td class='blanco_left' colspan='3'><?php echo $horaInicioModificada; ?></td>
+                    <td class='blanco_left' colspan='29' style='text-align: center'><b>PRE-OPERATORIO</b></td>
+                    <td class='blanco_break'></td>
+                    <td class='blanco_left' colspan='23' style='text-align: center'><b>PRE-OPERATORIO</b></td>
+                    <td class='blanco_left' colspan='5'></td>
+                </tr>
+                <?php
+                // Iterar sobre el número máximo de líneas
+                for ($i = 0; $i < $maxLines; $i++) {
+                    echo "<tr>";
+
+                    // Imprimir línea del primer bloque si existe, si no, imprimir celda vacía
+                    if (isset($lines1[$i])) {
+                        echo "<td class='blanco_left' colspan='6'></td>";
+                        echo "<td class='blanco_left' colspan='3'></td>";
+                        echo "<td class='blanco_left' colspan='29'>" . htmlspecialchars(trim($lines1[$i])) . "</td>";
+                    } else {
+                        echo "<td class='blanco_left' colspan='6'></td>";
+                        echo "<td class='blanco_left' colspan='3'></td>";
+                        echo "<td class='blanco_left' colspan='29'></td>";
+                    }
+
+                    echo "<td class='blanco_break'></td>";
+
+                    // Imprimir línea del segundo bloque si existe, si no, imprimir celda vacía
+                    if (isset($lines2[$i])) {
+                        echo "<td class='blanco_left' colspan='23'>" . htmlspecialchars(trim($lines2[$i])) . "</td>";
+                    } else {
+                        echo "<td class='blanco_left' colspan='23'></td>";
+                    }
+
+                    echo "<td class='blanco_left' colspan='5'></td>";
+                    echo "</tr>";
+                } ?>
+                <tr>
+                    <td class='blanco_left' colspan='6'></td>
+                    <td class='blanco_left' colspan='3'></td>
+                    <td class='blanco_left' colspan='29'></td>
+                    <td class='blanco_break'></td>
+                    <td class='blanco_left' colspan='23'></td>
+                    <td class='blanco_left' colspan='5'></td>
+                </tr>
+                <tr>
+                    <td class='blanco_left' colspan='6'></td>
+                    <td class='blanco_left' colspan='3'><?php echo $horaFin; ?></td>
+                    <td class='blanco_left' colspan='29' style='text-align: center'><b>POST-OPERATORIO</b></td>
+                    <td class='blanco_break'></td>
+                    <td class='blanco_left' colspan='23' style='text-align: center'><b>POST-OPERATORIO</b></td>
+                    <td class='blanco_left' colspan='5'></td>
+                </tr>
+                <?php
+                // Iterar sobre el número máximo de líneas para el tercer bloque
+                for ($i = 0; $i < $maxLines; $i++) {
+                    echo "<tr>";
+
+                    // Imprimir línea del tercer bloque si existe, si no, imprimir celda vacía
+                    if (isset($lines3[$i])) {
+                        echo "<td class='blanco_left' colspan='6'></td>";
+                        echo "<td class='blanco_left' colspan='3'></td>";
+                        echo "<td class='blanco_left' colspan='29'>" . htmlspecialchars(trim($lines3[$i])) . "</td>";
+                    } else {
+                        echo "<td class='blanco_left' colspan='6'></td>";
+                        echo "<td class='blanco_left' colspan='3'></td>";
+                        echo "<td class='blanco_left' colspan='29'></td>";
+                    }
+
+                    echo "<td class='blanco_break'></td>";
+
+                    // Imprimir línea del segundo bloque si existe, si no, imprimir celda vacía
+                    if (isset($lines2[$i])) {
+                        echo "<td class='blanco_left' colspan='23'>" . htmlspecialchars(trim($lines4[$i])) . "</td>";
+                    } else {
+                        echo "<td class='blanco_left' colspan='23'></td>";
+                    }
+
+                    echo "<td class='blanco_left' colspan='5'></td>";
+                    echo "</tr>";
+                }
+                ?>
+                <tr>
+                    <td class='blanco_left' colspan='6'></td>
+                    <td class='blanco_left' colspan='3'></td>
+                    <td class='blanco_left' colspan='29'>MD. <?php echo $anestesiologo; ?></td>
+                    <td class='blanco_break'></td>
+                    <td class='blanco_left' colspan='23'></td>
+                    <td class='blanco_left' colspan='5'></td>
+                </tr>
+                <tr>
+                    <td class='blanco_left' colspan='6'></td>
+                    <td class='blanco_left' colspan='3'><?php echo $horaFinModificada; ?></td>
+                    <td class='blanco_left' colspan='29' style='text-align: center'><b>ALTA MEDICA</b></td>
+                    <td class='blanco_break'></td>
+                    <td class='blanco_left' colspan='23' style='text-align: center'><b>ALTA MEDICA</b></td>
+                    <td class='blanco_left' colspan='5'></td>
+                </tr>
+                <?php
+                // Iterar sobre el número máximo de líneas para el tercer bloque
+                for ($i = 0; $i < $maxLines; $i++) {
+                    echo "<tr>";
+
+                    // Imprimir línea del tercer bloque si existe, si no, imprimir celda vacía
+                    if (isset($lines5[$i])) {
+                        echo "<td class='blanco_left' colspan='6'></td>";
+                        echo "<td class='blanco_left' colspan='3'></td>";
+                        echo "<td class='blanco_left' colspan='29'>" . htmlspecialchars(trim($lines5[$i])) . "</td>";
+                    } else {
+                        echo "<td class='blanco_left' colspan='6'></td>";
+                        echo "<td class='blanco_left' colspan='3'></td>";
+                        echo "<td class='blanco_left' colspan='29'></td>";
+                    }
+
+                    echo "<td class='blanco_break'></td>";
+
+                    // Imprimir línea del segundo bloque si existe, si no, imprimir celda vacía
+                    if (isset($lines6[$i])) {
+                        echo "<td class='blanco_left' colspan='23'>" . htmlspecialchars(trim($lines6[$i])) . "</td>";
+                    } else {
+                        echo "<td class='blanco_left' colspan='23'></td>";
+                    }
+
+                    echo "<td class='blanco_left' colspan='5'></td>";
+                    echo "</tr>";
+                } ?>
+                <tr>
+                    <td class='blanco_left' colspan='6'></td>
+                    <td class='blanco_left' colspan='3'></td>
+                    <td class='blanco_left' colspan='29'>MD. <?php echo $mainSurgeon; ?></td>
+                    <td class='blanco_break'></td>
+                    <td class='blanco_left' colspan='23'></td>
+                    <td class='blanco_left' colspan='5'></td>
+                </tr>
+                <?php
+                // Cerrar la tabla
+                echo "</table>";
+            }
+            $stmt_evolucion->close();
+        }
+    }
+    // Cerrar la sentencia
+    $stmt->close();
+
+
+    // Iniciar la tabla
+    ?>
+    <table style="border: none">
+        <TR>
+            <TD colspan="6" HEIGHT=24 ALIGN=LEFT VALIGN=M><B><FONT SIZE=1
+                                                                   COLOR="#000000">SNS-MSP/HCU-form.005/2021</FONT></B>
+            </TD>
+            <TD colspan="3" ALIGN=RIGHT VALIGN=TOP><B><FONT SIZE=3 COLOR="#000000">EVOLUCIÓN Y PRESCRIPCIONES
+                        (1)</FONT></B>
+            </TD>
+        </TR>
+    </table>
 </body>

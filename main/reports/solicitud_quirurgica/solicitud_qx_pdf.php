@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-require 'vendor/autoload.php';
+require '../../../vendor/autoload.php';
 
 use Mpdf\Mpdf;
 
@@ -28,16 +28,19 @@ function cargarHTML($archivo)
     return ob_get_clean();
 }
 
-// Incluir el archivo CSS externo general
-$stylesheet = file_get_contents('styles.css');
-$mpdf->WriteHTML($stylesheet, \Mpdf\HTMLParserMode::HEADER_CSS);
-
 // Páginas/formularios en el PDF
-$paginas = ['protocolo.php', '005.php', 'medicamentos.php', 'signos_vitales.php', 'insumos.php', 'saveqx.php'];
+$paginas = ['010.php', 'referencia.php'];
 
-// Incluir cada página y agregar una nueva página solo si no es la última
+// Incluir CSS específico para cada página
 $totalPaginas = count($paginas);
 foreach ($paginas as $index => $pagina) {
+    if ($pagina === '010.php') {
+        $stylesheet = file_get_contents('styles.css');
+    } elseif ($pagina === 'referencia.php') {
+        $stylesheet = file_get_contents('referencia.css');
+    }
+    $mpdf->WriteHTML($stylesheet, \Mpdf\HTMLParserMode::HEADER_CSS);
+
     $html = cargarHTML($pagina);
     $mpdf->WriteHTML($html);
 
@@ -46,13 +49,6 @@ foreach ($paginas as $index => $pagina) {
         $mpdf->AddPage();
     }
 }
-
-// Cambiar la orientación a horizontal (Landscape) para la página 'transanestesico'
-$mpdf->AddPage('L');  // Cambia a horizontal
-
-// Incluir el contenido de transanestesico.php
-$htmlTransanestesico = cargarHTML('transanestesico.php');
-$mpdf->WriteHTML($htmlTransanestesico);
 
 // Generar y mostrar el PDF
 $mpdf->Output('informacion_paciente.pdf', 'I');
