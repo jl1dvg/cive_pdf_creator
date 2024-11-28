@@ -82,7 +82,7 @@ $stmt->close();
                 if ($form_id && $hc_number) {
                     // Consulta para obtener los datos del paciente y el procedimiento
                     $sql = "SELECT p.hc_number, p.fname, p.mname, p.lname, p.lname2, p.fecha_nacimiento, p.afiliacion, p.sexo, p.ciudad, 
-                    pr.form_id, pr.fecha_inicio, pr.hora_inicio, pr.fecha_fin, pr.hora_fin, pr.cirujano_1, pr.instrumentista, 
+                    pr.form_id, pr.procedimiento_id, pr.fecha_inicio, pr.hora_inicio, pr.fecha_fin, pr.hora_fin, pr.cirujano_1, pr.instrumentista, 
                     pr.cirujano_2, pr.circulante, pr.primer_ayudante, pr.anestesiologo, pr.segundo_ayudante, 
                     pr.ayudante_anestesia, pr.tercer_ayudante, pr.membrete, pr.dieresis, pr.exposicion, pr.hallazgo, 
                     pr.operatorio, pr.complicaciones_operatorio, pr.datos_cirugia, pr.procedimientos, pr.lateralidad, 
@@ -512,7 +512,7 @@ $stmt->close();
                                 }
 
                                 // Obtener los insumos del JSON desde la tabla `insumos_pack` (ajusta según tu esquema)
-                                $procedimiento_id = 'avastin'; // Ejemplo de ID
+                                $procedimiento_id = $data['procedimiento_id']; // Ejemplo de ID
                                 $sql = "SELECT insumos FROM insumos_pack WHERE procedimiento_id = ?";
                                 $stmt = $mysqli->prepare($sql);
                                 $stmt->bind_param('s', $procedimiento_id);
@@ -538,28 +538,30 @@ $stmt->close();
                                         <tbody>
                                         <?php
                                         // Iterar sobre las categorías del JSON y agregar filas a la tabla
-                                        foreach ($insumos as $categoria => $items) {
-                                            foreach ($items as $item) {
-                                                echo '<tr>';
-                                                echo '<td><select class="form-control categoria-select" name="categoria">';
-                                                foreach ($categorias as $cat) {
-                                                    $selected = ($cat == $categoria) ? 'selected' : '';
-                                                    echo '<option value="' . htmlspecialchars($cat) . '" ' . $selected . '>' . htmlspecialchars(str_replace('_', ' ', $cat)) . '</option>';
-                                                }
-                                                echo '</select></td>';
-                                                echo '<td><select class="form-control nombre-select" name="nombre">';
-                                                if (isset($insumosDisponibles[$categoria])) {
-                                                    foreach ($insumosDisponibles[$categoria] as $nombre) {
-                                                        $selected = ($nombre == $item['nombre']) ? 'selected' : '';
-                                                        echo '<option value="' . htmlspecialchars($nombre) . '" ' . $selected . '>' . htmlspecialchars($nombre) . '</option>';
+                                        foreach (['equipos', 'quirurgicos', 'anestesia'] as $categoriaOrdenada) {
+                                            if (isset($insumos[$categoriaOrdenada])) {
+                                                foreach ($insumos[$categoriaOrdenada] as $item) {
+                                                    echo '<tr class="categoria-' . htmlspecialchars($categoriaOrdenada) . '">';
+                                                    echo '<td><select class="form-control categoria-select" name="categoria">';
+                                                    foreach ($categorias as $cat) {
+                                                        $selected = ($cat == $categoriaOrdenada) ? 'selected' : '';
+                                                        echo '<option value="' . htmlspecialchars($cat) . '" ' . $selected . '>' . htmlspecialchars(str_replace('_', ' ', $cat)) . '</option>';
                                                     }
-                                                } else {
-                                                    echo '<option value="">Seleccione una categoría primero</option>';
+                                                    echo '</select></td>';
+                                                    echo '<td><select class="form-control nombre-select" name="nombre" data-nombre="' . htmlspecialchars($item['nombre']) . '">';
+                                                    if (isset($insumosDisponibles[$categoriaOrdenada])) {
+                                                        foreach ($insumosDisponibles[$categoriaOrdenada] as $nombre) {
+                                                            $selected = ($nombre == $item['nombre']) ? 'selected' : '';
+                                                            echo '<option value="' . htmlspecialchars($nombre) . '" ' . $selected . '>' . htmlspecialchars($nombre) . '</option>';
+                                                        }
+                                                    } else {
+                                                        echo '<option value="">Seleccione una categoría primero</option>';
+                                                    }
+                                                    echo '</select></td>';
+                                                    echo '<td contenteditable="true" data-cantidad="' . htmlspecialchars($item['cantidad']) . '">' . htmlspecialchars($item['cantidad']) . '</td>';
+                                                    echo '<td><button class="delete-btn btn btn-danger"><i class="fa fa-minus"></i></button> <button class="add-row-btn btn btn-success"><i class="fa fa-plus"></i></button></td>';
+                                                    echo '</tr>';
                                                 }
-                                                echo '</select></td>';
-                                                echo '<td contenteditable="true">' . htmlspecialchars($item['cantidad']) . '</td>';
-                                                echo '<td><button class="delete-btn btn btn-danger"><i class="fa fa-minus"></i></button> <button class="add-row-btn btn btn-success"><i class="fa fa-plus"></i></button></td>';
-                                                echo '</tr>';
                                             }
                                         }
                                         ?>
@@ -933,6 +935,18 @@ $stmt->close();
                 nombreSelect.append('<option value="">Seleccione una categoría primero</option>');
             }
         }).trigger('change');
+
+        // Colorear las filas según la categoría
+        $('#insumosTable tbody tr').each(function () {
+            var categoria = $(this).find('select[name="categoria"]').val().toLowerCase();
+            if (categoria === 'equipos') {
+                $(this).css('background-color', '#d4edda'); // Verde claro
+            } else if (categoria === 'anestesia') {
+                $(this).css('background-color', '#fff3cd'); // Amarillo claro
+            } else if (categoria === 'quirurgicos') {
+                $(this).css('background-color', '#cce5ff'); // Azul claro
+            }
+        });
 
         // Actualizar el campo oculto con el JSON de los insumos
         function actualizarInsumos() {

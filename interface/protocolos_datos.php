@@ -52,6 +52,7 @@ if (isset($data['hcNumber'], $data['form_id'])) {
 
         // Campos adicionales
         $membrete = $data['membrete'] ?? null;
+        $procedimiento_id = $data['procedimiento_id'] ?? null;
         $dieresis = $data['dieresis'] ?? null;
         $exposicion = $data['exposicion'] ?? null;
         $hallazgo = $data['hallazgo'] ?? null;
@@ -70,12 +71,13 @@ if (isset($data['hcNumber'], $data['form_id'])) {
 
         // SQL para insertar o actualizar `protocolo_data`
         $sqlProtocolo = "INSERT INTO protocolo_data (
-            hc_number, form_id, fecha, cirujano_1, instrumentista, cirujano_2, circulante, primer_ayudante, anestesiologo,
+            hc_number, form_id, procedimiento_id, fecha, cirujano_1, instrumentista, cirujano_2, circulante, primer_ayudante, anestesiologo,
             segundo_ayudante, ayudante_anestesia, tercer_ayudante, otros, membrete, dieresis, exposicion, hallazgo, operatorio,
             complicaciones_operatorio, datos_cirugia, fecha_inicio, hora_inicio, fecha_fin, hora_fin, tipo_anestesia, 
             procedimientos, lateralidad, diagnosticos
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE
+                procedimiento_id = VALUES(procedimiento_id),
                 fecha = VALUES(fecha),
                 cirujano_1 = VALUES(cirujano_1),
                 instrumentista = VALUES(instrumentista),
@@ -105,8 +107,8 @@ if (isset($data['hcNumber'], $data['form_id'])) {
 
         $stmtProtocolo = $mysqli->prepare($sqlProtocolo);
         $stmtProtocolo->bind_param(
-            "ssssssssssssssssssssssssssss",
-            $hcNumber, $form_id, $fechaActual, $cirujano_1, $instrumentista, $cirujano_2, $circulante, $primer_ayudante,
+            "sssssssssssssssssssssssssssss",
+            $hcNumber, $form_id, $procedimiento_id, $fechaActual, $cirujano_1, $instrumentista, $cirujano_2, $circulante, $primer_ayudante,
             $anestesiologo, $segundo_ayudante, $ayudante_anestesia, $tercer_ayudante, $otros, $membrete, $dieresis, $exposicion,
             $hallazgo, $operatorio, $complicaciones_operatorio, $datos_cirugia, $fechaInicio, $horaInicio, $fechaFin, $horaFin,
             $tipoAnestesia, $procedimientos, $lateralidad, $diagnosticos

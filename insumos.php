@@ -171,8 +171,16 @@ $fc = rand(110, 130);
 
                 // Iterar sobre las categorías y sus insumos
                 foreach ($insumosArray as $categoria => $insumos) {
+                    $categoria_nombre = $categoria;
+                    if ($categoria == 'equipos') {
+                        $categoria_nombre = 'EQUIPOS ESPECIALES';
+                    } elseif ($categoria == 'anestesia') {
+                        $categoria_nombre = 'INSUMOS Y MEDICAMENTOS DE ANESTESIA';
+                    } elseif ($categoria == 'quirurgicos') {
+                        $categoria_nombre = 'INSUMOS Y MEDICAMENTOS QUIRURGICOS';
+                    }
                     echo "<tr>";
-                    echo "<td class='verde' colspan='2'><b>" . htmlspecialchars($categoria) . "</b></td>";
+                    echo "<td class='verde' colspan='2'><b>" . htmlspecialchars($categoria_nombre) . "</b></td>";
                     echo "</tr>";
 
                     // Iterar sobre los insumos dentro de la categoría
