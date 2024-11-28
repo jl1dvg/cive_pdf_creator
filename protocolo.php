@@ -495,10 +495,12 @@ $diagnosticosPrevios = obtenerDiagnosticosAnteriores($hc_number, $form_id, $mysq
                     echo $cirujano2_data['cedula'];
                 } ?></td>
             <td class='blanco'
-                colspan='5'><?php if (empty($cirujano2_data['firma'])) {
+                colspan='5'><?php if (!empty($cirujano2_data['firma'])) {
+                    echo "<img src='" . htmlspecialchars($cirujano2_data['firma']) . "' alt='Imagen de la firma' style='max-height: 70px;'>";
+                } elseif (empty($cirujano2_data['firma']) && !empty($ayudante_data['firma'])) {
                     echo "<img src='" . htmlspecialchars($ayudante_data['firma']) . "' alt='Imagen de la firma' style='max-height: 70px;'>";
                 } else {
-                    echo "<img src='" . htmlspecialchars($cirujano2_data['firma']) . "' alt='Imagen de la firma' style='max-height: 70px;'>";
+                    echo ' ';
                 } ?></td>
         </tr>
         <tr>

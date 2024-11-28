@@ -107,6 +107,7 @@ if ($form_id && $hc_number) {
         $cirujano2_data = buscarUsuarioPorNombre($assistantSurgeon1, $mysqli);
         $ayudante_data = buscarUsuarioPorNombre($ayudante, $mysqli);
         $anestesiologo_data = buscarUsuarioPorNombre($anestesiologo, $mysqli);
+        $enfermera_data = buscarUsuarioPorNombre('Jeniffer Dayanara Baque Zambrano', $mysqli);
     }
 }
 
@@ -243,9 +244,10 @@ $fc = rand(110, 130);
     <tr>
         <td class="blanco_unbordered" colspan="15">Ojo a operar</td>
         <td class="blanco_unbordered" colspan="2">OD</td>
-        <td class="blanco_unbordered" colspan="2">X</td>
+        <td class="blanco_unbordered" colspan="2"><?php echo ($lateralidad == 'OD') ? 'X' : ''; ?></td>
         <td class="blanco_unbordered" colspan="2">OI</td>
-        <td class="blanco_unbordered" colspan="2" style="border-right: 1px solid #808080;">X</td>
+        <td class="blanco_unbordered" colspan="2"
+            style="border-right: 1px solid #808080;"><?php echo ($lateralidad == 'OI') ? 'X' : ''; ?></td>
         <td class="blanco_unbordered" colspan="23" style="border-right: 1px solid #808080;"></td>
         <td class="blanco_unbordered" colspan="24" rowspan="3">El recuento FINAL de material blanco e<br>instrumental
             quirúrgico
@@ -976,9 +978,9 @@ $fc = rand(110, 130);
         Cuáles:</td>
     </tr>
     <tr>
-        <td class="blanco" colspan="15">JENIFFER BAQUE Z.</td>
-        <td class="blanco" colspan="16">DR. <?php echo $mainSurgeon; ?></td>
-        <td class="blanco" colspan="15">DR. <?php echo $anestesiologo; ?></td>
+        <td class="blanco" colspan="15"><?php echo strtoupper($enfermera_data['nombre']); ?></td>
+        <td class="blanco" colspan="16">MD. <?php echo $mainSurgeon; ?></td>
+        <td class="blanco" colspan="15">MD. <?php echo $anestesiologo; ?></td>
         <td class="blanco_unbordered" colspan="24"></td>
     </tr>
     <tr>
@@ -990,7 +992,9 @@ $fc = rand(110, 130);
         </td>
     </tr>
     <tr>
-        <td class="blanco" colspan="15" rowspan="5"></td>
+        <td class="blanco" colspan="15"
+            rowspan="5"><?php echo "<img src='" . htmlspecialchars($enfermera_data['firma']) . "' alt='Imagen de la firma' style='max-height: 70px;'>";
+            ?></td>
         <td class="blanco" colspan="16"
             rowspan="5"><?php echo "<img src='" . htmlspecialchars($cirujano_data['firma']) . "' alt='Imagen de la firma' style='max-height: 70px;'>";
             ?></td>

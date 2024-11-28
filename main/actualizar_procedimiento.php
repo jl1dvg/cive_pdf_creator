@@ -45,7 +45,7 @@ $primer_ayudante = $_POST['primer_ayudante'] ?? null;
 $segundo_ayudante = $_POST['segundo_ayudante'] ?? null;
 $tercer_ayudante = $_POST['tercer_ayudante'] ?? null;
 $anestesiologo = $_POST['anestesiologo'] ?? null;
-$ayudante_anestesia = $_POST['ayudante_anestesia'] ?? null;
+$ayudante_anestesia = $_POST['ayudanteAnestesia'] ?? null;
 $circulante = $_POST['circulante'] ?? null;
 $instrumentista = $_POST['instrumentista'] ?? null;
 
@@ -65,13 +65,15 @@ $hora_inicio = $_POST['hora_inicio'] ?? null;
 $fecha_fin = $_POST['fecha_fin'] ?? null;
 $hora_fin = $_POST['hora_fin'] ?? null;
 $tipo_anestesia = $_POST['tipo_anestesia'] ?? null;
+$insumos = $_POST['insumos'] ?? null;
 
-// Validaciones adicionales de campos críticos
-if (empty($procedimientos) || empty($diagnosticos)) {
-    file_put_contents('error_log.txt', "Procedimientos o diagnósticos vacíos" . PHP_EOL, FILE_APPEND);
-    echo json_encode(["success" => false, "message" => "Los procedimientos o diagnósticos no pueden estar vacíos."]);
-    exit;
-}
+
+
+// Normalizar el JSON de insumos para evitar problemas de formato
+$insumos = json_encode(json_decode($insumos, true), JSON_UNESCAPED_UNICODE);
+
+// Debug: imprimir el valor normalizado de $insumos
+file_put_contents('debug_normalized_insumos.txt', $insumos . PHP_EOL, FILE_APPEND);
 
 // Definir la consulta SQL
 $sql = "UPDATE protocolo_data pr
@@ -82,20 +84,20 @@ $sql = "UPDATE protocolo_data pr
             pr.cirujano_1 = ?, pr.cirujano_2 = ?, pr.primer_ayudante = ?, pr.segundo_ayudante = ?, pr.tercer_ayudante = ?, 
             pr.anestesiologo = ?, pr.ayudante_anestesia = ?, pr.circulante = ?, pr.instrumentista = ?, 
             pr.membrete = ?, pp.procedimiento_proyectado = ?, pr.dieresis = ?, pr.exposicion = ?, pr.hallazgo = ?, pr.operatorio = ?, 
-            pr.complicaciones_operatorio = ?, pr.datos_cirugia = ?, pr.fecha_inicio = ?, pr.hora_inicio = ?, pr.fecha_fin = ?, pr.hora_fin = ?, pr.tipo_anestesia = ?
+            pr.complicaciones_operatorio = ?, pr.datos_cirugia = ?, pr.fecha_inicio = ?, pr.hora_inicio = ?, pr.fecha_fin = ?, pr.hora_fin = ?, pr.tipo_anestesia = ?, pr.insumos = ?
             WHERE pr.form_id = ? AND p.hc_number = ?";
 
 // Preparar la declaración
 if ($stmt = $mysqli->prepare($sql)) {
-    // Vincular los parámetros (eliminamos los campos de fecha y anestesia que no se envían)
-    $stmt->bind_param('ssssssssssssssssssssssssssssssss',
+    // Vincular los parámetros (añadir `$insumos` a la lista de parámetros)
+    $stmt->bind_param('sssssssssssssssssssssssssssssssss',
         $fname, $mname, $lname, $lname2, $fecha_nacimiento,
         $lateralidad, $procedimientos, $diagnosticos,
         $cirujano_1, $cirujano_2, $primer_ayudante, $segundo_ayudante, $tercer_ayudante,
         $anestesiologo, $ayudante_anestesia, $circulante, $instrumentista,
         $membrete, $procedimiento_proyectado, $dieresis, $exposicion, $hallazgo, $operatorio,
-    $complicaciones_operatorio, $datos_cirugia, $fecha_inicio, $hora_inicio, $fecha_fin, $hora_fin, $tipo_anestesia,
-        $form_id, $hc_number
+        $complicaciones_operatorio, $datos_cirugia, $fecha_inicio, $hora_inicio, $fecha_fin, $hora_fin, $tipo_anestesia,
+        $insumos, $form_id, $hc_number
     );
 
     // Ejecutar la consulta y verificar el resultado
@@ -103,7 +105,9 @@ if ($stmt = $mysqli->prepare($sql)) {
         if ($stmt->affected_rows > 0) {
             echo json_encode(["success" => true, "message" => "Datos actualizados correctamente."]);
         } else {
-            echo json_encode(["success" => false, "message" => "No se realizaron cambios en la base de datos."]);
+            // Registrar en el log si la consulta se ejecutó sin cambios
+            file_put_contents('debug_no_changes.txt', "No se realizaron cambios, insumos: " . $insumos . PHP_EOL, FILE_APPEND);
+            echo json_encode(["success" => true, "message" => "No se realizaron cambios en la base de datos, pero la consulta fue exitosa."]);
         }
     } else {
         // Depuración de errores al ejecutar la consulta

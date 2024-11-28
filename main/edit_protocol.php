@@ -86,7 +86,7 @@ $stmt->close();
                     pr.cirujano_2, pr.circulante, pr.primer_ayudante, pr.anestesiologo, pr.segundo_ayudante, 
                     pr.ayudante_anestesia, pr.tercer_ayudante, pr.membrete, pr.dieresis, pr.exposicion, pr.hallazgo, 
                     pr.operatorio, pr.complicaciones_operatorio, pr.datos_cirugia, pr.procedimientos, pr.lateralidad, 
-                    pr.tipo_anestesia, pr.diagnosticos, pp.procedimiento_proyectado
+                    pr.tipo_anestesia, pr.diagnosticos, pr.insumos, pp.procedimiento_proyectado
                     FROM patient_data p 
                     INNER JOIN protocolo_data pr ON p.hc_number = pr.hc_number
                     LEFT JOIN procedimiento_proyectado pp ON pp.form_id = pr.form_id AND pp.hc_number = pr.hc_number
@@ -246,10 +246,55 @@ $stmt->close();
                                 <div class="row">
                                     <!-- Cirujano Principal -->
                                     <div class="col-md-6">
+                                        <?php
+                                        // Función para obtener y mostrar los datos del select de cirujano
+                                        function generarOpcionesCirujano($conn, $user, $especialidad)
+                                        {
+                                            // Manejar el caso en que $especialidad pueda estar en blanco
+                                            if (!empty($especialidad)) {
+                                                $especialidad = $especialidad;
+                                            } else {
+                                                $especialidad = '%';
+                                            }
+
+                                            $usersSql = "SELECT id, nombre FROM users WHERE especialidad LIKE ? ORDER BY nombre";
+                                            $stmt = $conn->prepare($usersSql);
+                                            if (!$stmt) {
+                                                echo '<option value="">Error al preparar la consulta</option>';
+                                                return;
+                                            }
+                                            $stmt->bind_param("s", $especialidad);
+                                            $stmt->execute();
+                                            $usersResult = $stmt->get_result();
+
+                                            // Verificar si se obtuvieron resultados
+                                            echo '<option value="" disabled selected></option>'; // Añadir opción vacía al inicio
+                                            if ($usersResult->num_rows > 0) {
+                                                // Iterar sobre los resultados para crear las opciones del select
+                                                while ($row = $usersResult->fetch_assoc()) {
+                                                    // Verificar si el valor actual debe ser seleccionado
+                                                    $cirujano_1 = strtoupper($user);
+                                                    $selected = (!empty($user) && $cirujano_1 == strtoupper($row['nombre'])) ? 'selected' : '';
+                                                    // Mostrar el nombre en mayúsculas, sin importar cómo esté en la base de datos
+                                                    echo '<option value="' . htmlspecialchars($row['nombre']) . '" ' . $selected . '>' . strtoupper(htmlspecialchars($row['nombre'])) . '</option>';
+                                                }
+                                            } else {
+                                                // Si no hay resultados, mostrar una opción de "No disponible"
+                                                echo '<option value="">No disponible</option>';
+                                            }
+                                        }
+
+                                        // Comienza el HTML
+                                        ?>
                                         <div class="form-group">
                                             <label for="mainSurgeon" class="form-label">Cirujano Principal :</label>
-                                            <input type="text" class="form-control" id="mainSurgeon" name="cirujano_1"
-                                                   value="<?php echo htmlspecialchars($data['cirujano_1']); ?>">
+                                            <select class="form-select" id="mainSurgeon" name="cirujano_1"
+                                                    data-placeholder="Escoja el Cirujano Principal">
+                                                <?php
+                                                // Llamar a la función para generar las opciones del select
+                                                generarOpcionesCirujano($mysqli, $data['cirujano_1'], 'Cirujano Oftalmólogo');
+                                                ?>
+                                            </select>
                                         </div>
                                     </div>
                                     <!-- Cirujano Asistente -->
@@ -257,9 +302,10 @@ $stmt->close();
                                         <div class="form-group">
                                             <label for="assistantSurgeon" class="form-label">Cirujano Asistente
                                                 :</label>
-                                            <input type="text" class="form-control" id="assistantSurgeon"
-                                                   name="cirujano_2"
-                                                   value="<?php echo htmlspecialchars($data['cirujano_2']); ?>">
+                                            <select class="form-select" id="assistantSurgeon" name="cirujano_2"
+                                                    data-placeholder="Escoja el Cirujano 2">
+                                                <?php generarOpcionesCirujano($mysqli, $data['cirujano_2'], 'Cirujano Oftalmólogo'); ?>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -269,18 +315,18 @@ $stmt->close();
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="primerAyudante" class="form-label">Primer Ayudante :</label>
-                                            <input type="text" class="form-control" id="primerAyudante"
-                                                   name="primer_ayudante"
-                                                   value="<?php echo htmlspecialchars($data['primer_ayudante']); ?>">
+                                            <select class="form-select" id="primerAyudante" name="primer_ayudante">
+                                                <?php echo generarOpcionesCirujano($mysqli, $data['primer_ayudante'], 'Cirujano Oftalmólogo'); ?>
+                                            </select>
                                         </div>
                                     </div>
                                     <!-- Segundo Ayudante -->
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="segundoAyudante" class="form-label">Segundo Ayudante :</label>
-                                            <input type="text" class="form-control" id="segundoAyudante"
-                                                   name="segundo_ayudante"
-                                                   value="<?php echo htmlspecialchars($data['segundo_ayudante']); ?>">
+                                            <select class="form-select" id="segundoAyudante" name="segundo_ayudante">
+                                                <?php echo generarOpcionesCirujano($mysqli, $data['segundo_ayudante'], 'Cirujano Oftalmólogo'); ?>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -290,9 +336,9 @@ $stmt->close();
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="tercerAyudante" class="form-label">Tercer Ayudante :</label>
-                                            <input type="text" class="form-control" id="tercerAyudante"
-                                                   name="tercer_ayudante"
-                                                   value="<?php echo htmlspecialchars($data['tercer_ayudante']); ?>">
+                                            <select class="form-select" id="tercerAyudante" name="tercer_ayudante">
+                                                <?php echo generarOpcionesCirujano($mysqli, $data['tercer_ayudante'], 'Cirujano Oftalmólogo'); ?>
+                                            </select>
                                         </div>
                                     </div>
                                     <!-- Ayudante de Anestesia -->
@@ -300,9 +346,9 @@ $stmt->close();
                                         <div class="form-group">
                                             <label for="ayudanteAnestesia" class="form-label">Ayudante de Anestesia
                                                 :</label>
-                                            <input type="text" class="form-control" id="ayudanteAnestesia"
-                                                   name="ayudante_anestesia"
-                                                   value="<?php echo htmlspecialchars($data['ayudante_anestesia']); ?>">
+                                            <select class="form-select" id="ayudanteAnestesia" name="ayudanteAnestesia">
+                                                <?php echo generarOpcionesCirujano($mysqli, $data['ayudante_anestesia'], 'Asistente'); ?>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -312,18 +358,20 @@ $stmt->close();
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="anesthesiologist" class="form-label">Anestesiólogo :</label>
-                                            <input type="text" class="form-control" id="anesthesiologist"
-                                                   name="anestesiologo"
-                                                   value="<?php echo htmlspecialchars($data['anestesiologo']); ?>">
+                                            <select class="form-select" id="anesthesiologist"
+                                                    name="anestesiologo"
+                                                    data-placeholder="Escoja el anestesiologo">
+                                                <?php generarOpcionesCirujano($mysqli, $data['anestesiologo'], 'Anestesiologo'); ?>
+                                            </select>
                                         </div>
                                     </div>
                                     <!-- Instrumentista -->
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="instrumentista" class="form-label">Instrumentista :</label>
-                                            <input type="text" class="form-control" id="instrumentista"
-                                                   name="instrumentista"
-                                                   value="<?php echo htmlspecialchars($data['instrumentista']); ?>">
+                                            <select class="form-select" id="instrumentista" name="instrumentista">
+                                                <?php echo generarOpcionesCirujano($mysqli, $data['instrumentista'], 'Asistente'); ?>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -333,8 +381,9 @@ $stmt->close();
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="circulante" class="form-label">Enfermera Circulante :</label>
-                                            <input type="text" class="form-control" id="circulante" name="circulante"
-                                                   value="<?php echo htmlspecialchars($data['circulante']); ?>">
+                                            <select class="form-select" id="circulante" name="circulante">
+                                                <?php echo generarOpcionesCirujano($mysqli, $data['circulante'], 'Asistente'); ?>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -439,6 +488,86 @@ $stmt->close();
                                     <label for="datos_cirugia" class="form-label">Detalles de la Cirugía :</label>
                                     <textarea name="datos_cirugia" id="datos_cirugia" rows="5"
                                               class="form-control"><?php echo htmlspecialchars($data['datos_cirugia']); ?></textarea>
+                                </div>
+                            </section>
+
+                            <!-- Sección 5: Insumos -->
+                            <h6>Insumos</h6>
+                            <section>
+                                <!-- Procedimiento Proyectado -->
+                                <?php
+                                // Obtener las categorías y los insumos de la tabla `insumos`
+                                $sqlCategorias = "SELECT DISTINCT categoria FROM insumos order by categoria";
+                                $resultCategorias = $mysqli->query($sqlCategorias);
+                                $categorias = [];
+                                while ($row = $resultCategorias->fetch_assoc()) {
+                                    $categorias[] = $row['categoria'];
+                                }
+
+                                $sqlInsumos = "SELECT nombre, categoria FROM insumos order by nombre";
+                                $resultInsumos = $mysqli->query($sqlInsumos);
+                                $insumosDisponibles = [];
+                                while ($row = $resultInsumos->fetch_assoc()) {
+                                    $insumosDisponibles[$row['categoria']][] = $row['nombre'];
+                                }
+
+                                // Obtener los insumos del JSON desde la tabla `insumos_pack` (ajusta según tu esquema)
+                                $procedimiento_id = 'avastin'; // Ejemplo de ID
+                                $sql = "SELECT insumos FROM insumos_pack WHERE procedimiento_id = ?";
+                                $stmt = $mysqli->prepare($sql);
+                                $stmt->bind_param('s', $procedimiento_id);
+                                $stmt->execute();
+                                $result = $stmt->get_result();
+                                $row = $result->fetch_assoc();
+
+                                // Decodificar el JSON
+                                $insumos = isset($data['insumos']) && !empty($data['insumos']) ? json_decode($data['insumos'], true) : json_decode($row['insumos'], true);
+                                ?>
+
+                                <!-- Tabla HTML -->
+                                <div class="table-responsive">
+                                    <table id="insumosTable" class="table editable-table mb-0">
+                                        <thead>
+                                        <tr>
+                                            <th>Categoría</th>
+                                            <th>Nombre del Insumo</th>
+                                            <th>Cantidad</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <?php
+                                        // Iterar sobre las categorías del JSON y agregar filas a la tabla
+                                        foreach ($insumos as $categoria => $items) {
+                                            foreach ($items as $item) {
+                                                echo '<tr>';
+                                                echo '<td><select class="form-control categoria-select" name="categoria">';
+                                                foreach ($categorias as $cat) {
+                                                    $selected = ($cat == $categoria) ? 'selected' : '';
+                                                    echo '<option value="' . htmlspecialchars($cat) . '" ' . $selected . '>' . htmlspecialchars(str_replace('_', ' ', $cat)) . '</option>';
+                                                }
+                                                echo '</select></td>';
+                                                echo '<td><select class="form-control nombre-select" name="nombre">';
+                                                if (isset($insumosDisponibles[$categoria])) {
+                                                    foreach ($insumosDisponibles[$categoria] as $nombre) {
+                                                        $selected = ($nombre == $item['nombre']) ? 'selected' : '';
+                                                        echo '<option value="' . htmlspecialchars($nombre) . '" ' . $selected . '>' . htmlspecialchars($nombre) . '</option>';
+                                                    }
+                                                } else {
+                                                    echo '<option value="">Seleccione una categoría primero</option>';
+                                                }
+                                                echo '</select></td>';
+                                                echo '<td contenteditable="true">' . htmlspecialchars($item['cantidad']) . '</td>';
+                                                echo '<td><button class="delete-btn btn btn-danger"><i class="fa fa-minus"></i></button> <button class="add-row-btn btn btn-success"><i class="fa fa-plus"></i></button></td>';
+                                                echo '</tr>';
+                                            }
+                                        }
+                                        ?>
+                                        </tbody>
+                                    </table>
+                                    <!-- Campo oculto para almacenar los insumos como JSON -->
+                                    <input type="hidden" id="insumosInput" name="insumos"
+                                           value='<?= htmlspecialchars(json_encode($insumos)) ?>'>
                                 </div>
                             </section>
                         </form>
@@ -725,123 +854,6 @@ $stmt->close();
 </div>
 <!-- ./wrapper -->
 
-<!-- Sidebar -->
-
-<div id="chat-box-body">
-    <div id="chat-circle" class="waves-effect waves-circle btn btn-circle btn-sm btn-warning l-h-50">
-        <div id="chat-overlay"></div>
-        <span class="icon-Group-chat fs-18"><span class="path1"></span><span class="path2"></span></span>
-    </div>
-
-    <div class="chat-box">
-        <div class="chat-box-header p-15 d-flex justify-content-between align-items-center">
-            <div class="btn-group">
-                <button class="waves-effect waves-circle btn btn-circle btn-primary-light h-40 w-40 rounded-circle l-h-45"
-                        type="button" data-bs-toggle="dropdown">
-                    <span class="icon-Add-user fs-22"><span class="path1"></span><span class="path2"></span></span>
-                </button>
-                <div class="dropdown-menu min-w-200">
-                    <a class="dropdown-item fs-16" href="#">
-                        <span class="icon-Color me-15"></span>
-                        New Group</a>
-                    <a class="dropdown-item fs-16" href="#">
-                        <span class="icon-Clipboard me-15"><span class="path1"></span><span class="path2"></span><span
-                                    class="path3"></span><span class="path4"></span></span>
-                        Contacts</a>
-                    <a class="dropdown-item fs-16" href="#">
-                        <span class="icon-Group me-15"><span class="path1"></span><span class="path2"></span></span>
-                        Groups</a>
-                    <a class="dropdown-item fs-16" href="#">
-                        <span class="icon-Active-call me-15"><span class="path1"></span><span
-                                    class="path2"></span></span>
-                        Calls</a>
-                    <a class="dropdown-item fs-16" href="#">
-                        <span class="icon-Settings1 me-15"><span class="path1"></span><span class="path2"></span></span>
-                        Settings</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item fs-16" href="#">
-                        <span class="icon-Question-circle me-15"><span class="path1"></span><span class="path2"></span></span>
-                        Help</a>
-                    <a class="dropdown-item fs-16" href="#">
-                        <span class="icon-Notifications me-15"><span class="path1"></span><span
-                                    class="path2"></span></span>
-                        Privacy</a>
-                </div>
-            </div>
-            <div class="text-center flex-grow-1">
-                <div class="text-dark fs-18">Mayra Sibley</div>
-                <div>
-                    <span class="badge badge-sm badge-dot badge-primary"></span>
-                    <span class="text-muted fs-12">Active</span>
-                </div>
-            </div>
-            <div class="chat-box-toggle">
-                <button id="chat-box-toggle"
-                        class="waves-effect waves-circle btn btn-circle btn-danger-light h-40 w-40 rounded-circle l-h-45"
-                        type="button">
-                    <span class="icon-Close fs-22"><span class="path1"></span><span class="path2"></span></span>
-                </button>
-            </div>
-        </div>
-        <div class="chat-box-body">
-            <div class="chat-box-overlay">
-            </div>
-            <div class="chat-logs">
-                <div class="chat-msg user">
-                    <div class="d-flex align-items-center">
-                            <span class="msg-avatar">
-                                <img src="../images/avatar/2.jpg" class="avatar avatar-lg">
-                            </span>
-                        <div class="mx-10">
-                            <a href="#" class="text-dark hover-primary fw-bold">Mayra Sibley</a>
-                            <p class="text-muted fs-12 mb-0">2 Hours</p>
-                        </div>
-                    </div>
-                    <div class="cm-msg-text">
-                        Hi there, I'm Jesse and you?
-                    </div>
-                </div>
-                <div class="chat-msg self">
-                    <div class="d-flex align-items-center justify-content-end">
-                        <div class="mx-10">
-                            <a href="#" class="text-dark hover-primary fw-bold">You</a>
-                            <p class="text-muted fs-12 mb-0">3 minutes</p>
-                        </div>
-                        <span class="msg-avatar">
-                                <img src="../images/avatar/3.jpg" class="avatar avatar-lg">
-                            </span>
-                    </div>
-                    <div class="cm-msg-text">
-                        My name is Anne Clarc.
-                    </div>
-                </div>
-                <div class="chat-msg user">
-                    <div class="d-flex align-items-center">
-                            <span class="msg-avatar">
-                                <img src="../images/avatar/2.jpg" class="avatar avatar-lg">
-                            </span>
-                        <div class="mx-10">
-                            <a href="#" class="text-dark hover-primary fw-bold">Mayra Sibley</a>
-                            <p class="text-muted fs-12 mb-0">40 seconds</p>
-                        </div>
-                    </div>
-                    <div class="cm-msg-text">
-                        Nice to meet you Anne.<br>How can i help you?
-                    </div>
-                </div>
-            </div><!--chat-log -->
-        </div>
-        <div class="chat-input">
-            <form>
-                <input type="text" id="chat-input" placeholder="Send a message..."/>
-                <button type="submit" class="chat-submit" id="chat-submit">
-                    <span class="icon-Send fs-22"></span>
-                </button>
-            </form>
-        </div>
-    </div>
-</div>
-
 <!-- Page Content overlay -->
 
 
@@ -852,6 +864,9 @@ $stmt->close();
 <script src="../assets/vendor_components/jquery-steps-master/build/jquery.steps.js"></script>
 <script src="../assets/vendor_components/jquery-validation-1.17.0/dist/jquery.validate.min.js"></script>
 <script src="../assets/vendor_components/sweetalert/sweetalert.min.js"></script>
+<script src="../assets/vendor_components/datatable/datatables.min.js"></script>
+<script src="../assets/vendor_components/tiny-editable/mindmup-editabletable.js"></script>
+<script src="../assets/vendor_components/tiny-editable/numeric-input-example.js"></script>
 
 <!-- Doclinic App -->
 <script src="js/jquery.smartmenus.js"></script>
@@ -859,7 +874,96 @@ $stmt->close();
 <script src="js/template.js"></script>
 
 <script src="js/pages/steps.js?v=<?php echo time(); ?>"></script>
+<script>
+    $(function () {
+        "use strict";
 
+        // Inicializar DataTable
+        var table = $('#insumosTable').DataTable({
+            "paging": false // Desactivar la paginación
+        });
+
+        // Hacer la tabla editable (editableTableWidget)
+        $('#insumosTable').editableTableWidget();
+
+        // Agregar evento para eliminar filas
+        $('#insumosTable').on('click', '.delete-btn', function () {
+            table.row($(this).parents('tr')).remove().draw();
+            actualizarInsumos();
+        });
+
+        // Evento para agregar una nueva fila debajo de la actual
+        $('#insumosTable').on('click', '.add-row-btn', function (event) {
+            event.preventDefault(); // Prevenir el envío del formulario
+            console.log("Botón de agregar fila fue presionado");
+            var categoriaOptions = '<?php foreach ($categorias as $cat) {
+                echo "<option value=\"" . htmlspecialchars($cat) . "\">" . htmlspecialchars(str_replace("_", " ", $cat)) . "</option>";
+            } ?>';
+            var newData = [
+                '<select class="form-control categoria-select" name="categoria">' + categoriaOptions + '</select>', // Categoría por defecto
+                '<select class="form-control nombre-select" name="nombre" data-nombre=""><option value="">Seleccione una categoría primero</option></select>',  // Nombre por defecto
+                '1',             // Cantidad por defecto
+                '<button class="delete-btn btn btn-danger"><i class="fa fa-minus"></i></button> <button class="add-row-btn btn btn-success"><i class="fa fa-plus"></i></button>'
+            ];
+            var currentRow = $(this).parents('tr');
+            var rowIndex = table.row(currentRow).index();
+            table.row.add(newData).draw(false); // Agregar la nueva fila debajo de la actual
+            var newRow = table.row(rowIndex + 1).nodes().to$();
+            newRow.insertAfter(currentRow);
+            console.log("Nueva fila agregada: ", newData);
+            actualizarInsumos();
+        });
+
+        // Actualizar los insumos disponibles según la categoría seleccionada
+        var insumosDisponibles = <?php echo json_encode($insumosDisponibles); ?>;
+        $('#insumosTable').on('change', '.categoria-select', function () {
+            var categoriaSeleccionada = $(this).val();
+            var nombreSelect = $(this).closest('tr').find('.nombre-select');
+            nombreSelect.empty();
+            if (categoriaSeleccionada && insumosDisponibles[categoriaSeleccionada]) {
+                $.each(insumosDisponibles[categoriaSeleccionada], function (index, value) {
+                    nombreSelect.append('<option value="' + value + '">' + value + '</option>');
+                });
+                // Seleccionar el valor correspondiente del insumo si ya existe
+                var nombreActual = nombreSelect.data('nombre');
+                if (nombreActual) {
+                    nombreSelect.val(nombreActual);
+                }
+            } else {
+                nombreSelect.append('<option value="">Seleccione una categoría primero</option>');
+            }
+        }).trigger('change');
+
+        // Actualizar el campo oculto con el JSON de los insumos
+        function actualizarInsumos() {
+            var insumosObject = {
+                equipos: [],
+                anestesia: [],
+                quirurgicos: []
+            };
+            $('#insumosTable tbody tr').each(function () {
+                var categoria = $(this).find('select[name="categoria"]').val().toLowerCase();
+                var nombre = $(this).find('select[name="nombre"]').val();
+                var cantidad = $(this).find('td:eq(2)').text();
+
+                if (categoria && nombre && cantidad) {
+                    insumosObject[categoria].push({
+                        nombre: nombre,
+                        cantidad: parseInt(cantidad)
+                    });
+                }
+            });
+            var jsonInsumos = JSON.stringify(insumosObject);
+            $('#insumosInput').val(jsonInsumos);
+            console.log("Actualizado JSON insumos: ", jsonInsumos); // Depurar el valor actualizado
+        }
+
+        // Asegurarse de que se actualicen los insumos al editar la tabla
+        $('#insumosTable').on('change', 'td', function () {
+            actualizarInsumos();
+        });
+    });
+</script>
 
 </body>
 </html>
