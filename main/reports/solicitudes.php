@@ -78,7 +78,7 @@ $stmt->close();
             sp.id,
             sp.hc_number, 
             sp.form_id,
-            CONCAT(pd.fname, ' ', pd.lname, ' ', pd.lname2) AS full_name, 
+            CONCAT(pd.fname, ' ', pd.mname, ' ', pd.lname, ' ', pd.lname2) AS full_name, 
             sp.tipo,
             pd.afiliacion,
             sp.procedimiento,
@@ -139,18 +139,6 @@ $stmt->close();
                                                 $nombre_paciente = ucwords(strtolower($row['full_name']));
                                                 $doctor = ucwords(strtolower($row['doctor']));
 
-                                                // Procesar diagnósticos
-                                                $diagnosticos_string = [];
-                                                if (!empty($row['diagnosticos'])) {
-                                                    $diagnosticos = json_decode($row['diagnosticos'], true);
-                                                    if (is_array($diagnosticos)) {
-                                                        foreach ($diagnosticos as $diagnostico) {
-                                                            $diagnosticos_string[] = htmlspecialchars($diagnostico['idDiagnostico']) . ' (' . htmlspecialchars($diagnostico['ojo']) . ')';
-                                                        }
-                                                    }
-                                                }
-                                                $diagnosticos_formateados = implode(', ', $diagnosticos_string);
-
                                                 // Calcular días restantes para fecha de caducidad
                                                 $badgeClass = "badge-success-light";
                                                 $dias_restantes = "N/A";
@@ -188,13 +176,10 @@ $stmt->close();
                                                     echo "<div class='btn-group'>";
                                                     echo "<a class='hover-primary dropdown-toggle no-caret' data-bs-toggle='dropdown'><i class='fa fa-ellipsis-h'></i></a>";
                                                     echo "<div class='dropdown-menu'>";
-                                                    echo "<a class='dropdown-item' href='solicitud_quirurgica/solicitud_qx_pdf.php?hc_number=" . urlencode($row['hc_number']) . "&form_id=" . urlencode($row['form_id']) . "' target='_blank'>Generar PDF</a>";
+                                                    echo "<a class='dropdown-item' href='solicitud_quirurgica/solicitud_qx_pdf.php?hc_number=" . urlencode($row['hc_number']) . "' target='_blank'>Generar PDF</a>";
                                                     echo "<a class='dropdown-item' href='#'>View Details</a>";
                                                     echo "<a class='dropdown-item' href='#'>Edit</a>";
                                                     echo "<a class='dropdown-item' href='#'>Delete</a>";
-                                                    echo "<div class='dropdown-divider'></div>";
-                                                    echo "<a class='dropdown-item text-muted' href='#'>Diagnósticos: " . htmlspecialchars($diagnosticos_formateados) . "</a>";
-                                                    echo "<a class='dropdown-item text-muted' href='#'>Observación: " . htmlspecialchars($row['observacion']) . "</a>";
                                                     echo "</div>";
                                                     echo "</div>";
                                                     echo "</td>";
@@ -208,6 +193,7 @@ $stmt->close();
                                         </tbody>
                                     </table>
                                 </div>
+                                <button id="exportExcel" class="btn btn-primary mt-3">Exportar a Excel</button>
                             </div>
                         </div>
                     </div>
@@ -218,114 +204,6 @@ $stmt->close();
     </div>
     <!-- /.content-wrapper -->
 
-    <!--Model Popup Area-->
-    <!-- result modal content -->
-    <div class="modal fade" id="resultModal">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="result-popup">Resultados</h4>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row justify-content-between">
-                        <div class="col-md-7 col-12">
-                            <h4 id="test-name">Diagnóstico</h4>
-                        </div>
-                        <div class="col-md-5 col-12">
-                            <h4 class="text-end" id="lab-order-id">Orden ID</h4>
-                        </div>
-                    </div>
-                    <!-- Nueva tabla para Diagnósticos -->
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <thead class="bg-secondary">
-                            <tr>
-                                <th scope="col">CIE10</th>
-                                <th scope="col">Detalle</th>
-                            </tr>
-                            </thead>
-                            <tbody id="diagnostico-table">
-                            <!-- Se llenará dinámicamente -->
-                            </tbody>
-                        </table>
-                    </div>
-                    <!-- Nueva tabla para Procedimientos -->
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <thead class="bg-secondary">
-                            <tr>
-                                <th scope="col">Código</th>
-                                <th scope="col">Nombre del Procedimiento</th>
-                            </tr>
-                            </thead>
-                            <tbody id="procedimientos-table">
-                            <!-- Se llenará dinámicamente -->
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Nueva tabla para mostrar fecha de inicio, hora de inicio, hora de fin, y duración -->
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <thead class="bg-secondary">
-                            <tr>
-                                <th>Fecha de Inicio</th>
-                                <th>Hora de Inicio</th>
-                                <th>Hora de Fin</th>
-                                <th>Duración</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr id="timing-row">
-                                <!-- Se llenará dinámicamente con 4 <td> -->
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <thead class="bg-secondary">
-                            <tr>
-                                <th scope="col" colspan="2">Procedimiento</th>
-                            </tr>
-                            </thead>
-                            <tbody id="result-table">
-                            <!-- Se llenará dinámicamente -->
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <thead class="bg-secondary">
-                            <tr>
-                                <th scope="col" colspan="2">Staff Quirúrgico</th>
-                            </tr>
-                            </thead>
-                            <tbody id="staff-table">
-                            <!-- Se llenará dinámicamente -->
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="comment">
-                        <p><span class="fw-600">Comentario</span> : <span class="comment-here text-mute"></span></p>
-                    </div>
-                    <!-- Agregar checkbox para marcar como revisado -->
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="markAsReviewed">
-                        <label class="form-check-label" for="markAsReviewed">Marcar como revisado</label>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger pull-right" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-info pull-right">Imprimir</button>
-                    <button type="button" class="btn btn-success pull-right" onclick="updateProtocolStatus()">Guardar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
     <!-- /.modal-dialog -->
 </div>
 <!-- /.modal -->
@@ -635,354 +513,17 @@ $stmt->close();
 
 <!-- Sidebar -->
 
-<div id="chat-box-body">
-    <div id="chat-circle" class="waves-effect waves-circle btn btn-circle btn-sm btn-warning l-h-50">
-        <div id="chat-overlay"></div>
-        <span class="icon-Group-chat fs-18"><span class="path1"></span><span class="path2"></span></span>
-    </div>
-
-    <div class="chat-box">
-        <div class="chat-box-header p-15 d-flex justify-content-between align-items-center">
-            <div class="btn-group">
-                <button class="waves-effect waves-circle btn btn-circle btn-primary-light h-40 w-40 rounded-circle l-h-45"
-                        type="button" data-bs-toggle="dropdown">
-                    <span class="icon-Add-user fs-22"><span class="path1"></span><span class="path2"></span></span>
-                </button>
-                <div class="dropdown-menu min-w-200">
-                    <a class="dropdown-item fs-16" href="#">
-                        <span class="icon-Color me-15"></span>
-                        New Group</a>
-                    <a class="dropdown-item fs-16" href="#">
-                        <span class="icon-Clipboard me-15"><span class="path1"></span><span class="path2"></span><span
-                                    class="path3"></span><span class="path4"></span></span>
-                        Contacts</a>
-                    <a class="dropdown-item fs-16" href="#">
-                        <span class="icon-Group me-15"><span class="path1"></span><span class="path2"></span></span>
-                        Groups</a>
-                    <a class="dropdown-item fs-16" href="#">
-                        <span class="icon-Active-call me-15"><span class="path1"></span><span
-                                    class="path2"></span></span>
-                        Calls</a>
-                    <a class="dropdown-item fs-16" href="#">
-                        <span class="icon-Settings1 me-15"><span class="path1"></span><span class="path2"></span></span>
-                        Settings</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item fs-16" href="#">
-                        <span class="icon-Question-circle me-15"><span class="path1"></span><span class="path2"></span></span>
-                        Help</a>
-                    <a class="dropdown-item fs-16" href="#">
-                        <span class="icon-Notifications me-15"><span class="path1"></span><span
-                                    class="path2"></span></span>
-                        Privacy</a>
-                </div>
-            </div>
-            <div class="text-center flex-grow-1">
-                <div class="text-dark fs-18">Mayra Sibley</div>
-                <div>
-                    <span class="badge badge-sm badge-dot badge-primary"></span>
-                    <span class="text-muted fs-12">Active</span>
-                </div>
-            </div>
-            <div class="chat-box-toggle">
-                <button id="chat-box-toggle"
-                        class="waves-effect waves-circle btn btn-circle btn-danger-light h-40 w-40 rounded-circle l-h-45"
-                        type="button">
-                    <span class="icon-Close fs-22"><span class="path1"></span><span class="path2"></span></span>
-                </button>
-            </div>
-        </div>
-        <div class="chat-box-body">
-            <div class="chat-box-overlay">
-            </div>
-            <div class="chat-logs">
-                <div class="chat-msg user">
-                    <div class="d-flex align-items-center">
-                            <span class="msg-avatar">
-                                <img src="../../images/avatar/2.jpg" class="avatar avatar-lg">
-                            </span>
-                        <div class="mx-10">
-                            <a href="#" class="text-dark hover-primary fw-bold">Mayra Sibley</a>
-                            <p class="text-muted fs-12 mb-0">2 Hours</p>
-                        </div>
-                    </div>
-                    <div class="cm-msg-text">
-                        Hi there, I'm Jesse and you?
-                    </div>
-                </div>
-                <div class="chat-msg self">
-                    <div class="d-flex align-items-center justify-content-end">
-                        <div class="mx-10">
-                            <a href="#" class="text-dark hover-primary fw-bold">You</a>
-                            <p class="text-muted fs-12 mb-0">3 minutes</p>
-                        </div>
-                        <span class="msg-avatar">
-                                <img src="../../images/avatar/3.jpg" class="avatar avatar-lg">
-                            </span>
-                    </div>
-                    <div class="cm-msg-text">
-                        My name is Anne Clarc.
-                    </div>
-                </div>
-                <div class="chat-msg user">
-                    <div class="d-flex align-items-center">
-                            <span class="msg-avatar">
-                                <img src="../../images/avatar/2.jpg" class="avatar avatar-lg">
-                            </span>
-                        <div class="mx-10">
-                            <a href="#" class="text-dark hover-primary fw-bold">Mayra Sibley</a>
-                            <p class="text-muted fs-12 mb-0">40 seconds</p>
-                        </div>
-                    </div>
-                    <div class="cm-msg-text">
-                        Nice to meet you Anne.<br>How can i help you?
-                    </div>
-                </div>
-            </div><!--chat-log -->
-        </div>
-        <div class="chat-input">
-            <form>
-                <input type="text" id="chat-input" placeholder="Send a message..."/>
-                <button type="submit" class="chat-submit" id="chat-submit">
-                    <span class="icon-Send fs-22"></span>
-                </button>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Page Content overlay -->
-<script>
-    function togglePrintStatus(form_id, hc_number, button, currentStatus) {
-        // Verificar si el botón está activo
-        var isActive = button.classList.contains('active');
-        var newStatus = isActive ? 1 : 0;  // Si el botón está activo (on), el nuevo estado será 0 (off); si no, será 1 (on)
-
-        // Cambiar visualmente el estado del botón
-        if (isActive) {
-            button.classList.add('active');
-            button.setAttribute('aria-pressed', 'true');
-        } else {
-            button.classList.remove('active');
-            button.setAttribute('aria-pressed', 'false');
-        }
-
-        // Realizar la petición AJAX para actualizar el estado en la base de datos
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', 'update_print_status.php', true);
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr.send('form_id=' + form_id + '&hc_number=' + hc_number + '&printed=' + newStatus);
-
-        xhr.onload = function () {
-            if (xhr.status === 200 && xhr.responseText === 'success') {
-                console.log('Estado actualizado en la base de datos');
-
-                // Solo si el nuevo estado es "on" (printed = 1), generamos el PDF
-                if (newStatus === 1) {
-                    window.open('../../generate_pdf.php?form_id=' + form_id + '&hc_number=' + hc_number, '_blank');
-                }
-            } else {
-                console.log('Error al actualizar el estado');
-            }
-        };
-    }
-
-    let currentFormId;  // Variable para almacenar el form_id actual
-    let currentHcNumber;  // Variable para almacenar el hc_number actual
-    function loadResult(rowData) {
-        // Guardar form_id y hc_number para uso posterior
-        currentFormId = rowData.form_id;
-        currentHcNumber = rowData.hc_number;
-
-        // Actualizar el contenido del modal con los datos de la fila seleccionada
-        document.getElementById('result-popup').innerHTML = "QX realizada - " + rowData.membrete;
-        document.getElementById('lab-order-id').innerHTML = "Protocolo: " + rowData.form_id;
-
-        // Marcar o desmarcar el checkbox basado en el estado del protocolo (status)
-        const markAsReviewedCheckbox = document.getElementById('markAsReviewed');
-        markAsReviewedCheckbox.checked = rowData.status == 1 ? true : false;  // Si el estado es 1, marcar el checkbox
-
-        // Procesar los diagnósticos
-        let diagnosticoData = JSON.parse(rowData.diagnosticos);  // Asegurarse de que esté en formato JSON
-        let diagnosticoTable = '';
-
-        diagnosticoData.forEach(diagnostico => {
-            let cie10 = '';
-            let detalle = '';
-
-            // Dividir el campo idDiagnostico en código y detalle
-            if (diagnostico.idDiagnostico) {
-                const parts = diagnostico.idDiagnostico.split(' - ', 2);  // Separar por " - "
-                cie10 = parts[0];  // CIE10 Code
-                detalle = parts[1];  // Detail
-            }
-
-            // Agregar una fila a la tabla
-            diagnosticoTable += `
-                <tr>
-                    <td>${cie10}</td>
-                    <td>${detalle}</td>
-                </tr>
-            `;
-        });
-
-        // Insertar la tabla de diagnóstico en el modal
-        document.getElementById('diagnostico-table').innerHTML = diagnosticoTable;
-
-        // Procesar los procedimientos
-        let procedimientoData = JSON.parse(rowData.procedimientos);  // Convertir a JSON
-        let procedimientoTable = '';
-
-        procedimientoData.forEach(procedimiento => {
-            let codigo = '';
-            let nombre = '';
-
-            // Dividir el campo procInterno en código y nombre
-            if (procedimiento.procInterno) {
-                const parts = procedimiento.procInterno.split(' - ', 3);  // Separar por " - "
-                codigo = parts[1];  // Código del procedimiento
-                nombre = parts[2];  // Nombre del procedimiento
-            }
-
-            // Agregar una fila a la tabla de procedimientos
-            procedimientoTable += `
-                <tr>
-                    <td>${codigo}</td>
-                    <td>${nombre}</td>
-                </tr>
-            `;
-        });
-
-        // Insertar la tabla de procedimientos en el modal
-        document.getElementById('procedimientos-table').innerHTML = procedimientoTable;
-
-
-        // Llenar otras tablas como antes (resultados, tiempos, staff, etc.)
-        document.getElementById('result-table').innerHTML = `
-                <tr>
-                    <td>Dieresis</td>
-                <td>${rowData.dieresis}</td>
-            </tr>
-                <tr>
-                    <td>Exposición</td>
-                <td>${rowData.exposicion}</td>
-            </tr>
-                <tr>
-                    <td>Hallazgo</td>
-                <td>${rowData.hallazgo}</td>
-            </tr>
-                <tr>
-                    <td>Operatorio</td>
-                <td>${rowData.operatorio}</td>
-            </tr>
-            `;
-
-        // Calcular la duración entre hora_inicio y hora_fin
-        let horaInicio = new Date('1970-01-01T' + rowData.hora_inicio + 'Z');
-        let horaFin = new Date('1970-01-01T' + rowData.hora_fin + 'Z');
-        let diff = new Date(horaFin - horaInicio);  // Diferencia de tiempo
-
-        let duration = `${diff.getUTCHours().toString().padStart(2, '0')}:${diff.getUTCMinutes().toString().padStart(2, '0')}`;
-
-        // Actualizar la fila con la fecha de inicio, hora de inicio, hora de fin y duración
-        document.getElementById('timing-row').innerHTML = `
-            <td>${rowData.fecha_inicio}</td>
-            <td>${rowData.hora_inicio}</td>
-            <td>${rowData.hora_fin}</td>
-            <td>${duration}</td>
-        `;
-
-        // Inicializar el staffTable vacía
-        let staffTable = '';
-
-        // Campos del staff que queremos mostrar si no están vacíos
-        const staffFields = {
-            'Cirujano Principal': rowData.cirujano_1,
-            'Instrumentista': rowData.instrumentista,
-            'Cirujano Asistente': rowData.cirujano_2,
-            'Circulante': rowData.circulante,
-            'Primer Ayudante': rowData.primer_ayudante,
-            'Anestesiólogo': rowData.anestesiologo,
-            'Segundo Ayudante': rowData.segundo_ayudante,
-            'Ayudante de Anestesia': rowData.ayudante_anestesia,
-            'Tercer Ayudante': rowData.tercer_ayudante
-        };
-
-        // Iterar sobre los campos del staff y añadir solo los que no están vacíos
-        for (const [label, value] of Object.entries(staffFields)) {
-            if (value && value.trim() !== '') {
-                staffTable += `
-                    <tr>
-                        <td>${label}</td>
-                        <td>${value}</td>
-                    </tr>
-                `;
-            }
-        }
-
-        // Agregar el contenido del staff al modal
-        document.getElementById('staff-table').innerHTML = staffTable;
-
-        // Actualizar los comentarios y las firmas
-        document.querySelector('.comment-here').innerHTML = rowData.complicaciones_operatorio || 'Sin comentarios';
-    }
-
-    function updateProtocolStatus() {
-        // Obtener si el checkbox está marcado
-        const isReviewed = document.getElementById('markAsReviewed').checked ? 1 : 0;
-
-        // Realizar la petición AJAX para actualizar el campo "status" en la base de datos
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'update_protocol_status.php', true);  // Archivo PHP para manejar la actualización
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                console.log(xhr.responseText);  // Ver la respuesta del servidor
-
-                // Verificamos si la respuesta contiene 'success'
-                if (xhr.status === 200 && xhr.responseText.trim().includes('success')) {
-                    console.log('Estado del protocolo actualizado correctamente');
-
-                    // Cerrar el modal sin usar jQuery
-                    const modalElement = document.getElementById('resultModal');
-                    const modalInstance = bootstrap.Modal.getInstance(modalElement);
-                    modalInstance.hide();
-
-                    // Recargar la tabla general después de cerrar el modal
-                    reloadPatientTable();
-                } else {
-                    console.log('Error al actualizar el estado del protocolo');
-                }
-            }
-        };
-        // Enviar el form_id, hc_number y el nuevo estado (revisado o no)
-        xhr.send(`form_id=${encodeURIComponent(currentFormId)}&hc_number=${encodeURIComponent(currentHcNumber)}&status=${isReviewed}`);
-    }
-
-    function reloadPatientTable() {
-        // Hacer una petición AJAX al mismo archivo
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', window.location.href, true);  // Hacer una petición GET al mismo archivo PHP
-        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');  // Esto ayuda a diferenciar solicitudes AJAX
-
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                // Actualizar el contenido del tbody con el nuevo HTML de las filas
-                const parser = new DOMParser();
-                const htmlDoc = parser.parseFromString(xhr.responseText, 'text/html');
-                const newTableBody = htmlDoc.getElementById('patientTableBody').innerHTML;
-                document.getElementById('patientTableBody').innerHTML = newTableBody;
-            }
-        };
-        xhr.send();
-    }
-</script>
-
-
 <!-- Vendor JS -->
 <script src="../js/vendors.min.js"></script>
 <script src="../js/pages/chat-popup.js"></script>
 <script src="../../assets/icons/feather-icons/feather.min.js"></script>
 <script src="../../assets/vendor_components/datatable/datatables.min.js"></script>
+<script src="https://cdn.datatables.net/searchpanes/2.0.0/js/dataTables.searchPanes.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/searchpanes/2.0.0/css/searchPanes.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
+<script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
 
 <script>
     // Custom sorting for dd/mm/yyyy format
@@ -1003,25 +544,107 @@ $stmt->close();
     };
 
     $(document).ready(function () {
-        $('#surgeryTable').DataTable({
-            "paging": true,
-            "lengthChange": false,
-            "searching": true,
-            "ordering": true,
-            "info": true,
-            "columnDefs": [
-                {
-                    "targets": 4, // Índice de columna para la fecha de solicitud (ajustar si es necesario)
-                    "type": "dd-mm-yyyy"
+        if (!$.fn.DataTable.isDataTable('#surgeryTable')) {
+            var table = $('#surgeryTable').DataTable({
+                "paging": true,
+                "lengthChange": false,
+                "searching": true,
+                "ordering": true,
+                "order": [[4, "desc"]], // Ordenar siempre por la columna de fecha de solicitud, de más reciente a más antiguo
+                "info": true,
+                "columnDefs": [
+                    {
+                        "targets": 4, // Índice de columna para la fecha de solicitud (ajustar si es necesario)
+                        "type": "dd-mm-yyyy",
+                        "searchable": true // Permitir búsqueda en la columna de fecha de solicitud
+                    },
+                    {
+                        "targets": 9, // Índice de columna para "Días Restantes" (ajustar si es necesario)
+                        "type": "dias-restantes" // Tipo de ordenación personalizada
+                    }
+                ],
+                "searchPanes": {
+                    "columns": [3] // Índice de la columna "Afiliación" que tendrá filtro
                 },
-                {
-                    "targets": 9, // Índice de columna para "Días Restantes" (ajustar si es necesario)
-                    "type": "dias-restantes" // Tipo de ordenación personalizada
+                "dom": 'Plfrtip', // Esto agrega los filtros por columna arriba de la tabla
+                "initComplete": function () {
+                    // Agregar selector de rango de fechas para la columna "Fecha de Solicitud"
+                    $("#surgeryTable thead").append('<tr><th></th><th></th><th></th><th></th><th><input type="text" id="dateRangePicker" class="form-control" placeholder="Seleccione rango de fechas"></th><th></th><th></th><th></th><th></th><th></th></tr>');
+
+                    $('#dateRangePicker').daterangepicker({
+                        autoUpdateInput: false,
+                        locale: {
+                            cancelLabel: 'Clear',
+                            format: 'DD/MM/YYYY'
+                        }
+                    });
+
+                    $('#dateRangePicker').on('apply.daterangepicker', function (ev, picker) {
+                        var startDate = picker.startDate.format('YYYY-MM-DD');
+                        var endDate = picker.endDate.format('YYYY-MM-DD');
+                        $.fn.dataTable.ext.search.push(
+                            function (settings, data, dataIndex) {
+                                var min = startDate;
+                                var max = endDate;
+                                var date = moment(data[4], 'DD/MM/YYYY').format('YYYY-MM-DD');
+                                if ((min === null && max === null) ||
+                                    (min === null && date <= max) ||
+                                    (min <= date && max === null) ||
+                                    (min <= date && date <= max)) {
+                                    return true;
+                                }
+                                return false;
+                            }
+                        );
+                        $('#surgeryTable').DataTable().draw();
+                    });
+
+                    $('#dateRangePicker').on('cancel.daterangepicker', function () {
+                        $(this).val('');
+                        $.fn.dataTable.ext.search.pop();
+                        $('#surgeryTable').DataTable().draw();
+                    });
                 }
-            ]
+            });
+        }
+
+        // Exportar a Excel solo con las columnas específicas
+        $('#exportExcel').on('click', function () {
+            var wb = XLSX.utils.book_new();
+            var ws_data = [];
+            // Agregar una fila combinada en blanco y otra con el título "SOLICITUD DE LA DERIVACIÓN"
+            ws_data.push(["", "", "", "", "", "", ""]);
+            ws_data.push(["", "", "", "SOLICITUD DE LA DERIVACIÓN", "", "", "AUTORIZACIÓN DE LA DERIVACIÓN", "UNIDAD QUE RECIBE LA DERIVACIÓN"]);
+
+            // Obtener encabezados específicos
+            ws_data.push(["COORDINACION PROVINCIAL", "PROVINCIA", "CANTON", "NOMBRE DE LA UNIDAD MEDICA", "FECHA DE SOLICITUD DE DERIVACIÓN (F 053) dd/mm/aaaa", "APELLIDOS Y NOMBRES DEL MEDICO QUE SOLICITA LA DERIVACION (F 053)", "FECHA DE LA AUTORIZACION DE LA DERIVACION dd/mm/aaaa", "APELLIDOS Y NOMBRES COMPLETOS DEL RESPONSABLE QUE AUTORIZA LA DERIVACIÓN", "UNIDAD A LA QUE PERTENECE QUIEN AUTORIZA LA DERIVACIÓN", "NOMBRE DE LA UNIDAD MEDICA QUE RECIBE LA DERIVACIÓN", "RUC DE LA UNIDAD MEDICA QUE RECIBE LA DERIVACIÓN", "CÓDIGO DE VALIDACIÓN DE LA DERIVACIÓN (CÓDIGO PARA RPC)", "NÚMERO DE CÉDULA DEL AFILIADO"]);
+
+            // Obtener todos los datos de la tabla (incluyendo todas las páginas)
+            table.rows({search: 'applied'}).every(function () {
+                var data = this.data();
+                var czg = "Coordinación Zonal Guayas";
+                var provincia = "Guayas";
+                var canton = "Guayaquil";
+                var unidad = "CLINICA INTERNACIONAL DE LA VISION ECUADOR CIVE";
+                var fecha = data[4];
+                var doctor = data[6];
+                var fecha_derivacion = data[4];
+                var nombre = data[2];
+                var coordinacion = "COORDINACION PROVINCIAL DE PRESTACIONES DE SALUD IESS GUAYAS";
+                var ruc = "0992807342001";
+                var ci = data[1];
+                var procedimiento = data[5];
+
+                ws_data.push([czg, provincia, canton, unidad, fecha, doctor, fecha_derivacion, nombre, coordinacion, unidad, ruc, procedimiento, ci]);
+            });
+
+            var ws = XLSX.utils.aoa_to_sheet(ws_data);
+            XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+            XLSX.writeFile(wb, 'SurgeryDataFiltered.xlsx');
         });
     });
 </script>
+
 
 <!-- Doclinic App -->
 <script src="../js/jquery.smartmenus.js"></script>
