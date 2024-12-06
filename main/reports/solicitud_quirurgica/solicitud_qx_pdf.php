@@ -5,23 +5,31 @@ require '../../../vendor/autoload.php';
 
 use Mpdf\Mpdf;
 
+// Obtener parámetros de la URL
+$hc_number = isset($_GET['hc_number']) ? $_GET['hc_number'] : null;
+$form_id = isset($_GET['form_id']) ? $_GET['form_id'] : null;
+
+if (!$hc_number || !$form_id) {
+    die("Faltan parámetros necesarios.");
+}
+
 // Configuración personalizada de mPDF
 $mpdf = new Mpdf([
     'default_font_size' => 8,
     'default_font' => 'dejavusans',
-    'margin_left' => 5,
-    'margin_right' => 5,
-    'margin_top' => 5,
-    'margin_bottom' => 5,
-    'orientation' => 'P',  // Orientación predeterminada en vertical
+    'margin_left' => 3,
+    'margin_right' => 3,
+    'margin_top' => 3,
+    'margin_bottom' => 3,
+    'orientation' => 'P',
     'shrink_tables_to_fit' => 1,
     'use_kwt' => true,
     'autoScriptToLang' => true,
     'keep_table_proportions' => true,
 ]);
 
-// Función para cargar HTML desde un archivo
-function cargarHTML($archivo)
+// Función para cargar HTML desde un archivo y pasar parámetros
+function cargarHTML($archivo, $hc_number, $form_id)
 {
     ob_start();
     include $archivo;
@@ -29,19 +37,20 @@ function cargarHTML($archivo)
 }
 
 // Páginas/formularios en el PDF
-$paginas = ['010.php', 'referencia.php'];
+$paginas = ['007.php', 'referencia.php', '010.php'];
 
 // Incluir CSS específico para cada página
 $totalPaginas = count($paginas);
 foreach ($paginas as $index => $pagina) {
     if ($pagina === '010.php') {
         $stylesheet = file_get_contents('styles.css');
-    } elseif ($pagina === 'referencia.php') {
+    } elseif ($pagina === '007.php' || $pagina === 'referencia.php') {
         $stylesheet = file_get_contents('referencia.css');
     }
     $mpdf->WriteHTML($stylesheet, \Mpdf\HTMLParserMode::HEADER_CSS);
 
-    $html = cargarHTML($pagina);
+    // Cargar el contenido HTML de cada página pasando los parámetros
+    $html = cargarHTML($pagina, $hc_number, $form_id);
     $mpdf->WriteHTML($html);
 
     // Solo agregar una nueva página si no es la última página en el ciclo

@@ -62,7 +62,9 @@ $stmt->close();
              ON cd2.form_id = pp.form_id 
              WHERE cd2.hc_number = p.hc_number 
              ORDER BY cd2.fecha DESC 
-             LIMIT 1) AS doctor  -- Subconsulta para obtener el último doctor
+             LIMIT 1) AS doctor,  -- Subconsulta para obtener el último doctor
+            p.fecha_caducidad, 
+            p.afiliacion 
         FROM patient_data p
         INNER JOIN consulta_data cd ON p.hc_number = cd.hc_number
         GROUP BY p.hc_number
@@ -92,7 +94,7 @@ $stmt->close();
                 </div>
             </div>
 
-            <!-- Main content -->
+            <!-- Contenido principal -->
             <section class="content">
                 <div class="row">
                     <div class="col-12">
@@ -102,50 +104,48 @@ $stmt->close();
                                     <table class="table border-no" id="example1">
                                         <thead>
                                         <tr>
-                                            <th>Patient ID</th>
-                                            <th>Date Check In</th>
-                                            <th>Patient Name</th>
-                                            <th>Doctor Assigned</th>
-                                            <th>Disease</th>
-                                            <th>Status</th>
-                                            <th>Room No</th>
+                                            <th>ID del Paciente</th>
+                                            <th>Fecha de Ingreso</th>
+                                            <th>Nombre del Paciente</th>
+                                            <th>Afiliación</th>
+                                            <th>Estado</th>
                                             <th></th>
                                         </tr>
                                         </thead>
                                         <tbody>
                                         <?php if ($result->num_rows > 0): ?>
                                             <?php while ($row = $result->fetch_assoc()): ?>
-                                                <tr class="hover-primary">
+                                                <tr class="hover-primary"
+                                                    onclick="window.location='patients/patient_details.php?hc_number=<?php echo $row['hc_number']; ?>';"
+                                                    style="cursor:pointer;">
                                                     <td><?php echo $row['hc_number']; ?></td>
-                                                    <td><?php echo date('d M Y, h:i A', strtotime($row['ultima_fecha'])); ?></td>
+                                                    <td><?php echo date('d M Y', strtotime($row['ultima_fecha'])); ?></td>
                                                     <td><?php echo $row['full_name']; ?></td>
-                                                    <td><?php echo $row['doctor']; ?></td>
-                                                    <?php $diagnosticos = json_decode($row['diagnosticos'], true);  // Convertir el JSON a un array asociativo
-
-                                                    $diagnosticos_string = [];  // Array para almacenar las partes de idDiagnostico y ojo
-
-                                                    foreach ($diagnosticos as $diagnostico) {
-                                                        // Agregar el idDiagnostico y ojo en el formato deseado
-                                                        $diagnosticos_string[] = $diagnostico['idDiagnostico'] . ' (' . $diagnostico['ojo'] . ')';
-                                                    }
-
-                                                    // Convertir el array a una cadena separada por comas
-                                                    $diagnosticos_formateados = implode(', ', $diagnosticos_string);
-                                                    ?>
-                                                    <td><?php echo $diagnosticos_formateados; ?></td>
-                                                    <td>
-
-                                                    </td>
-                                                    <td>FF-101</td> <!-- Room number can be dynamic if available -->
+                                                    <td><?php echo !empty($row['afiliacion']) ? $row['afiliacion'] : 'N/A'; ?></td>
+                                                    <td><?php
+                                                        if (!empty($row['fecha_caducidad'])) {
+                                                            $fecha_caducidad = strtotime($row['fecha_caducidad']);
+                                                            $fecha_actual = time();
+                                                            if ($fecha_caducidad < $fecha_actual) {
+                                                                echo '<span class="badge badge-danger-light">Sin Cobertura</span>';
+                                                            } else {
+                                                                echo '<span class="badge badge-success-light">Con Cobertura</span>';
+                                                            }
+                                                        } else {
+                                                            echo '<span class="badge badge-warning-light">N/A</span>';
+                                                        }
+                                                        ?></td>
                                                     <td>
                                                         <div class="btn-group">
                                                             <a class="hover-primary dropdown-toggle no-caret"
                                                                data-bs-toggle="dropdown"><i
                                                                         class="fa fa-ellipsis-h"></i></a>
                                                             <div class="dropdown-menu">
-                                                                <a class="dropdown-item" href="#">View Details</a>
-                                                                <a class="dropdown-item" href="#">Edit</a>
-                                                                <a class="dropdown-item" href="#">Delete</a>
+                                                                <a class="dropdown-item"
+                                                                   href="patients/patient_details.php?hc_number=<?php echo $row['hc_number']; ?>">Ver
+                                                                    Detalles</a>
+                                                                <a class="dropdown-item" href="#">Editar</a>
+                                                                <a class="dropdown-item" href="#">Eliminar</a>
                                                             </div>
                                                         </div>
                                                     </td>
@@ -153,7 +153,7 @@ $stmt->close();
                                             <?php endwhile; ?>
                                         <?php else: ?>
                                             <tr>
-                                                <td colspan="8">No data available</td>
+                                                <td colspan="8">No hay datos disponibles</td>
                                             </tr>
                                         <?php endif; ?>
                                         </tbody>
@@ -584,7 +584,6 @@ $stmt->close();
 <script src="js/vendors.min.js"></script>
 <script src="js/pages/chat-popup.js"></script>
 <script src="../assets/icons/feather-icons/feather.min.js"></script>
-
 <script src="../assets/vendor_components/datatable/datatables.min.js"></script>
 
 <!-- Doclinic App -->

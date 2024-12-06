@@ -66,23 +66,28 @@ td.verde_normal {
 
 td.cyan_normal {
     font-size: 4.0pt;
-    height: 8px;
+    height: 7px;
     vertical-align: middle;
     border-top: .5pt solid #5F5F5F;
     border-right: .5pt solid #5F5F5F;
     border-bottom: .5pt solid #5F5F5F;
     border-left: 1.0pt solid #5F5F5F;
     background: #CCFFFF;
+    padding: 0; /* Elimina el padding */
+    margin: 0; /* Por si las celdas tienen margen */
 }
 
 td.marcado {
-    color: red;
-    font-size: 5.0pt;
-    height: 8px;
+    color: #000000;
+    font-size: 6.5pt;
+    font-weight: bold;
+    height: 7px;
     text-align: center;
     vertical-align: middle;
     border: .5pt solid #5F5F5F;
     background: white;
+    padding: 0; /* Elimina el padding */
+    margin: 0; /* Por si las celdas tienen margen */
 }
 
 td.blanco {
@@ -95,10 +100,12 @@ td.blanco {
 }
 
 td.blanco_unbordered {
-    height: 10px;
+    height: 5px;
     text-align: left;
     vertical-align: middle;
-    font-size: 6pt;
+    font-size: 3pt;
+    padding: 0; /* Elimina el padding */
+    margin: 0;  /* Por si las celdas tienen margen */
 }
 
 td.blanco_break {

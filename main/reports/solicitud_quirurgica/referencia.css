@@ -12,11 +12,11 @@ td.morado {
     background-color: #CCCCFF;
     font-size: 7pt;
     font-weight: bold;
-    height: 17px;
+    height: 15px;
 }
 
 td.verde {
-    height: 17px;
+    height: 15px;
     text-align: center;
     vertical-align: middle;
     background-color: #CCFFCC;
@@ -29,7 +29,7 @@ td.verde {
 td.blanco {
     border-top: 1px solid #808080;
     border-right: 1px solid #808080;
-    height: 17px;
+    height: 15px;
     text-align: center;
     vertical-align: middle;
     font-size: 7pt;
@@ -38,10 +38,22 @@ td.blanco {
 td.blanco_left {
     border-top: 1px solid #808080;
     border-right: 1px solid #808080;
-    height: 18px;
+    height: 15px;
     text-align: left;
     vertical-align: middle;
     font-size: 7pt;
+}
+
+td.amarillo {
+    height: 23px;
+    text-align: center;
+    vertical-align: middle;
+    background-color: #FFFFCC;
+    font-size: 7pt;
+    font-weight: bold;
+    color: red;
+    border-top: 1px solid #808080;
+    border-right: 1px solid #808080;
 }
 
 /* Estilo para todas las celdas (td) de la tabla */
@@ -55,7 +67,7 @@ td.blanco_left {
 
 .reason-cell {
     border: 1px solid #000000;
-    height: 18px;
+    height: 15px;
     text-align: left;
     vertical-align: bottom;
     font-size: 7.5pt;

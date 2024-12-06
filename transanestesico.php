@@ -178,7 +178,7 @@ $diagnosticosPrevios = obtenerDiagnosticosAnteriores($hc_number, $form_id, $mysq
     </tr>
     <tr style="height: 16px">
         <td class="blanco_tr" colspan="27"><?php echo $insurance; ?></td>
-        <td class="blanco_tr" colspan="45">AlTA VISION</td>
+        <td class="blanco_tr" colspan="45">CIVE</td>
         <td class="blanco_tr" colspan="40"><?php echo $historyNumber; ?></td>
         <td class="blanco_tr" colspan="26"><?php echo $historyNumber; ?></td>
     </tr>
@@ -298,9 +298,19 @@ $diagnosticosPrevios = obtenerDiagnosticosAnteriores($hc_number, $form_id, $mysq
     <tr style="height: 11px">
         <td class="verde_left_tr" colspan="7">CIRUJANO</td>
         <td class="blanco_left_tr" style="text-align: left" colspan="35"><?php echo $mainSurgeon; ?></td>
-        <td class="verde_left_tr" colspan="6">AYUDANTE (S)</td>
+        <td class="verde_left_tr" colspan="6"><?php
+            if (empty($assistantSurgeon1)) {
+                echo strtoupper('AYUDANTE (S)');
+            } else {
+                echo strtoupper('CIRUJANO 2');
+            } ?></td>
         <td class="blanco_left_tr"
-            colspan="24"><?php echo $ayudante; ?></td>
+            colspan="24"><?php
+            if (empty($assistantSurgeon1)) {
+                echo strtoupper($ayudante);
+            } else {
+                echo strtoupper($assistantSurgeon1);
+            } ?></td>
         <td class="verde_left_tr" colspan="19">CIRCULANTE</td>
         <td class="blanco_left_tr" colspan="19"><?php
             echo $circulante;
@@ -447,7 +457,7 @@ $diagnosticosPrevios = obtenerDiagnosticosAnteriores($hc_number, $form_id, $mysq
         </td>
     </tr>
     <tr style="height: 12px">
-        <td class="s41" colspan="30"></td>
+        <td class="s41" colspan="30">O2: 3L</td>
         <td class="s42" colspan="3"></td>
         <td class="s42" colspan="3"></td>
         <td class="s42" colspan="3"></td>
@@ -5592,7 +5602,15 @@ $diagnosticosPrevios = obtenerDiagnosticosAnteriores($hc_number, $form_id, $mysq
         <td class="blanco_left_tr"></td>
         <td class="blanco_left_tr"></td>
         <td class="blanco_left_tr" colspan="11">ANESTÉSICO LOCAL</td>
-        <td class="blanco_tr" colspan="21"><b>REGIONAL</b></td>
+        <td class="blanco_tr" colspan="21"><b>
+                <?php
+                if ($tipoAnestesia == 'OTROS') {
+                    echo $tipoAnestesia . ' - TOPICA';
+                } else {
+                    echo $tipoAnestesia;
+                }
+                ?>
+            </b></td>
         <td class="blanco_left_tr" colspan="9">COADYUVANTE</td>
         <td class="blanco_left_tr" colspan="9"></td>
         <td class="blanco_left_tr"></td>
@@ -5606,7 +5624,15 @@ $diagnosticosPrevios = obtenerDiagnosticosAnteriores($hc_number, $form_id, $mysq
         <td class="blanco_left_tr"></td>
         <td class="blanco_left_tr"></td>
         <td class="blanco_left_tr" colspan="11">TIPO DE AGUJA</td>
-        <td class="blanco_tr" colspan="21"><b>25X1</b></td>
+        <td class="blanco_tr" colspan="21"><b>
+                <?php
+                if ($tipoAnestesia == 'OTROS') {
+                    echo ' - ';
+                } else {
+                    echo '25X1';
+                }
+                ?>
+            </b></td>
         <td class="blanco_left_tr" colspan="9">EQUIPO</td>
         <td class="blanco_left_tr" colspan="9"></td>
         <td class="blanco_left_tr"></td>

@@ -193,7 +193,22 @@ $stmt->close();
                                         </tbody>
                                     </table>
                                 </div>
-                                <button id="exportExcel" class="btn btn-primary mt-3">Exportar a Excel</button>
+                                <div class="col-xs-6 col-md-2">
+                                    <div class="media media-single px-0">
+                                        <div class="ms-0 me-15 bg-danger-light h-50 w-50 l-h-50 rounded text-center d-flex align-items-center justify-content-center">
+                                                        <span class="fs-24 text-danger"><i
+                                                                    class="fa fa-file-zip-o"></i></span>
+                                        </div>
+                                        <div class="d-flex flex-column flex-grow-1">
+                                                        <span class="title fw-500 fs-16 text-truncate"
+                                                              style="max-width: 200px;">Exportar ZIP</span>
+                                        </div>
+                                        <a id="exportExcel" class="fs-18 text-gray hover-info"
+                                           href="#">
+                                            <i class="fa fa-download"></i>
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -523,7 +538,8 @@ $stmt->close();
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
 <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip-utils/0.1.0/jszip-utils.min.js"></script>
 
 <script>
     // Custom sorting for dd/mm/yyyy format
@@ -608,8 +624,19 @@ $stmt->close();
             });
         }
 
+        // Mostrar animación de carga
+        function showLoading() {
+            $('body').append('<div id="loading" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); display: flex; align-items: center; justify-content: center; z-index: 9999;"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div>');
+        }
+
+        // Ocultar animación de carga
+        function hideLoading() {
+            $('#loading').remove();
+        }
+
         // Exportar a Excel y descargar PDFs en un archivo ZIP
         $('#exportExcel').on('click', function () {
+            showLoading();
             var ws_data = [];
             // Agregar una fila combinada en blanco y otra con el título "SOLICITUD DE LA DERIVACIÓN"
             ws_data.push(["", "", "", "", "", "", ""]);
@@ -617,6 +644,9 @@ $stmt->close();
 
             // Obtener encabezados específicos
             ws_data.push(["COORDINACION PROVINCIAL", "PROVINCIA", "CANTON", "NOMBRE DE LA UNIDAD MEDICA", "FECHA DE SOLICITUD DE DERIVACIÓN (F 053) dd/mm/aaaa", "APELLIDOS Y NOMBRES DEL MEDICO QUE SOLICITA LA DERIVACION (F 053)", "FECHA DE LA AUTORIZACION DE LA DERIVACION dd/mm/aaaa", "APELLIDOS Y NOMBRES COMPLETOS DEL RESPONSABLE QUE AUTORIZA LA DERIVACIÓN", "UNIDAD A LA QUE PERTENECE QUIEN AUTORIZA LA DERIVACIÓN", "NOMBRE DE LA UNIDAD MEDICA QUE RECIBE LA DERIVACIÓN", "RUC DE LA UNIDAD MEDICA QUE RECIBE LA DERIVACIÓN", "CÓDIGO DE VALIDACIÓN DE LA DERIVACIÓN (CÓDIGO PARA RPC)", "NÚMERO DE CÉDULA DEL AFILIADO"]);
+
+            var zip = new JSZip();
+            var pdfFolder = zip.folder("PDFs");
 
             // Obtener todos los datos de la tabla (incluyendo todas las páginas)
             table.rows({search: 'applied'}).every(function () {
@@ -636,14 +666,9 @@ $stmt->close();
 
                 ws_data.push([czg, provincia, canton, unidad, fecha, doctor, fecha_derivacion, nombre, coordinacion, unidad, ruc, procedimiento, ci]);
 
-                // Abrir PDF correspondiente a cada fila en una nueva pestaña
+                // Agregar PDF correspondiente a cada fila en la carpeta ZIP
                 var pdfLink = 'solicitud_quirurgica/solicitud_qx_pdf.php?hc_number=' + encodeURIComponent(data[1]) + '&form_id=' + encodeURIComponent(data[0]);
-                var link = document.createElement('a');
-                link.href = pdfLink;
-                link.download = 'Solicitud_' + data[1] + '_' + data[0] + '.pdf';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                pdfFolder.file('Solicitud_' + data[1] + '_' + data[0] + '.pdf', urlToPromise(pdfLink), {binary: true});
             });
 
             // Enviar los datos al servidor mediante una petición POST
@@ -662,15 +687,34 @@ $stmt->close();
                 })
                 .then(blob => {
                     // Descargar el archivo Excel generado
-                    var link = document.createElement('a');
-                    link.href = window.URL.createObjectURL(blob);
-                    link.download = 'SurgeryDataFiltered.xlsx';
-                    link.click();
+                    zip.file('SurgeryDataFiltered.xlsx', blob);
+                    // Generar el archivo ZIP
+                    zip.generateAsync({type: "blob"})
+                        .then(function (zipBlob) {
+                            hideLoading();
+                            var link = document.createElement('a');
+                            link.href = window.URL.createObjectURL(zipBlob);
+                            link.download = 'SurgeryDataFilteredAndPDFs.zip';
+                            link.click();
+                        });
                 })
                 .catch(error => {
+                    hideLoading();
                     console.error('Error:', error);
                 });
         });
+
+        function urlToPromise(url) {
+            return new Promise(function (resolve, reject) {
+                JSZipUtils.getBinaryContent(url, function (err, data) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(data);
+                    }
+                });
+            });
+        }
     });
 </script>
 

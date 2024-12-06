@@ -2,15 +2,12 @@
 require '../../../conexion.php';  // Asegúrate de tener la conexión a la base de datos configurada
 require '../../../vendor/autoload.php';
 
+
 use Dotenv\Dotenv;
 
 // Cargar las variables de entorno desde el archivo .env
 $dotenv = Dotenv::createImmutable(__DIR__ . '/../../../');
 $dotenv->load();
-
-// Obtener los parámetros enviados desde el enlace
-$form_id = $_GET['form_id'] ?? null;
-$hc_number = $_GET['hc_number'] ?? null;
 
 if ($form_id && $hc_number) {
 // Consulta para obtener los datos de patient_data, solicitud_procedimiento y consulta_data
@@ -46,7 +43,10 @@ if ($form_id && $hc_number) {
         $procedureId = $procedure_data['id'];
         $formId = $procedure_data['form_id'];
         $procedureType = $procedure_data['tipo'];
-        $procedure = $procedure_data['procedimiento'];
+
+        $procedimiento_parts = explode(' - ', $procedure_data['procedimiento']);
+        $nombre_procedimiento = ucwords(strtolower(end($procedimiento_parts)));
+
         $doctor = $procedure_data['doctor'];
         $procedureDate = $procedure_data['fecha'];
         $duration = $procedure_data['duracion'];
@@ -60,7 +60,7 @@ if ($form_id && $hc_number) {
         // Asignar los datos de consulta_data
         $motivoConsulta = $procedure_data['motivo_consulta'];
         $enfermedadActual = $procedure_data['enfermedad_actual'];
-        $examenFisico = $procedure_data['examen_fisico'];
+        $examenFisico = 'Motivo de consulta:' . $procedure_data['motivo_consulta'] . '. Enfermedad actual:' . $procedure_data['enfermedad_actual'] . '. ' . $procedure_data['examen_fisico'];
         $plan = $procedure_data['plan'];
         $diagnoses = $procedure_data['diagnosticos'];
         $examenes = $procedure_data['examenes'];
@@ -105,6 +105,8 @@ if ($form_id && $hc_number) {
         $createdAtObj = new DateTime($createdAt);
         $createdAtDate = $createdAtObj->format('Y/m/d');
         $createdAtTime = $createdAtObj->format('H:i');
+
+        $cirujano_data = buscarUsuarioPorNombre($doctor, $mysqli);
     }
 }
 
@@ -121,11 +123,28 @@ if (!function_exists('generateEnfermedadProblemaActual')) {
         $prompt = "
     Examen físico oftalmológico: $examenFisico
 
-Redacta los hallazgos del examen físico de manera organizada y detallada, usando un lenguaje profesional, pero directo. Presenta los hallazgos por cada ojo como 'Ojo derecho:' seguido de los detalles, y luego 'Ojo izquierdo:' seguido de los detalles. Evita frases introductorias innecesarias o usar guiones.
-puedes apoyarte en el siguiente esquema:
-Biomicroscopia: Ojo derecho (de preferencia en esto usa siglas como OD u OI para ahorrar caracteres): [detalles]. Ojo izquierdo: [detalles]
-Fondo de Ojo: Ojo derecho: [detalles]. Ojo izquierdo: [detalles]
-PIO: Si la presión intraocular está en el formato '18/18.5', indica que el primer valor corresponde al ojo derecho y el segundo al ojo izquierdo.";
+Redacta los hallazgos del examen físico de manera profesional, clara y sintetizada. Sigue este esquema y considera las siguientes instrucciones:
+
+1. Combina el Motivo de consulta y enfermedad actual en una sola frase concisa que describa de manera específica la razón de la consulta y la situación actual del paciente. Evita frases introductorias como 'Motivo de consulta:' o 'Enfermedad actual:'.
+2. Biomicroscopia: Presenta los hallazgos separados por ojo con las siglas OD y OI exclusivamente. Si no se menciona un ojo, omítelo. Usa frases completas y bien estructuradas.
+3. Fondo de Ojo: Incluye únicamente si hay detalles reportados. Si no se mencionan hallazgos, no lo incluyas.
+4. PIO: Si está disponible, escribe la presión intraocular en el formato OD/OI (por ejemplo, 18/18.5). Si no está reportada, omítela.
+
+Instrucciones adicionales:
+- Usa mayúsculas y minúsculas correctamente; solo usa siglas para OD, OI y PIO.
+- No incluyas secciones vacías ni detalles no reportados.
+- Sintetiza la información eliminando redundancias y enfocándote en lo relevante.
+- Evita líneas separadas para frases importantes; presenta la información de forma continua y bien organizada.
+- No inventes datos; si algo no está claro, simplemente no lo incluyas.
+
+Ejemplo de formato esperado:
+[Frase que combine el motivo de consulta y la enfermedad actual.]
+Biomicroscopia: OD: [detalles]. OI: [detalles]. 
+Fondo de Ojo: OD: [detalles]. OI: [detalles]. 
+PIO: [valor].
+
+Utiliza este esquema para el análisis.
+";
 
         $data = [
             'model' => 'gpt-3.5-turbo',
@@ -162,10 +181,74 @@ PIO: Si la presión intraocular está en el formato '18/18.5', indica que el pri
         return $responseData['choices'][0]['message']['content'];
     }
 }
+if (!function_exists('generatePlanTratamiento')) {
+    function generatePlanTratamiento($plan, $insurance)
+    {
+        $apiKey = $_ENV['OPENAI_API_KEY'] ?? getenv('OPENAI_API_KEY');
+
+        if (!$apiKey) {
+            die('API key is missing. Please set your OpenAI API key.');
+        }
+
+        $prompt = "
+Plan de tratamiento basado en la evaluación oftalmológica: $plan
+
+Redacta un plan de tratamiento breve, claro y profesional, respetando el siguiente formato y estilo:
+
+1. **Procedimientos:** Enumera exclusivamente los procedimientos quirúrgicos necesarios. Usa frases directas y justificaciones breves si es relevante y evita colocar fechas.
+2. **Exámenes prequirúrgicos y valoración cardiológica:** Incluye esta sección con el siguiente contexto: 'Se solicita a $insurance autorización para valoración y tratamiento integral en cardiología y electrocardiograma.'
+
+Instrucciones adicionales:
+- Usa mayúsculas y minúsculas correctamente tipo oración. Esto significa que solo las iniciales de los nombres propios y términos específicos deben estar en mayúscula. No escribas todo en mayúsculas.
+- Presenta la información de manera directa y estructurada en listas o frases cortas, sin introducir explicaciones extensas ni repeticiones.
+- Evita incluir secciones vacías o inventar información; solo menciona datos presentes en el plan proporcionado.
+- Omite encabezados si no hay contenido relevante en esa sección.
+
+Ejemplo de formato esperado:
+[Procedimiento 1].[Procedimiento 2].
+
+Exámenes prequirúrgicos y valoración cardiológica:
+- Se solicita a [aseguradora] autorización para valoración y tratamiento integral en cardiología y electrocardiograma.
+";
+
+        $data = [
+            'model' => 'gpt-3.5-turbo',
+            'messages' => [
+                ['role' => 'system', 'content' => 'Eres un médico oftalmólogo redactando un plan de tratamiento profesional basado en un análisis clínico.'],
+                ['role' => 'user', 'content' => $prompt]
+            ],
+            'max_tokens' => 300
+        ];
+
+        $options = [
+            'http' => [
+                'header' => "Content-type: application/json\r\nAuthorization: Bearer $apiKey\r\n",
+                'method' => 'POST',
+                'content' => json_encode($data),
+                'ignore_errors' => true // Capturar errores HTTP
+            ],
+        ];
+
+        $context = stream_context_create($options);
+        $response = file_get_contents('https://api.openai.com/v1/chat/completions', false, $context);
+
+        if ($response === FALSE) {
+            $error = error_get_last();
+            die('Error occurred: ' . $error['message']);
+        }
+
+        $responseData = json_decode($response, true);
+
+        if (isset($responseData['error'])) {
+            die('API Error: ' . $responseData['error']['message']);
+        }
+
+        return $responseData['choices'][0]['message']['content'];
+    }
+}
 ?>
 <HTML>
 <BODY>
-<div>FORMULARIO DE REFERENCIA, DERIVACION CONTRAREFERENCIA Y REFERENCIA</div>
 <table>
     <TR>
         <TD class="morado" colspan="12">l. DATOS DEL USARIO</TD>
@@ -228,7 +311,7 @@ PIO: Si la presión intraocular está en el formato '18/18.5', indica que el pri
         <TD class="verde">E-MAIL:</TD>
         <TD class="blanco" COLSPAN=3><BR></TD>
         <TD class="verde">TELEFONO:</TD>
-        <TD class="blanco" COLSPAN=3><?php echo $insurance; ?></TD>
+        <TD class="blanco" COLSPAN=3></TD>
         <TD class="verde">FECHA:</TD>
         <TD class="blanco" COLSPAN=3><BR></TD>
     </TR>
@@ -254,8 +337,8 @@ PIO: Si la presión intraocular está en el formato '18/18.5', indica que el pri
     </TR>
     <TR>
         <TD class="blanco" COLSPAN=2></TD>
-        <TD class="blanco" COLSPAN=2><?php echo $hc_number; ?></TD>
-        <TD class="blanco" COLSPAN=3>CIVE</TD>
+        <TD class="blanco" COLSPAN=2></TD>
+        <TD class="blanco" COLSPAN=3></TD>
         <TD class="blanco" COLSPAN=2><BR></TD>
         <TD class="blanco" COLSPAN=3><BR></TD>
     </TR>
@@ -273,21 +356,15 @@ PIO: Si la presión intraocular está en el formato '18/18.5', indica que el pri
         <TD class="verde" colspan="2">A&ntilde;o</TD>
     </tr>
     <TR>
-        <TD class="blanco" COLSPAN=2><?php echo $insurance; ?></TD>
+        <TD class="blanco" COLSPAN=2></TD>
         <TD class="blanco" COLSPAN=2></TD>
         <TD class="blanco" colspan="2">AMBULATORIO</TD>
         <TD class="blanco" COLSPAN=2></TD>
         <TD class="blanco">
-            <?php
-            echo date("d", strtotime($createdAtDate));
-            ?></TD>
+        </TD>
         <TD class="blanco">
-            <?php echo date("m", strtotime($createdAtDate));
-            ?>
         </TD>
         <TD class="blanco" colspan="2">
-            <?php echo date("Y", strtotime($createdAtDate));
-            ?>
         </TD>
     </TR>
 </table>
@@ -327,16 +404,10 @@ PIO: Si la presión intraocular está en el formato '18/18.5', indica que el pri
     <tr>
         <td class='blanco_left'></td>
     </tr>
-    <tr>
-        <td class='blanco_left'></td>
-    </tr>
 </table>
 <table>
     <TR>
         <TD class="morado">4. HALLAZGOS RELEVANTES DE EXAMENES Y PROCEDIMIENTOS DIAGNOSTICOS</TD>
-    </TR>
-    <TR>
-        <TD class="blanco_left"></TD>
     </TR>
     <TR>
         <TD class="blanco_left"></TD>
@@ -349,29 +420,18 @@ PIO: Si la presión intraocular está en el formato '18/18.5', indica que el pri
         <TD class="morado" width="15%">PRE</TD>
         <TD class="morado" width="15%">DEF</TD>
     </TR>
-    <?php
-    foreach ($diagnosesArray as $index => $item) {
-        $parts = explode(' - ', $item['idDiagnostico'], 4);
-        $cie10 = $parts[0] ?? '';
-        $detalle = $parts[1] ?? '';
-        echo "<tr>
-            <TD CLASS='blanco_left'>" . htmlspecialchars($detalle) . "</td>
-            <TD CLASS='blanco'>" . htmlspecialchars($cie10) . "</td>
-            <TD CLASS='blanco'><BR></TD>
-            <TD CLASS='blanco'>X</TD>
-          </tr>";
-    }
-    ?>
+    <tr>
+        <td class="blanco"></td>
+        <td class="blanco"></td>
+        <td class="blanco"></td>
+        <td class="blanco"></td>
+    </tr>
 </table>
 <table>
     <TR>
         <TD class="morado" width="80%">6. EXAMENES / PROCEDIMIENTOS SOLICITADOS</TD>
         <TD class="morado" width="20%">CODIGO TARIFARIO</TD>
     </TR>
-    <tr>
-        <td class="blanco_left"></td>
-        <td class="blanco_left"></td>
-    </tr>
     <tr>
         <td class="blanco_left"></td>
         <td class="blanco_left"></td>
@@ -405,9 +465,9 @@ PIO: Si la presión intraocular está en el formato '18/18.5', indica que el pri
     </TR>
     <TR>
         <TD class="blanco" COLSPAN=2><BR></TD>
-        <TD class="blanco" COLSPAN=2><BR></TD>
-        <TD class="blanco" COLSPAN=2><BR></TD>
-        <TD class="blanco"><BR></TD>
+        <TD class="blanco" COLSPAN=2><?php echo $hc_number ?></TD>
+        <TD class="blanco" COLSPAN=2>CLINICA INTERNACIONAL DE LA VISION DE ECUADOR</TD>
+        <TD class="blanco">III</TD>
         <TD class="blanco" COLSPAN=2><BR></TD>
         <TD class="blanco" COLSPAN=3><BR></TD>
     </TR>
@@ -420,37 +480,33 @@ PIO: Si la presión intraocular está en el formato '18/18.5', indica que el pri
         </TD>
     </TR>
     <TR>
-        <TD class="blanco" colspan="2"><BR></TD>
+        <TD class="blanco" colspan="2"><?php echo $insurance; ?></TD>
         <TD class="blanco" COLSPAN=3><BR></TD>
         <TD class="blanco"><BR></TD>
         <TD class="blanco" COLSPAN=3><BR></TD>
-        <TD class="blanco"><BR></TD>
-        <TD class="blanco"><BR></TD>
-        <TD class="blanco"><BR></TD>
+        <TD class="blanco"><?php
+            echo date("d", strtotime($createdAtDate));
+            ?></TD>
+        <TD class="blanco"><?php
+            echo date("m", strtotime($createdAtDate));
+            ?></TD>
+        <TD class="blanco"><?php
+            echo date("Y", strtotime($createdAtDate));
+            ?></TD>
     </TR>
     <TR>
         <TD class="verde" COLSPAN=2>Entidad del Sistema</TD>
         <TD class="verde" COLSPAN=3>Establecimiento de Salud</TD>
         <TD class="verde">Tipo</TD>
-        <TD class="verde" COLSPAN=3>>Districto/Area</TD>
+        <TD class="verde" COLSPAN=3>Districto/Area</TD>
         <TD class="verde">Dia</TD>
         <TD class="verde">Mes</TD>
         <TD class="verde">A&ntilde;o</TD>
     </TR>
+</TABLE>
+<table>
     <TR>
         <TD COLSPAN=12 class="morado">2. RESUMEN DEL CUADRO CLINICO</TD>
-    </TR>
-    <TR>
-        <TD colspan="12" class="blanco_left">
-            <?php
-            $reasonChunks = $motivoConsulta . ". " . $enfermedadActual;
-            $wrappedChunk = wordwrap($reasonChunks, 130, "</td></tr><tr><td colspan=12 class='blanco_left'>");
-            echo $wrappedChunk;
-            ?>
-        </td>
-    </tr>
-    <TR>
-        <TD COLSPAN=12 class="morado">3. HALLAZGOS RELEVANTES DE EXAMENES Y PROCEDIMIENTOS DIAGNOSTICOS</TD>
     </TR>
     <TR>
         <TD colspan="12" class="blanco_left">
@@ -458,63 +514,74 @@ PIO: Si la presión intraocular está en el formato '18/18.5', indica que el pri
             $examenAI = generateEnfermedadProblemaActual($examenFisico);
             echo wordwrap($examenAI, 150, "</TD></TR><TR><TD colspan=12 class='blanco_left'>");
             ?>
+        </td>
+    </tr>
+</table>
+<table>
+    <TR>
+        <TD COLSPAN=12 class="morado">3. HALLAZGOS RELEVANTES DE EXAMENES Y PROCEDIMIENTOS DIAGNOSTICOS</TD>
+    </TR>
+    <TR>
+        <TD colspan="12" class="blanco_left">
         </TD>
     </TR>
+</table>
+<table>
     <TR>
         <TD COLSPAN=12 class="morado">4. TRATAMIENTOS Y PROCEDIMIENTOS TERAPEUTICOS REALIZADOS</TD>
     </TR>
     <TR>
         <TD colspan="12" class="blanco_left">
             <?php
-            $text = "Se solicita a $insurance autorización para valoración y tratamiento integral en cardiología y electrocardiograma.";
-            echo wordwrap($text, 150, "</TD></TR><TR><TD colspan=12 class='blanco_left'>");
+            if ($eye == 'D') {
+                $eye = 'ojo derecho.';
+            } elseif ($eye == 'I') {
+                $eye = 'ojo izquierdo';
+            }
+            $planAI = $nombre_procedimiento . ' en ' . $eye . '. Se solicita a' . $insurance . ' autorización para realización de exámenes prequirúrgicos, valoración y tratamiento integral en cardiología y electrocardiograma.';
+            echo wordwrap($planAI, 150, "</TD></TR><TR><TD colspan=12 class='blanco_left'>");
             ?>
-
         </TD>
     </TR>
+</table>
+<table>
     <TR>
-        <TD class="morado" COLSPAN=9>5. DIAGNOSTICO</TD>
+        <TD class="morado">5. DIAGNOSTICO</TD>
         <TD class="morado">CIE-10</TD>
         <TD class="morado">PRE</TD>
         <TD class="morado">DEF</TD>
     </TR>
+    <?php
+    foreach ($diagnosesArray as $index => $item) {
+        $parts = explode(' - ', $item['idDiagnostico'], 4);
+        $cie10 = $parts[0] ?? '';
+        $detalle = $parts[1] ?? '';
+        echo "<tr>
+            <TD CLASS='blanco_left'>" . htmlspecialchars($detalle) . "</td>
+            <TD CLASS='blanco'>" . htmlspecialchars($cie10) . "</td>
+            <TD CLASS='blanco'><BR></TD>
+            <TD CLASS='blanco'>X</TD>
+          </tr>";
+    }
+    ?>
+</table>
+<table>
     <TR>
-        <TD class="blanco"
-            COLSPAN=8><BR>
-        </TD>
-        <TD class="blanco"
-            COLSPAN=2><BR></TD>
-        <TD class="blanco"
-        ><BR></TD>
-        <TD class="blanco"
-        ><BR></TD>
-    </TR>
-    <TR>
-        <TD class="blanco"
-            COLSPAN=8><BR>
-        </TD>
-        <TD class="blanco"
-            COLSPAN=2><BR></TD>
-        <TD class="blanco"
-        ><BR></TD>
-        <TD class="blanco"
-        ><BR></TD>
-    </TR>
-    <TR>
-        <TD COLSPAN=12 class="morado">6.
+        <TD class="morado">6.
             TRATAMIENTO RECOMENDADO A SEGUIR EN EL ESTABLECIMIENTO DE SALUD DE MENOR NIVEL DE COMPLEJIDAD
         </TD>
     </TR>
     <TR>
-        <TD class="blanco" COLSPAN=8><BR></TD>
-        <TD class="blanco" COLSPAN=4><BR></TD>
+        <TD class="blanco_left"></TD>
     </TR>
 </TABLE>
 <table>
     <TR>
-        <TD class="blanco" COLSPAN=4><?php echo $doctor; ?></TD>
-        <TD class="blanco" COLSPAN=4><?php echo $hc_number; ?></TD>
-        <TD class="blanco" COLSPAN=4></TD>
+        <TD class="blanco" COLSPAN=4><?php echo strtoupper($cirujano_data['nombre']); ?></TD>
+        <TD class="blanco" COLSPAN=4><?php echo strtoupper($cirujano_data['cedula']); ?></TD>
+        <TD class="blanco"
+            COLSPAN=4><?php echo "<img src='" . htmlspecialchars($cirujano_data['firma']) . "' alt='Imagen de la firma' style='max-height: 40px;'>";
+            ?></TD>
     </TR>
     <TR>
         <TD class="verde" COLSPAN=4>NOMBRE</TD>
@@ -522,6 +589,16 @@ PIO: Si la presión intraocular está en el formato '18/18.5', indica que el pri
         <TD class="verde" COLSPAN=4>FIRMA</TD>
     </TR>
 </TABLE>
-
+<table style='border: none'>
+    <TR>
+        <TD colspan='6' HEIGHT=24 ALIGN=LEFT VALIGN=M><B><FONT SIZE=1
+                                                               COLOR='#000000'>SNS-MSP/HCU-form. 053/2021</FONT></B>
+        </TD>
+        <TD colspan='3' ALIGN=RIGHT VALIGN=TOP><B><FONT SIZE=3 COLOR='#000000'>REFERENCIA - DERIVACIÓN- CONTRAREFERENCIA
+                    - REFERENCIA INVERSA</FONT></B>
+        </TD>
+    </TR>
+    ]
+</TABLE>
 </BODY>
 </HTML>

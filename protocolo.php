@@ -292,18 +292,21 @@ $diagnosticosPrevios = obtenerDiagnosticosAnteriores($hc_number, $form_id, $mysq
     <tr>
         <td colspan='20' class='morado'>E. TIPO ANESTESIA</td>
     </tr>
-    <tr>
-        <td class='verde_left' colspan='3'>General:</td>
-        <td class='blanco' colspan='1'></td>
-        <td class='verde_left' colspan='3'>Local:</td>
-        <td class='blanco' colspan='1'></td>
-        <td class='verde_left' colspan='3'>Otros:</td>
-        <td class='blanco' colspan='1'></td>
-        <td class='verde_left' colspan='3'>Regional:</td>
-        <td class='blanco' colspan='1'>x</td>
-        <td class='verde_left' colspan='3'>Sedación:</td>
-        <td class='blanco' colspan='1'></td>
-    </tr>
+    <?php
+    // Tipo de anestesia
+    echo "<tr>";
+    echo "<td class='verde_left' colspan='3'>General:</td>";
+    echo "<td class='blanco' colspan='1'>" . ($tipoAnestesia == 'GENERAL' ? 'x' : '') . "</td>";
+    echo "<td class='verde_left' colspan='3'>Local:</td>";
+    echo "<td class='blanco' colspan='1'>" . ($tipoAnestesia == 'LOCAL' ? 'x' : '') . "</td>";
+    echo "<td class='verde_left' colspan='3'>Otros:</td>";
+    echo "<td class='blanco' colspan='1'>" . ($tipoAnestesia == 'OTROS' ? 'TOPICA' : '') . "</td>";
+    echo "<td class='verde_left' colspan='3'>Regional:</td>";
+    echo "<td class='blanco' colspan='1'>" . ($tipoAnestesia == 'REGIONAL' ? 'x' : '') . "</td>";
+    echo "<td class='verde_left' colspan='3'>Sedación:</td>";
+    echo "<td class='blanco' colspan='1'>" . ($tipoAnestesia == 'SEDACION' ? 'x' : '') . "</td>";
+    echo "</tr>";
+    ?>
 </table>
 <table>
     <tr>

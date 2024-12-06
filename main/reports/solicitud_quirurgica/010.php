@@ -1,9 +1,6 @@
 <?php
 require '../../../conexion.php';  // Asegúrate de tener la conexión a la base de datos configurada
 
-// Obtener los parámetros enviados desde el enlace
-$form_id = $_GET['form_id'] ?? null;
-$hc_number = $_GET['hc_number'] ?? null;
 
 if ($form_id && $hc_number) {
 // Consulta para obtener los datos de patient_data, solicitud_procedimiento y consulta_data
@@ -98,6 +95,7 @@ if ($form_id && $hc_number) {
         $createdAtObj = new DateTime($createdAt);
         $createdAtDate = $createdAtObj->format('Y/m/d');
         $createdAtTime = $createdAtObj->format('H:i');
+        $cirujano_data = buscarUsuarioPorNombre($doctor, $mysqli);
     }
 }
 ?>
@@ -193,9 +191,6 @@ if ($form_id && $hc_number) {
     <tr>
         <td class="blanco_left" colspan="10">TRATAMIENTO TERAPEUTICO (ESPECIFIQUE NOMBRE Y TIEMPO DE ADMINISTRACIÓN):
         </td>
-    </tr>
-    <tr>
-        <td class="blanco" colspan="10"></td>
     </tr>
 </TABLE>
 <table>
@@ -1581,22 +1576,6 @@ if ($form_id && $hc_number) {
         </td>
     </tr>
     <tr>
-        <td colspan=45 class=blanco_left>&nbsp;
-        </td>
-        <td></td>
-        <td class=blanco_left>2.</td>
-        <td colspan=33 class=blanco_left>&nbsp;
-        </td>
-    </tr>
-    <tr>
-        <td colspan=45 class=blanco_left>&nbsp;
-        </td>
-        <td></td>
-        <td class=blanco_left>3.</td>
-        <td colspan=33 class=blanco_left>&nbsp;
-        </td>
-    </tr>
-    <tr>
         <td colspan=45 class=blanco_left>&nbsp;</td>
         <td></td>
         <td colspan=13 class=blanco_left>INVESTIGACIÓN PARAGONIMUS SPP</td>
@@ -1636,7 +1615,7 @@ if ($form_id && $hc_number) {
     <tr>
         <td colspan=11 class=blanco><?php echo htmlspecialchars($createdAtDate); ?></td>
         <td colspan=11 class=blanco><?php echo htmlspecialchars($createdAtTime); ?></td>
-        <td colspan=19 class=blanco>&nbsp;</td>
+        <td colspan=19 class=blanco><?php echo htmlspecialchars($cirujano_data['nombre']); ?></td>
         <td colspan=18 class=blanco>&nbsp;</td>
         <td colspan=20 class=blanco>&nbsp;</td>
     </tr>
@@ -1646,9 +1625,10 @@ if ($form_id && $hc_number) {
         <td colspan=34 class=verde>SELLO</td>
     </tr>
     <tr>
-        <td colspan=17 class=blanco>&nbsp;
-        </td>
-        <td colspan=28 class=blanco>&nbsp;</td>
+        <td colspan=17 class=blanco><?php echo htmlspecialchars($cirujano_data['cedula']); ?></td>
+        <td colspan=28
+            class=blanco><?php echo "<img src='" . htmlspecialchars($cirujano_data['firma']) . "' alt='Imagen de la firma' style='max-height: 25px;'>";
+            ?></td>
         <td colspan=34 class=blanco>&nbsp;
         </td>
     </tr>
@@ -2024,7 +2004,7 @@ if ($form_id && $hc_number) {
         <tr>
             <td colspan=11 class=blanco><?php echo htmlspecialchars($createdAtDate); ?></td>
             <td colspan=11 class=blanco><?php echo htmlspecialchars($createdAtTime); ?></td>
-            <td colspan=19 class=blanco>&nbsp;</td>
+            <td colspan=19 class=blanco><?php echo strtoupper($cirujano_data['nombre']); ?></td>
             <td colspan=18 class=blanco>&nbsp;</td>
             <td colspan=20 class=blanco>&nbsp;</td>
         </tr>
@@ -2034,9 +2014,11 @@ if ($form_id && $hc_number) {
             <td colspan=34 class=verde>SELLO</td>
         </tr>
         <tr>
-            <td colspan=17 class=blanco>&nbsp;
+            <td colspan=17 class=blanco><?php echo strtoupper($cirujano_data['cedula']); ?>
             </td>
-            <td colspan=28 class=blanco>&nbsp;</td>
+            <td colspan=28
+                class=blanco><?php echo "<img src='" . htmlspecialchars($cirujano_data['firma']) . "' alt='Imagen de la firma' style='max-height: 40px;'>";
+                ?></td>
             <td colspan=34 class=blanco>&nbsp;
             </td>
         </tr>

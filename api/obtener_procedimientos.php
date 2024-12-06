@@ -53,6 +53,7 @@ if ($result->num_rows > 0) {
             "exposicion" => $row['exposicion'],
             "hallazgo" => $row['hallazgo'],
             "operatorio" => $row['operatorio'],
+            "anestesia" => $row['anestesia'],
             "complicacionesoperatorio" => $row['complicacionesoperatorio'],
             "perdidasanguineat" => $row['perdidasanguineat'],
             "horas" => $row['horas'],

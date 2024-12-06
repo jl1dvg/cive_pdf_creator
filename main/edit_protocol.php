@@ -235,8 +235,17 @@ $stmt->close();
                                 <!-- Lateralidad -->
                                 <div class="form-group">
                                     <label for="lateralidad" class="form-label">Lateralidad :</label>
-                                    <input type="text" class="form-control" id="lateralidad" name="lateralidad"
-                                           value="<?php echo htmlspecialchars($data['lateralidad']); ?>">
+                                    <select class="form-select" id="lateralidad" name="lateralidad">
+                                        <option value="OD" <?= ($data['lateralidad'] == 'OD') ? 'selected' : '' ?>>
+                                            OD
+                                        </option>
+                                        <option value="OI" <?= ($data['lateralidad'] == 'OI') ? 'selected' : '' ?>>
+                                            OI
+                                        </option>
+                                        <option value="AO" <?= ($data['lateralidad'] == 'AO') ? 'selected' : '' ?>>
+                                            AO
+                                        </option>
+                                    </select>
                                 </div>
                             </section>
 
@@ -422,8 +431,23 @@ $stmt->close();
                                 <!-- Tipo de Anestesia -->
                                 <div class="form-group">
                                     <label for="tipo_anestesia" class="form-label">Tipo de Anestesia :</label>
-                                    <input type="text" class="form-control" id="tipo_anestesia" name="tipo_anestesia"
-                                           value="<?php echo htmlspecialchars($data['tipo_anestesia']); ?>">
+                                    <select class="form-select" id="tipo_anestesia" name="tipo_anestesia">
+                                        <option value="GENERAL" <?= ($data['tipo_anestesia'] == 'GENERAL') ? 'selected' : '' ?>>
+                                            GENERAL
+                                        </option>
+                                        <option value="LOCAL" <?= ($data['tipo_anestesia'] == 'LOCAL') ? 'selected' : '' ?>>
+                                            LOCAL
+                                        </option>
+                                        <option value="OTROS" <?= ($data['tipo_anestesia'] == 'OTROS') ? 'selected' : '' ?>>
+                                            OTROS
+                                        </option>
+                                        <option value="REGIONAL" <?= ($data['tipo_anestesia'] == 'REGIONAL') ? 'selected' : '' ?>>
+                                            REGIONAL
+                                        </option>
+                                        <option value="SEDACION" <?= ($data['tipo_anestesia'] == 'SEDACION') ? 'selected' : '' ?>>
+                                            SEDACION
+                                        </option>
+                                    </select>
                                 </div>
                             </section>
 

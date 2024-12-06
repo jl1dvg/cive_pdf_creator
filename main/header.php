@@ -168,8 +168,8 @@ define('BASE_URL', 'https://cive.consulmed.me/');
         <li><a href="<?php echo BASE_URL; ?>main/main.php"><i class="icon-Layout-4-blocks"><span
                             class="path1"></span><span class="path2"></span></i>Dashboard</a>
         </li>
-        <li><a href="<?php echo BASE_URL; ?>main/patients.php"><span class="path1"></span><span
-                        class="path2"></span></i>Pacientes</a>
+        <li><a href="<?php echo BASE_URL; ?>main/patients.php"><i class="icon-Compiling"><span
+                            class="path1"></span><span class="path2"></span></i>Pacientes</a>
             <ul>
                 <li><a href="<?php echo BASE_URL; ?>main/patients.php"><i class="icon-Commit"><span
                                     class="path1"></span><span
@@ -188,6 +188,9 @@ define('BASE_URL', 'https://cive.consulmed.me/');
                                     class="path1"></span><span
                                     class="path2"></span></i>Solicitudes de Cirugía</a></li>
             </uL>
+        </li>
+        <li><a href="<?php echo BASE_URL; ?>main/editors/protocolos_templates_list.php"><i class="icon-Air-ballon"><span
+                            class="path1"></span><span class="path2"></span></i>Editor de Protocolos</a>
         </li>
     </ul>
 </nav>
