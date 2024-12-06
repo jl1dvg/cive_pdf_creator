@@ -158,7 +158,7 @@ $stmt->close();
                                                 }
                                                 if (!empty($nombre_procedimiento)) {
                                                     echo "<tr class='hover-primary'>";
-                                                    echo "<td>" . $counter++ . "</td>";
+                                                    echo "<td>" . htmlspecialchars($row['form_id']) . "</td>";
                                                     echo "<td>" . htmlspecialchars($row['hc_number']) . "</td>";
                                                     echo "<td>" . htmlspecialchars($nombre_paciente) . "</td>";
                                                     echo "<td>" . htmlspecialchars($row['afiliacion']) . "</td>";
@@ -176,7 +176,7 @@ $stmt->close();
                                                     echo "<div class='btn-group'>";
                                                     echo "<a class='hover-primary dropdown-toggle no-caret' data-bs-toggle='dropdown'><i class='fa fa-ellipsis-h'></i></a>";
                                                     echo "<div class='dropdown-menu'>";
-                                                    echo "<a class='dropdown-item' href='solicitud_quirurgica/solicitud_qx_pdf.php?hc_number=" . urlencode($row['hc_number']) . "' target='_blank'>Generar PDF</a>";
+                                                    echo "<a class='dropdown-item' href='solicitud_quirurgica/solicitud_qx_pdf.php?hc_number=" . urlencode($row['hc_number']) . "&form_id=" . urlencode($row['form_id']) . "' target='_blank'>Generar PDF</a>";
                                                     echo "<a class='dropdown-item' href='#'>View Details</a>";
                                                     echo "<a class='dropdown-item' href='#'>Edit</a>";
                                                     echo "<a class='dropdown-item' href='#'>Delete</a>";
@@ -523,7 +523,7 @@ $stmt->close();
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
 <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+
 
 <script>
     // Custom sorting for dd/mm/yyyy format
@@ -608,9 +608,8 @@ $stmt->close();
             });
         }
 
-        // Exportar a Excel solo con las columnas específicas
+        // Exportar a Excel y descargar PDFs en un archivo ZIP
         $('#exportExcel').on('click', function () {
-            var wb = XLSX.utils.book_new();
             var ws_data = [];
             // Agregar una fila combinada en blanco y otra con el título "SOLICITUD DE LA DERIVACIÓN"
             ws_data.push(["", "", "", "", "", "", ""]);
@@ -636,11 +635,41 @@ $stmt->close();
                 var procedimiento = data[5];
 
                 ws_data.push([czg, provincia, canton, unidad, fecha, doctor, fecha_derivacion, nombre, coordinacion, unidad, ruc, procedimiento, ci]);
+
+                // Abrir PDF correspondiente a cada fila en una nueva pestaña
+                var pdfLink = 'solicitud_quirurgica/solicitud_qx_pdf.php?hc_number=' + encodeURIComponent(data[1]) + '&form_id=' + encodeURIComponent(data[0]);
+                var link = document.createElement('a');
+                link.href = pdfLink;
+                link.download = 'Solicitud_' + data[1] + '_' + data[0] + '.pdf';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
             });
 
-            var ws = XLSX.utils.aoa_to_sheet(ws_data);
-            XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
-            XLSX.writeFile(wb, 'SurgeryDataFiltered.xlsx');
+            // Enviar los datos al servidor mediante una petición POST
+            fetch('exportar_excel.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({data: ws_data})
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error al exportar el archivo Excel');
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    // Descargar el archivo Excel generado
+                    var link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = 'SurgeryDataFiltered.xlsx';
+                    link.click();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
         });
     });
 </script>
