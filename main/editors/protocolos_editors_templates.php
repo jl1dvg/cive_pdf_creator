@@ -18,8 +18,23 @@ if (!isset($_GET['id'])) {
 
 $idPrimaria = $_GET['id'];
 
-// Cargar los datos del protocolo
-$sql = "SELECT * FROM procedimientos WHERE id = ?";
+// Consulta con JOIN para cargar los datos de procedimientos y evolucion005
+$sql = "
+    SELECT 
+        p.*, 
+        e.pre_evolucion, 
+        e.pre_indicacion, 
+        e.post_evolucion, 
+        e.post_indicacion, 
+        e.alta_evolucion, 
+        e.alta_indicacion
+    FROM 
+        procedimientos p
+    LEFT JOIN 
+        evolucion005 e ON p.id = e.id
+    WHERE 
+        p.id = ?";
+
 $stmt = $mysqli->prepare($sql);
 $stmt->bind_param("s", $idPrimaria);
 $stmt->execute();
@@ -217,6 +232,65 @@ $stmt->close();
                                                           class="form-control"
                                                           rows="4"><?= htmlspecialchars($protocolo['operatorio']) ?></textarea>
                                             </div>
+                                            <h4 class="box-title text-info mb-0 mt-20"><i
+                                                        class="ti-pencil-alt me-15"></i>
+                                                Evolución</h4>
+                                            <hr class="my-15">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="hallazgo">Evolución Pre Quirúrgica</label>
+                                                        <textarea rows="3" name="pre_evolucion" id="pre_evolucion"
+                                                                  class="form-control"><?= htmlspecialchars($protocolo['pre_evolucion']) ?>
+                                                        </textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="horas">Indicación Pre Quirúrgica</label>
+                                                        <textarea rows="3" name="pre_indicacion" id="pre_indicacion"
+                                                                  class="form-control"><?= htmlspecialchars($protocolo['pre_indicacion']) ?>
+                                                        </textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="hallazgo">Evolución Post Quirúrgica</label>
+                                                        <textarea rows="3" name="post_evolucion" id="post_evolucion"
+                                                                  class="form-control"><?= htmlspecialchars($protocolo['post_evolucion']) ?>
+                                                        </textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="horas">Indicación Post Quirúrgica</label>
+                                                        <textarea rows="3" name="post_indicacion" id="post_indicacion"
+                                                                  class="form-control"><?= htmlspecialchars($protocolo['post_indicacion']) ?>
+                                                        </textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="hallazgo">Evolución Alta Quirúrgica</label>
+                                                        <textarea rows="3" name="alta_evolucion" id="alta_evolucion"
+                                                                  class="form-control"><?= htmlspecialchars($protocolo['alta_evolucion']) ?>
+                                                        </textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="horas">Indicación Alta Quirúrgica</label>
+                                                        <textarea rows="3" name="alta_indicacion" id="alta_indicacion"
+                                                                  class="form-control"><?= htmlspecialchars($protocolo['alta_indicacion']) ?>
+                                                        </textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                             <h4 class="box-title text-info mb-0"><i class="ti-list me-15"></i> Lista de
                                                 insumos</h4>
                                             <hr class="my-15"> <?php
@@ -289,20 +363,20 @@ $stmt->close();
                                                             }
                                                         }
                                                     } else {
-            // Si no hay insumos, mostrar una fila con celdas predeterminadas para agregar el primer insumo
-            echo '<tr class="categoria-equipos">';
-            echo '<td><select class="form-control categoria-select" name="categoria[]">';
-            foreach ($categorias as $cat) {
-                echo '<option value="' . htmlspecialchars($cat) . '">' . htmlspecialchars(str_replace('_', ' ', $cat)) . '</option>';
-            }
-            echo '</select></td>';
-            echo '<td><select class="form-control nombre-select" name="nombre[]">';
-            foreach ($insumosDisponibles['equipos'] as $nombre) {
-                echo '<option value="' . htmlspecialchars($nombre) . '">' . htmlspecialchars($nombre) . '</option>';
-            }
-            echo '</select></td>';
-            echo '<td contenteditable="true" data-cantidad="1">1</td>';
-            echo '<td><button class="delete-btn btn btn-danger"><i class="fa fa-minus"></i></button> <button class="add-row-btn btn btn-success"><i class="fa fa-plus"></i></button></td>';
+                                                        // Si no hay insumos, mostrar una fila con celdas predeterminadas para agregar el primer insumo
+                                                        echo '<tr class="categoria-equipos">';
+                                                        echo '<td><select class="form-control categoria-select" name="categoria[]">';
+                                                        foreach ($categorias as $cat) {
+                                                            echo '<option value="' . htmlspecialchars($cat) . '">' . htmlspecialchars(str_replace('_', ' ', $cat)) . '</option>';
+                                                        }
+                                                        echo '</select></td>';
+                                                        echo '<td><select class="form-control nombre-select" name="nombre[]">';
+                                                        foreach ($insumosDisponibles['equipos'] as $nombre) {
+                                                            echo '<option value="' . htmlspecialchars($nombre) . '">' . htmlspecialchars($nombre) . '</option>';
+                                                        }
+                                                        echo '</select></td>';
+                                                        echo '<td contenteditable="true" data-cantidad="1">1</td>';
+                                                        echo '<td><button class="delete-btn btn btn-danger"><i class="fa fa-minus"></i></button> <button class="add-row-btn btn btn-success"><i class="fa fa-plus"></i></button></td>';
                                                         echo '</tr>';
                                                     }
                                                     ?>

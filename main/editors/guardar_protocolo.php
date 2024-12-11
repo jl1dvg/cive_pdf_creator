@@ -19,22 +19,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $imagen_link = $_POST['imagen_link'];
     $operatorio = $_POST['operatorio'];
 
-    $insumos = !empty($_POST['insumos']) ? $_POST['insumos'] : json_encode([]); // Asegurarse de que insumos no esté vacío
+    $pre_evolucion = $_POST['pre_evolucion'];
+    $pre_indicacion = $_POST['pre_indicacion'];
+    $post_evolucion = $_POST['post_evolucion'];
+    $post_indicacion = $_POST['post_indicacion'];
+    $alta_evolucion = $_POST['alta_evolucion'];
+    $alta_indicacion = $_POST['alta_indicacion'];
 
-    // Actualizar los datos en la base de datos
-    $sql = "UPDATE procedimientos SET 
-                cirugia = ?, 
-                categoria = ?, 
-                membrete = ?,
-                dieresis = ?,
-                exposicion = ?,
-                hallazgo = ?,
-                horas = ?,
-                imagen_link = ?, 
-                operatorio = ? 
-            WHERE id = ?";
+    $insumos = !empty($_POST['insumos']) ? $_POST['insumos'] : json_encode([]);
+    $medicamentos = !empty($_POST['medicamentos']) ? $_POST['medicamentos'] : json_encode([]);
+
+    // Depuración: Verificar el contenido de insumos y medicamentos
+    file_put_contents('debug_data.txt', "Insumos: " . print_r($insumos, true) . PHP_EOL, FILE_APPEND);
+
+    // Validar JSON
+    if (json_decode($insumos) === null) {
+        echo json_encode(["success" => false, "message" => "El JSON de insumos no es válido."]);
+        exit;
+    }
+
+    // Actualizar procedimientos y evolución
+    $sql = "UPDATE procedimientos p
+            JOIN evolucion005 e ON p.id = e.id
+            SET 
+                p.cirugia = ?, 
+                p.categoria = ?, 
+                p.membrete = ?,
+                p.dieresis = ?,
+                p.exposicion = ?,
+                p.hallazgo = ?,
+                p.horas = ?,
+                p.imagen_link = ?, 
+                p.operatorio = ?,
+                e.pre_evolucion = ?, 
+                e.pre_indicacion = ?, 
+                e.post_evolucion = ?, 
+                e.post_indicacion = ?, 
+                e.alta_evolucion = ?, 
+                e.alta_indicacion = ? 
+            WHERE p.id = ?";
+
     $stmt = $mysqli->prepare($sql);
-    $stmt->bind_param("ssssssssss", $cirugia, $categoria, $membrete, $dieresis, $exposicion, $hallazgo, $horas, $imagen_link, $operatorio, $idPrimaria);
+    $stmt->bind_param(
+        "ssssssssssssssss",
+        $cirugia, $categoria, $membrete, $dieresis, $exposicion, $hallazgo, $horas,
+        $imagen_link, $operatorio, $pre_evolucion, $pre_indicacion, $post_evolucion,
+        $post_indicacion, $alta_evolucion, $alta_indicacion, $idPrimaria
+    );
 
     if ($stmt->execute()) {
         // Verificar si insumos_pack existe, si no, insertarlo
