@@ -27,18 +27,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $alta_indicacion = $_POST['alta_indicacion'];
 
     $insumos = !empty($_POST['insumos']) ? $_POST['insumos'] : json_encode([]);
-    $medicamentos = !empty($_POST['medicamentos']) ? $_POST['medicamentos'] : json_encode([]);
+    $medicamentos = !empty($_POST['medicamentos']) ? $_POST['medicamentos'] : json_encode([]); // Agregar medicamentos
 
-    // Depuración: Verificar el contenido de insumos y medicamentos
-    file_put_contents('debug_data.txt', "Insumos: " . print_r($insumos, true) . PHP_EOL, FILE_APPEND);
-
-    // Validar JSON
-    if (json_decode($insumos) === null) {
-        echo json_encode(["success" => false, "message" => "El JSON de insumos no es válido."]);
-        exit;
-    }
-
-    // Actualizar procedimientos y evolución
+    // Actualizar los datos en la base de datos
     $sql = "UPDATE procedimientos p
             JOIN evolucion005 e ON p.id = e.id
             SET 
@@ -110,8 +101,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt_insumos->close();
         }
         $stmt_check->close();
+
+        // Verificar si medicamentos existe, si no, insertarlo
+        $sql_check_medicamentos = "SELECT COUNT(*) AS count FROM kardex WHERE procedimiento_id = ?";
+        $stmt_check_med = $mysqli->prepare($sql_check_medicamentos);
+        $stmt_check_med->bind_param("s", $idPrimaria);
+        $stmt_check_med->execute();
+        $result_check_med = $stmt_check_med->get_result();
+        $row_check_med = $result_check_med->fetch_assoc();
+
+        if ($row_check_med['count'] == 0) {
+            // Insertar nuevo registro en kardex
+            $sql_insert_medicamentos = "INSERT INTO kardex (procedimiento_id, medicamentos) VALUES (?, ?)";
+            $stmt_insert_med = $mysqli->prepare($sql_insert_medicamentos);
+            $stmt_insert_med->bind_param("ss", $idPrimaria, $medicamentos);
+            $stmt_insert_med->execute();
+            $stmt_insert_med->close();
     } else {
-        // Depuración de errores al ejecutar la consulta
+            // Actualizar los medicamentos
+            $sql_medicamentos = "UPDATE kardex SET medicamentos = ? WHERE procedimiento_id = ?";
+            $stmt_medicamentos = $mysqli->prepare($sql_medicamentos);
+            $stmt_medicamentos->bind_param("ss", $medicamentos, $idPrimaria);
+            $stmt_medicamentos->execute();
+            $stmt_medicamentos->close();
+        }
+        $stmt_check_med->close();
+
+        echo json_encode(["success" => true, "message" => "Datos actualizados correctamente."]);
+    } else {
         file_put_contents('sql_error.txt', "Error al ejecutar la consulta: " . $stmt->error . PHP_EOL, FILE_APPEND);
         echo json_encode(["success" => false, "message" => "Error al ejecutar la consulta: " . $stmt->error]);
     }
@@ -121,8 +138,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 } else {
     // Depuración: Error al preparar la consulta
     file_put_contents('sql_error.txt', "Error al preparar la consulta: " . $mysqli->error . PHP_EOL, FILE_APPEND);
-    echo json_encode(["success" => false, "message" => "Error al preparar la consulta SQL. Revisa el archivo sql_error.txt para más detalles."]);
+    echo json_encode(["success" => false, "message" => "Error al preparar la consulta SQL."]);
 }
 
 // Cerrar la conexión
 $mysqli->close();
+?>
