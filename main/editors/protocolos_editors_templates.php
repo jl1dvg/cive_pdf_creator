@@ -537,17 +537,20 @@ $stmt->close();
                 method: 'POST',
                 body: formData
             })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Error en la respuesta de la red');
-                    }
-                    return response.json();  // Asegúrate de que la respuesta sea JSON
-                })
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire("Datos Actualizados!", data.message, "success");
-                    } else {
-                        Swal.fire("Error", data.message, "error");
+                .then(response => response.text()) // Usar .text() para depurar el texto completo
+                .then(text => {
+                    try {
+                        console.log("Respuesta completa del servidor:", text); // Verificar respuesta completa
+                        const data = JSON.parse(text); // Intentar analizar como JSON
+
+                        if (data.success) {
+                            Swal.fire("Datos Actualizados!", data.message, "success");
+                        } else {
+                            Swal.fire("Error", data.message, "error");
+                        }
+                    } catch (error) {
+                        console.error("Error al analizar el JSON:", error, text);
+                        Swal.fire("Error", "Respuesta inesperada del servidor.", "error");
                     }
                 })
                 .catch(error => {
