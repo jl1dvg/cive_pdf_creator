@@ -97,15 +97,15 @@ if ($form_id && $hc_number) {
         // 2. Decodificar JSON de exámenes si es necesario
         $examenesArray = json_decode($examenes, true);
 
-        // 3. Calcular la edad del paciente
-        $birthDateObj = new DateTime($birthDate);
-        $procedureDateObj = new DateTime($procedureDate);
-        $edadPaciente = $birthDateObj->diff($procedureDateObj)->y;
-
         // 4. Separar la fecha y la hora de created_at
         $createdAtObj = new DateTime($createdAt);
         $createdAtDate = $createdAtObj->format('Y/m/d');
         $createdAtTime = $createdAtObj->format('H:i');
+
+        // 3. Calcular la edad del paciente
+        $birthDateObj = new DateTime($birthDate);
+        $procedureDateObj = new DateTime($createdAtDate);
+        $edadPaciente = $birthDateObj->diff($procedureDateObj)->y;
 
         $cirujano_data = buscarUsuarioPorNombre($doctor, $mysqli);
     }
@@ -248,89 +248,89 @@ Exámenes prequirúrgicos y valoración cardiológica:
     }
 }
 ?>
-    <TABLE>
-        <tr>
-            <td colspan='71' class='morado'>A. DATOS DEL ESTABLECIMIENTO
-                Y USUARIO / PACIENTE
-            </td>
-        </tr>
-        <tr>
-            <td colspan='15' height='27' class='verde'>INSTITUCIÓN DEL SISTEMA</td>
-            <td colspan='6' class='verde'>UNICÓDIGO</td>
-            <td colspan='18' class='verde'>ESTABLECIMIENTO DE SALUD</td>
-            <td colspan='18' class='verde'>NÚMERO DE HISTORIA CLÍNICA ÚNICA</td>
-            <td colspan='14' class='verde' style='border-right: none'>NÚMERO DE ARCHIVO</td>
-        </tr>
-        <tr>
-            <td colspan='15' height='27' class='blanco'><?php echo $insurance; ?></td>
-            <td colspan='6' class='blanco'>&nbsp;</td>
-            <td colspan='18' class='blanco'>CIVE</td>
-            <td colspan='18' class='blanco'><?php echo $historyNumber; ?></td>
-            <td colspan='14' class='blanco' style='border-right: none'><?php echo $historyNumber; ?></td>
-        </tr>
-        <tr>
-            <td colspan='15' rowspan='2' height='41' class='verde' style='height:31.0pt;'>PRIMER APELLIDO</td>
-            <td colspan='13' rowspan='2' class='verde'>SEGUNDO APELLIDO</td>
-            <td colspan='13' rowspan='2' class='verde'>PRIMER NOMBRE</td>
-            <td colspan='10' rowspan='2' class='verde'>SEGUNDO NOMBRE</td>
-            <td colspan='3' rowspan='2' class='verde'>SEXO</td>
-            <td colspan='6' rowspan='2' class='verde'>FECHA NACIMIENTO</td>
-            <td colspan='3' rowspan='2' class='verde'>EDAD</td>
-            <td colspan='8' class='verde' style='border-right: none; border-bottom: none'>CONDICIÓN EDAD <font
-                        class='font7'>(MARCAR)</font></td>
-        </tr>
-        <tr>
-            <td colspan='2' height='17' class='verde'>H</td>
-            <td colspan='2' class='verde'>D</td>
-            <td colspan='2' class='verde'>M</td>
-            <td colspan='2' class='verde' style='border-right: none'>A</td>
-        </tr>
-        <tr>
-            <td colspan='15' height='27' class='blanco'><?php echo $lname; ?></td>
-            <td colspan='13' class='blanco'><?php echo $lname2; ?></td>
-            <td colspan='13' class='blanco'><?php echo $fname; ?></td>
-            <td colspan='10' class='blanco'><?php echo $mname; ?></td>
-            <td colspan='3' class='blanco'><?php echo $gender; ?></td>
-            <td colspan='6' class='blanco'><?php echo $birthDate; ?></td>
-            <td colspan='3' class='blanco'><?php echo $edadPaciente; ?></td>
-            <td colspan='2' class='blanco'>&nbsp;</td>
-            <td colspan='2' class='blanco'>&nbsp;</td>
-            <td colspan='2' class='blanco'>&nbsp;</td>
-            <td colspan='2' class='blanco' style='border-right: none'>&nbsp;</td>
-        </tr>
-    </TABLE>
-    <table>
-        <colgroup>
-            <col class="xl76" span="71">
-        </colgroup>
-        <tr>
-            <td colspan="71" class="morado">B. CUADRO CLÍNICO DE INTERCONSULTA</td>
-        </tr>
-        <tr>
-            <td colspan="71" class="blanco_left"><?php
-                $reason = $motivoConsulta . ' ' . $enfermedadActual;
-                echo wordwrap($reason, 140, "</td>
+<TABLE>
+    <tr>
+        <td colspan='71' class='morado'>A. DATOS DEL ESTABLECIMIENTO
+            Y USUARIO / PACIENTE
+        </td>
+    </tr>
+    <tr>
+        <td colspan='15' height='27' class='verde'>INSTITUCIÓN DEL SISTEMA</td>
+        <td colspan='6' class='verde'>UNICÓDIGO</td>
+        <td colspan='18' class='verde'>ESTABLECIMIENTO DE SALUD</td>
+        <td colspan='18' class='verde'>NÚMERO DE HISTORIA CLÍNICA ÚNICA</td>
+        <td colspan='14' class='verde' style='border-right: none'>NÚMERO DE ARCHIVO</td>
+    </tr>
+    <tr>
+        <td colspan='15' height='27' class='blanco'><?php echo $insurance; ?></td>
+        <td colspan='6' class='blanco'>&nbsp;</td>
+        <td colspan='18' class='blanco'>CIVE</td>
+        <td colspan='18' class='blanco'><?php echo $historyNumber; ?></td>
+        <td colspan='14' class='blanco' style='border-right: none'><?php echo $historyNumber; ?></td>
+    </tr>
+    <tr>
+        <td colspan='15' rowspan='2' height='41' class='verde' style='height:31.0pt;'>PRIMER APELLIDO</td>
+        <td colspan='13' rowspan='2' class='verde'>SEGUNDO APELLIDO</td>
+        <td colspan='13' rowspan='2' class='verde'>PRIMER NOMBRE</td>
+        <td colspan='10' rowspan='2' class='verde'>SEGUNDO NOMBRE</td>
+        <td colspan='3' rowspan='2' class='verde'>SEXO</td>
+        <td colspan='6' rowspan='2' class='verde'>FECHA NACIMIENTO</td>
+        <td colspan='3' rowspan='2' class='verde'>EDAD</td>
+        <td colspan='8' class='verde' style='border-right: none; border-bottom: none'>CONDICIÓN EDAD <font
+                    class='font7'>(MARCAR)</font></td>
+    </tr>
+    <tr>
+        <td colspan='2' height='17' class='verde'>H</td>
+        <td colspan='2' class='verde'>D</td>
+        <td colspan='2' class='verde'>M</td>
+        <td colspan='2' class='verde' style='border-right: none'>A</td>
+    </tr>
+    <tr>
+        <td colspan='15' height='27' class='blanco'><?php echo $lname; ?></td>
+        <td colspan='13' class='blanco'><?php echo $lname2; ?></td>
+        <td colspan='13' class='blanco'><?php echo $fname; ?></td>
+        <td colspan='10' class='blanco'><?php echo $mname; ?></td>
+        <td colspan='3' class='blanco'><?php echo $gender; ?></td>
+        <td colspan='6' class='blanco'><?php echo $birthDate; ?></td>
+        <td colspan='3' class='blanco'><?php echo $edadPaciente; ?></td>
+        <td colspan='2' class='blanco'>&nbsp;</td>
+        <td colspan='2' class='blanco'>&nbsp;</td>
+        <td colspan='2' class='blanco'>&nbsp;</td>
+        <td colspan='2' class='blanco' style='border-right: none'>&nbsp;</td>
+    </tr>
+</TABLE>
+<table>
+    <colgroup>
+        <col class="xl76" span="71">
+    </colgroup>
+    <tr>
+        <td colspan="71" class="morado">B. CUADRO CLÍNICO DE INTERCONSULTA</td>
+    </tr>
+    <tr>
+        <td colspan="71" class="blanco_left"><?php
+            $reason = $motivoConsulta . ' ' . $enfermedadActual;
+            echo wordwrap($reason, 140, "</td>
     </tr>
     <tr>
         <td colspan=\"71\" class=\"blanco_left\">"); ?></td>
-        </tr>
-        <tr>
-            <td colspan="71" class="blanco_left"></td>
-        </tr>
-    </table>
-    <table>
-        <tr>
-            <td class="morado">C. RESUMEN DEL CRITERIO CLÍNICO</td>
-        </tr>
-        <tr>
-            <td class="blanco_left">
-                <?php
-                $examenAI = generateEnfermedadProblemaActual($examenFisico);
-                echo wordwrap($examenAI, 150, "</TD></TR><TR><TD class='blanco_left'>");
-                ?>
-            </td>
-        </tr>
-    </table>
+    </tr>
+    <tr>
+        <td colspan="71" class="blanco_left"></td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td class="morado">C. RESUMEN DEL CRITERIO CLÍNICO</td>
+    </tr>
+    <tr>
+        <td class="blanco_left">
+            <?php
+            $examenAI = generateEnfermedadProblemaActual($examenFisico);
+            echo wordwrap($examenAI, 150, "</TD></TR><TR><TD class='blanco_left'>");
+            ?>
+        </td>
+    </tr>
+</table>
 <?php
 // Generar la tabla con el nuevo formato para imprimir diagnósticos
 // Inicializar variables de control
@@ -398,89 +398,89 @@ for ($i = 0; $i < $rows; $i++) {
 // Cerrar la tabla
 echo "</table>";
 ?>
-    <table>
-        <tr>
-            <td class="morado">E. PLAN DE DIAGNÓSTICO PROPUESTO</td>
-        </tr>
-        <tr>
-            <td class="blanco" style="border-right: none; text-align: left">
-                <?php
-                echo wordwrap($plan, 140, "</TD></TR><TR><TD class='blanco_left'>");
-                ?>
-        </tr>
-    </table>
-    <table>
-        <tr>
-            <td colspan="71" class="morado">F. PLAN TERAPEÚTICO PROPUESTO</td>
-        </tr>
-        <tr>
-            <td colspan="71" class="blanco_left">
-                <?php
-                if ($eye == 'D') {
-                    $eye = 'ojo derecho.';
-                } elseif ($eye == 'I') {
-                    $eye = 'ojo izquierdo';
-                }
-                $planAI = $nombre_procedimiento . ' en ' . $eye . '. Se solicita a' . $insurance . ' autorización para realización de exámenes prequirúrgicos, valoración y tratamiento integral en cardiología y electrocardiograma.';
-                echo wordwrap($planAI, 150, "</TD></TR><TR><TD colspan=71 class='blanco_left'>");
-                ?>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="71" class="blanco" style="border-right: none; text-align: left"></td>
-        </tr>
-        <tr>
-            <td colspan="71" class="blanco" style="border-right: none; text-align: left"></td>
-        </tr>
-        <tr>
-            <td colspan="71" class="blanco" style="border-right: none; text-align: left"></td>
-        </tr>
-        <tr>
-            <td colspan="71" class="blanco" style="border-right: none; text-align: left"></td>
-        </tr>
-    </table>
-    <table>
-        <tr>
-            <td colspan="71" class="morado">G. DATOS DEL PROFESIONAL RESPONSABLE</td>
-        </tr>
-        <tr class="xl78">
-            <td colspan="8" class="verde">FECHA<br>
-                <font class="font5">(aaaa-mm-dd)</font>
-            </td>
-            <td colspan="7" class="verde">HORA<br>
-                <font class="font5">(hh:mm)</font>
-            </td>
-            <td colspan="21" class="verde">PRIMER NOMBRE</td>
-            <td colspan="19" class="verde">PRIMER APELLIDO</td>
-            <td colspan="16" class="verde">SEGUNDO APELLIDO</td>
-        </tr>
-        <tr>
-            <td colspan="8" class="blanco"><?php echo htmlspecialchars($createdAtDate); ?></td>
-            <td colspan="7" class="blanco"><?php echo htmlspecialchars($createdAtTime); ?></td>
-            <td colspan="21" class="blanco"><?php echo htmlspecialchars($cirujano_data['nombre']); ?></td>
-            <td colspan="19" class="blanco"></td>
-            <td colspan="16" class="blanco"></td>
-        </tr>
-        <tr>
-            <td colspan="15" class="verde">NÚMERO DE DOCUMENTO DE IDENTIFICACIÓN</td>
-            <td colspan="26" class="verde">FIRMA</td>
-            <td colspan="30" class="verde">SELLO</td>
-        </tr>
-        <tr>
-            <td colspan="15" class="blanco"
-                style="height: 40px"><?php echo htmlspecialchars($cirujano_data['cedula']); ?></td>
-            <td colspan="26" class="blanco">&nbsp;</td>
-            <td colspan="30" class="blanco">&nbsp;</td>
-        </tr>
-    </table>
-    <table style="border: none">
-        <TR>
-            <TD colspan="6" HEIGHT=24 ALIGN=LEFT VALIGN=TOP><B><FONT SIZE=1
-                                                                     COLOR="#000000">SNS-MSP/HCU-form.007/2021</FONT></B>
-            </TD>
-            <TD colspan="3" ALIGN=RIGHT VALIGN=TOP><B><FONT SIZE=3 COLOR="#000000">INTERCONSULTA -
-                        INFORME</FONT></B>
-            </TD>
-        </TR>
-        ]
-    </TABLE>
+<table>
+    <tr>
+        <td class="morado">E. PLAN DE DIAGNÓSTICO PROPUESTO</td>
+    </tr>
+    <tr>
+        <td class="blanco" style="border-right: none; text-align: left">
+            <?php
+            echo wordwrap($plan, 140, "</TD></TR><TR><TD class='blanco_left'>");
+            ?>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td colspan="71" class="morado">F. PLAN TERAPEÚTICO PROPUESTO</td>
+    </tr>
+    <tr>
+        <td colspan="71" class="blanco_left">
+            <?php
+            if ($eye == 'D') {
+                $eye = 'ojo derecho.';
+            } elseif ($eye == 'I') {
+                $eye = 'ojo izquierdo';
+            }
+            $planAI = $nombre_procedimiento . ' en ' . $eye . '. Se solicita a' . $insurance . ' autorización para realización de exámenes prequirúrgicos, valoración y tratamiento integral en cardiología y electrocardiograma.';
+            echo wordwrap($planAI, 150, "</TD></TR><TR><TD colspan=71 class='blanco_left'>");
+            ?>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="71" class="blanco" style="border-right: none; text-align: left"></td>
+    </tr>
+    <tr>
+        <td colspan="71" class="blanco" style="border-right: none; text-align: left"></td>
+    </tr>
+    <tr>
+        <td colspan="71" class="blanco" style="border-right: none; text-align: left"></td>
+    </tr>
+    <tr>
+        <td colspan="71" class="blanco" style="border-right: none; text-align: left"></td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td colspan="71" class="morado">G. DATOS DEL PROFESIONAL RESPONSABLE</td>
+    </tr>
+    <tr class="xl78">
+        <td colspan="8" class="verde">FECHA<br>
+            <font class="font5">(aaaa-mm-dd)</font>
+        </td>
+        <td colspan="7" class="verde">HORA<br>
+            <font class="font5">(hh:mm)</font>
+        </td>
+        <td colspan="21" class="verde">PRIMER NOMBRE</td>
+        <td colspan="19" class="verde">PRIMER APELLIDO</td>
+        <td colspan="16" class="verde">SEGUNDO APELLIDO</td>
+    </tr>
+    <tr>
+        <td colspan="8" class="blanco"><?php echo htmlspecialchars($createdAtDate); ?></td>
+        <td colspan="7" class="blanco"><?php echo htmlspecialchars($createdAtTime); ?></td>
+        <td colspan="21" class="blanco"><?php echo htmlspecialchars($cirujano_data['nombre']); ?></td>
+        <td colspan="19" class="blanco"></td>
+        <td colspan="16" class="blanco"></td>
+    </tr>
+    <tr>
+        <td colspan="15" class="verde">NÚMERO DE DOCUMENTO DE IDENTIFICACIÓN</td>
+        <td colspan="26" class="verde">FIRMA</td>
+        <td colspan="30" class="verde">SELLO</td>
+    </tr>
+    <tr>
+        <td colspan="15" class="blanco"
+            style="height: 40px"><?php echo htmlspecialchars($cirujano_data['cedula']); ?></td>
+        <td colspan="26" class="blanco">&nbsp;</td>
+        <td colspan="30" class="blanco">&nbsp;</td>
+    </tr>
+</table>
+<table style="border: none">
+    <TR>
+        <TD colspan="6" HEIGHT=24 ALIGN=LEFT VALIGN=TOP><B><FONT SIZE=1
+                                                                 COLOR="#000000">SNS-MSP/HCU-form.007/2021</FONT></B>
+        </TD>
+        <TD colspan="3" ALIGN=RIGHT VALIGN=TOP><B><FONT SIZE=3 COLOR="#000000">INTERCONSULTA -
+                    INFORME</FONT></B>
+        </TD>
+    </TR>
+    ]
+</TABLE>

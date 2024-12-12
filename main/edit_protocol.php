@@ -276,8 +276,10 @@ $stmt->close();
                                             $stmt->execute();
                                             $usersResult = $stmt->get_result();
 
+                                            // Añadir una opción en blanco que sea seleccionable
+                                            echo '<option value="" ' . (empty($user) ? 'selected' : '') . '></option>';
+
                                             // Verificar si se obtuvieron resultados
-                                            echo '<option value="" disabled selected></option>'; // Añadir opción vacía al inicio
                                             if ($usersResult->num_rows > 0) {
                                                 // Iterar sobre los resultados para crear las opciones del select
                                                 while ($row = $usersResult->fetch_assoc()) {
@@ -293,8 +295,8 @@ $stmt->close();
                                             }
                                         }
 
-                                        // Comienza el HTML
                                         ?>
+
                                         <div class="form-group">
                                             <label for="mainSurgeon" class="form-label">Cirujano Principal :</label>
                                             <select class="form-select" id="mainSurgeon" name="cirujano_1"

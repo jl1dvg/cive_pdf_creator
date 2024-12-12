@@ -301,13 +301,14 @@ $stmt->close();
                                             $stmt->execute();
                                             $result = $stmt->get_result();
                                             $row = $result->fetch_assoc();
-                                            $medicamentos = json_decode($row['medicamentos'], true); // Decodificar el JSON
 
+                                            // Decodificar el JSON de medicamentos
+                                            $medicamentos = !empty($row['medicamentos']) ? json_decode($row['medicamentos'], true) : [];
                                             if (json_last_error() !== JSON_ERROR_NONE) {
                                                 die("Error al decodificar el JSON: " . json_last_error_msg());
                                             }
 
-                                            // Consulta para obtener las opciones de medicamentos desde la tabla medicamentos
+                                            // Consulta para obtener opciones de medicamentos desde la tabla medicamentos
                                             $sqlOpciones = "SELECT DISTINCT medicamento FROM medicamentos ORDER BY medicamento";
                                             $resultOpciones = $mysqli->query($sqlOpciones);
 
@@ -315,6 +316,10 @@ $stmt->close();
                                             while ($rowOpciones = $resultOpciones->fetch_assoc()) {
                                                 $opcionesMedicamentos[] = $rowOpciones['medicamento'];
                                             }
+
+                                            // Opciones estáticas para Vías de Administración y Responsables
+                                            $vias = ['INTRAVENOSA', 'VIA INFILTRATIVA', 'SUBCONJUNTIVAL', 'TOPICA', 'INTRAVITREA'];
+                                            $responsables = ['Asistente', 'Anestesiólogo', 'Cirujano Principal'];
                                             ?>
 
                                             <!-- Tabla HTML -->
@@ -332,44 +337,52 @@ $stmt->close();
                                                     </thead>
                                                     <tbody>
                                                     <?php
+                                                    // Rellenar filas con datos de medicamentos o una fila vacía si no hay datos
                                                     if (!empty($medicamentos)) {
                                                         foreach ($medicamentos as $item) {
                                                             echo '<tr>';
+                                                            // Columna Medicamento
                                                             echo '<td><select class="form-control medicamento-select" name="medicamento[]">';
                                                             foreach ($opcionesMedicamentos as $opcion) {
-                                                                $selected = ($opcion == $item['medicamento']) ? 'selected' : '';
+                                                                $selected = ($opcion === $item['medicamento']) ? 'selected' : '';
                                                                 echo '<option value="' . htmlspecialchars($opcion) . '" ' . $selected . '>' . htmlspecialchars($opcion) . '</option>';
                                                             }
                                                             echo '</select></td>';
-                                                            echo '<td contenteditable="true">' . htmlspecialchars($item['dosis']) . '</td>';
-                                                            echo '<td contenteditable="true">' . htmlspecialchars($item['frecuencia']) . '</td>';
+
+                                                            // Columnas Dosis y Frecuencia
+                                                            echo '<td contenteditable="true" data-dosis="' . htmlspecialchars($item['dosis'] ?? '') . '">' . htmlspecialchars($item['dosis'] ?? '') . '</td>';
+                                                            echo '<td contenteditable="true" data-frecuencia="' . htmlspecialchars($item['frecuencia'] ?? '') . '">' . htmlspecialchars($item['frecuencia'] ?? '') . '</td>';
+
+                                                            // Columna Vía de Administración
                                                             echo '<td><select class="form-control via-select" name="via_administracion[]">';
-                                                            $vias = ['INTRAVENOSA', 'VIA INFILTRATIVA', 'SUBCONJUNTIVAL', 'TOPICA', 'INTRAVITREA'];
                                                             foreach ($vias as $via) {
-                                                                $selected = ($via == $item['via_administracion']) ? 'selected' : '';
+                                                                $selected = ($via === $item['via_administracion']) ? 'selected' : '';
                                                                 echo '<option value="' . htmlspecialchars($via) . '" ' . $selected . '>' . htmlspecialchars($via) . '</option>';
                                                             }
                                                             echo '</select></td>';
+
+                                                            // Columna Responsable
                                                             echo '<td><select class="form-control responsable-select" name="responsable[]">';
-                                                            $responsables = ['Asistente', 'Anestesiólogo', 'Cirujano Principal'];
                                                             foreach ($responsables as $responsable) {
-                                                                $selected = ($responsable == $item['responsable']) ? 'selected' : '';
+                                                                $selected = ($responsable === $item['responsable']) ? 'selected' : '';
                                                                 echo '<option value="' . htmlspecialchars($responsable) . '" ' . $selected . '>' . htmlspecialchars($responsable) . '</option>';
                                                             }
                                                             echo '</select></td>';
+
+                                                            // Columna Acciones
                                                             echo '<td><button class="delete-btn btn btn-danger"><i class="fa fa-minus"></i></button> <button class="add-row-btn btn btn-success"><i class="fa fa-plus"></i></button></td>';
                                                             echo '</tr>';
                                                         }
                                                     } else {
-                                                        // Si no hay medicamentos, mostrar una fila vacía para comenzar
+                                                        // Fila vacía por defecto
                                                         echo '<tr>';
                                                         echo '<td><select class="form-control medicamento-select" name="medicamento[]">';
                                                         foreach ($opcionesMedicamentos as $opcion) {
                                                             echo '<option value="' . htmlspecialchars($opcion) . '">' . htmlspecialchars($opcion) . '</option>';
                                                         }
                                                         echo '</select></td>';
-                                                        echo '<td contenteditable="true"></td>';
-                                                        echo '<td contenteditable="true"></td>';
+                                                        echo '<td contenteditable="true" data-dosis=""></td>';
+                                                        echo '<td contenteditable="true" data-frecuencia=""></td>';
                                                         echo '<td><select class="form-control via-select" name="via_administracion[]">';
                                                         foreach ($vias as $via) {
                                                             echo '<option value="' . htmlspecialchars($via) . '">' . htmlspecialchars($via) . '</option>';
@@ -592,8 +605,8 @@ $stmt->close();
             var newRow = $(
                 '<tr>' +
                 '<td><select class="form-control medicamento-select" name="medicamento[]">' + medicamentoOptions + '</select></td>' +
-                '<td contenteditable="true"><input type="text" class="form-control" name="dosis" value=""></td>' +
-                '<td contenteditable="true"><input type="text" class="form-control" name="frecuencia" value=""></td>' +
+                '<td contenteditable="true"></td>' +
+                '<td contenteditable="true"></td>' +
                 '<td><select class="form-control via-select" name="via_administracion[]">' + viaOptions + '</select></td>' +
                 '<td><select class="form-control responsable-select" name="responsable[]">' + responsableOptions + '</select></td>' +
                 '<td><button class="delete-btn btn btn-danger"><i class="fa fa-minus"></i></button> <button class="add-row-btn btn btn-success"><i class="fa fa-plus"></i></button></td>' +
@@ -608,12 +621,12 @@ $stmt->close();
             var medicamentosArray = [];
             $('#medicamentosTable tbody tr').each(function () {
                 var medicamento = $(this).find('select[name="medicamento[]"]').val();
-                var dosis = $(this).find('input[name="dosis"]').val();
-                var frecuencia = $(this).find('input[name="frecuencia"]').val();
+                var dosis = $(this).find('td:eq(1)').text().trim(); // Captura texto editable
+                var frecuencia = $(this).find('td:eq(2)').text().trim(); // Captura texto editable
                 var via_administracion = $(this).find('select[name="via_administracion[]"]').val();
                 var responsable = $(this).find('select[name="responsable[]"]').val();
 
-                if (medicamento) {
+                if (medicamento || dosis || frecuencia || via_administracion || responsable) {
                     medicamentosArray.push({
                         medicamento: medicamento,
                         dosis: dosis,
@@ -653,7 +666,7 @@ $stmt->close();
         cambiarColorFila();
 
         // Asegurarse de que se actualicen los medicamentos al editar la tabla
-        $('#medicamentosTable').on('change', 'td, input, select', function () {
+        $('#medicamentosTable').on('input change', 'td[contenteditable="true"], select', function () {
             actualizarMedicamentos();
         });
     });

@@ -12,7 +12,7 @@ if ($form_id && $hc_number) {
             pr.form_id, pr.fecha_inicio, pr.hora_inicio, pr.fecha_fin, pr.hora_fin, pr.cirujano_1, pr.instrumentista, 
             pr.cirujano_2, pr.circulante, pr.primer_ayudante, pr.anestesiologo, pr.segundo_ayudante, 
             pr.ayudante_anestesia, pr.tercer_ayudante, pr.membrete, pr.dieresis, pr.exposicion, pr.hallazgo, 
-            pr.operatorio, pr.complicaciones_operatorio, pr.datos_cirugia, pr.procedimientos, pr.lateralidad, 
+            pr.operatorio, pr.complicaciones_operatorio, pr.datos_cirugia, pr.procedimientos, pr.procedimiento_id, pr.lateralidad, 
             pr.tipo_anestesia, pr.diagnosticos, pp.procedimiento_proyectado
         FROM patient_data p 
         INNER JOIN protocolo_data pr ON p.hc_number = pr.hc_number
@@ -48,6 +48,7 @@ if ($form_id && $hc_number) {
 
         // Asignar los datos de `protocolo_data`
         $form_id = $protocol_data['form_id'];
+        $procedimiento_id = $protocol_data['procedimiento_id'];
         $fechaInicio = $protocol_data['fecha_inicio'];
         $horaInicio = $protocol_data['hora_inicio'];
         $fechaFin = $protocol_data['fecha_fin'];
@@ -140,8 +141,10 @@ $sistolica = rand(110, 130);
 $diastolica = rand(70, 83);
 $fc = rand(75, 100);
 // Llamada a la función
-$idProcedimiento = obtenerIdProcedimiento($realizedProcedure, $mysqli);
-$diagnosticosPrevios = obtenerDiagnosticosAnteriores($hc_number, $form_id, $mysqli, $idProcedimiento);
+if (empty($procedimiento_id)){
+    $procedimiento_id = obtenerIdProcedimiento($realizedProcedure, $mysqli);
+}
+$diagnosticosPrevios = obtenerDiagnosticosAnteriores($hc_number, $form_id, $mysqli, $procedimiento_id);
 $previousDiagnostic1 = $diagnosticosPrevios[0];
 $previousDiagnostic2 = $diagnosticosPrevios[1];
 $previousDiagnostic3 = $diagnosticosPrevios[2];
@@ -237,7 +240,7 @@ $procedimientoProyectadoNow = $nombre_procedimiento_proyectado;
         // Buscar en la tabla evolucion005 con el procedimiento_id obtenido
         $sql_evolucion = "SELECT pre_evolucion, pre_indicacion, post_evolucion, post_indicacion, alta_evolucion, alta_indicacion FROM evolucion005 WHERE id = ?";
         if ($stmt_evolucion = $mysqli->prepare($sql_evolucion)) {
-            $stmt_evolucion->bind_param("s", $idProcedimiento);
+            $stmt_evolucion->bind_param("s", $procedimiento_id);
             $stmt_evolucion->execute();
             $result_evolucion = $stmt_evolucion->get_result();
 

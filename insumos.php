@@ -11,7 +11,7 @@ if ($form_id && $hc_number) {
             pr.form_id, pr.fecha_inicio, pr.hora_inicio, pr.fecha_fin, pr.hora_fin, pr.cirujano_1, pr.instrumentista, 
             pr.cirujano_2, pr.circulante, pr.primer_ayudante, pr.anestesiologo, pr.segundo_ayudante, 
             pr.ayudante_anestesia, pr.tercer_ayudante, pr.membrete, pr.dieresis, pr.exposicion, pr.hallazgo, 
-            pr.operatorio, pr.complicaciones_operatorio, pr.datos_cirugia, pr.procedimientos, pr.lateralidad, 
+            pr.operatorio, pr.complicaciones_operatorio, pr.datos_cirugia, pr.procedimientos, pr.procedimiento_id, pr.lateralidad, 
             pr.tipo_anestesia, pr.diagnosticos, pp.procedimiento_proyectado
         FROM patient_data p 
         INNER JOIN protocolo_data pr ON p.hc_number = pr.hc_number
@@ -47,6 +47,7 @@ if ($form_id && $hc_number) {
 
         // Asignar los datos de `protocolo_data`
         $form_id = $protocol_data['form_id'];
+        $procedimiento_id = $protocol_data['procedimiento_id'];
         $fechaInicio = $protocol_data['fecha_inicio'];
         $horaInicio = $protocol_data['hora_inicio'];
         $fechaFin = $protocol_data['fecha_fin'];
@@ -103,7 +104,6 @@ if ($form_id && $hc_number) {
         $codes_concatenados = implode('/', $codes);
     }
 }
-$idProcedimiento = obtenerIdProcedimiento($realizedProcedure, $mysqli);
 $cirujano_data = buscarUsuarioPorNombre($mainSurgeon, $mysqli);
 
 // 3. Calcular la edad del paciente
@@ -123,8 +123,14 @@ $formattedRealizedProcedure = implode('<br>', $realizedProceduresArray);
 
 // Datos adicionales (tensión, frecuencia, etc.)
 $sistolica = rand(110, 130);
-$diastolica = rand(110, 130);
-$fc = rand(110, 130);
+$diastolica = rand(70, 83);
+$fc = rand(75, 100);
+// Llamada a la función
+if (empty($procedimiento_id)){
+    $procedimiento_id = obtenerIdProcedimiento($realizedProcedure, $mysqli);
+}
+
+$procedimientoProyectadoNow = $nombre_procedimiento_proyectado;
 ?>
 <body>
 <table>
@@ -155,7 +161,7 @@ $fc = rand(110, 130);
         // Consulta para obtener los insumos de la tabla "insumos_pack"
         $sql = "SELECT insumos FROM insumos_pack WHERE procedimiento_id = ?";
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param('s', $idProcedimiento);
+        $stmt->bind_param('s', $procedimiento_id);
         $stmt->execute();
         $result = $stmt->get_result();
 

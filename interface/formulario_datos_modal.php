@@ -3,24 +3,22 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
-// Include the database connection
 include '../conexion.php';
 
-// Validate connection
 if ($mysqli->connect_error) {
-    echo json_encode(["success" => false, "message" => "Database connection failed: " . $mysqli->connect_error]);
+    error_log("Database connection failed: " . $mysqli->connect_error);
+    echo json_encode(["success" => false, "message" => "Database connection failed"]);
     exit;
 }
 
-// Get and decode the JSON data
 $data = json_decode(file_get_contents('php://input'), true);
 
-if (!$data) {
-    echo json_encode(["success" => false, "message" => "No data received or invalid JSON."]);
+if (json_last_error() !== JSON_ERROR_NONE) {
+    error_log("JSON decode error: " . json_last_error_msg());
+    echo json_encode(["success" => false, "message" => "Invalid JSON input"]);
     exit;
 }
 
-// Map received data
 $sede = $data['sede'] ?? null;
 $area = $data['area'] ?? null;
 $afiliacion = $data['afiliacion'] ?? null;
@@ -36,9 +34,9 @@ $numSecuencialDerivacion = $data['numSecuencialDerivacion'] ?? null;
 $numHistoria = $data['numHistoria'] ?? null;
 $examenFisico = $data['examenFisico'] ?? null;
 $observacion = $data['observacion'] ?? null;
+$procedimientos = $data['procedimientos'] ? json_encode($data['procedimientos']) : null;
+$diagnosticos = $data['diagnosticos'] ? json_encode($data['diagnosticos']) : null;
 
-
-// Prepare the SQL statement
 $sql = "
     INSERT INTO prefactura_paciente (
         sede, area, afiliacion, parentesco, 
@@ -47,9 +45,9 @@ $sql = "
         fecha_registro, fecha_vigencia, 
         cod_derivacion, num_secuencial_derivacion, 
         num_historia, examen_fisico, 
-        observaciones
+        observaciones, procedimientos, diagnosticos
     ) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON DUPLICATE KEY UPDATE 
         sede = VALUES(sede),
         area = VALUES(area), 
@@ -65,33 +63,34 @@ $sql = "
         num_secuencial_derivacion = VALUES(num_secuencial_derivacion),
         num_historia = VALUES(num_historia),
         examen_fisico = VALUES(examen_fisico),
-        observaciones = VALUES(observaciones)
+        observaciones = VALUES(observaciones),
+        procedimientos = VALUES(procedimientos),
+        diagnosticos = VALUES(diagnosticos)
 ";
 
 $stmt = $mysqli->prepare($sql);
 
 if (!$stmt) {
-    echo json_encode(["success" => false, "message" => "SQL prepare failed: " . $mysqli->error]);
+    error_log("SQL prepare failed: " . $mysqli->error);
+    echo json_encode(["success" => false, "message" => "SQL prepare failed"]);
     exit;
 }
 
-// Bind parameters
 $stmt->bind_param(
-    "sssssssssssssss",
+    "sssssssssssssssss",
     $sede, $area, $afiliacion, $parentesco,
     $hcNumber, $tipoAfiliacion, $numeroAprobacion, $tipoPlan,
     $fechaRegistro, $fechaVigencia, $codDerivacion, $numSecuencialDerivacion,
-    $numHistoria, $examenFisico, $observacion
+    $numHistoria, $examenFisico, $observacion, $procedimientos, $diagnosticos
 );
 
-// Execute and handle result
 if ($stmt->execute()) {
     echo json_encode(["success" => true, "message" => "Datos guardados correctamente."]);
 } else {
-    echo json_encode(["success" => false, "message" => "Error al guardar los datos: " . $stmt->error]);
+    error_log("Error en la ejecución: " . $stmt->error);
+    echo json_encode(["success" => false, "message" => "Error al guardar los datos"]);
 }
 
-// Clean up
 $stmt->close();
 $mysqli->close();
 ?>

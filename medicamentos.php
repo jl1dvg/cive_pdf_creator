@@ -13,7 +13,7 @@ if ($form_id && $hc_number) {
             pr.form_id, pr.fecha_inicio, pr.hora_inicio, pr.fecha_fin, pr.hora_fin, pr.cirujano_1, pr.instrumentista, 
             pr.cirujano_2, pr.circulante, pr.primer_ayudante, pr.anestesiologo, pr.segundo_ayudante, 
             pr.ayudante_anestesia, pr.tercer_ayudante, pr.membrete, pr.dieresis, pr.exposicion, pr.hallazgo, 
-            pr.operatorio, pr.complicaciones_operatorio, pr.datos_cirugia, pr.procedimientos, pr.lateralidad, 
+            pr.operatorio, pr.complicaciones_operatorio, pr.datos_cirugia, pr.procedimientos, pr.procedimiento_id, pr.lateralidad, 
             pr.tipo_anestesia, pr.diagnosticos, pp.procedimiento_proyectado
         FROM patient_data p 
         INNER JOIN protocolo_data pr ON p.hc_number = pr.hc_number
@@ -49,6 +49,7 @@ if ($form_id && $hc_number) {
 
         // Asignar los datos de `protocolo_data`
         $form_id = $protocol_data['form_id'];
+        $procedimiento_id = $protocol_data['procedimiento_id'];
         $fechaInicio = $protocol_data['fecha_inicio'];
         $horaInicio = $protocol_data['hora_inicio'];
         $fechaFin = $protocol_data['fecha_fin'];
@@ -137,10 +138,17 @@ $formattedRealizedProcedure = implode('<br>', $realizedProceduresArray);
 
 // Datos adicionales (tensión, frecuencia, etc.)
 $sistolica = rand(110, 130);
-$diastolica = rand(110, 130);
-$fc = rand(110, 130);
-
-$idProcedimiento = obtenerIdProcedimiento($realizedProcedure, $mysqli);
+$diastolica = rand(70, 83);
+$fc = rand(75, 100);
+// Llamada a la función
+if (empty($procedimiento_id)){
+    $procedimiento_id = obtenerIdProcedimiento($realizedProcedure, $mysqli);
+}
+$diagnosticosPrevios = obtenerDiagnosticosAnteriores($hc_number, $form_id, $mysqli, $procedimiento_id);
+$previousDiagnostic1 = $diagnosticosPrevios[0];
+$previousDiagnostic2 = $diagnosticosPrevios[1];
+$previousDiagnostic3 = $diagnosticosPrevios[2];
+$procedimientoProyectadoNow = $nombre_procedimiento_proyectado;
 ?>
 <body>
 <TABLE>
@@ -241,7 +249,7 @@ $idProcedimiento = obtenerIdProcedimiento($realizedProcedure, $mysqli);
         // Buscar en la tabla kardex con el procedimiento_id obtenido
         $sql_kardex = "SELECT medicamentos FROM kardex WHERE procedimiento_id = ?";
         if ($stmt_kardex = $mysqli->prepare($sql_kardex)) {
-            $stmt_kardex->bind_param("s", $idProcedimiento);
+            $stmt_kardex->bind_param("s", $procedimiento_id);
             $stmt_kardex->execute();
             $result_kardex = $stmt_kardex->get_result();
 

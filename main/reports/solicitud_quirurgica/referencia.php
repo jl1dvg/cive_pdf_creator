@@ -96,15 +96,15 @@ if ($form_id && $hc_number) {
         // 2. Decodificar JSON de exámenes si es necesario
         $examenesArray = json_decode($examenes, true);
 
-        // 3. Calcular la edad del paciente
-        $birthDateObj = new DateTime($birthDate);
-        $procedureDateObj = new DateTime($procedureDate);
-        $edadPaciente = $birthDateObj->diff($procedureDateObj)->y;
-
         // 4. Separar la fecha y la hora de created_at
         $createdAtObj = new DateTime($createdAt);
         $createdAtDate = $createdAtObj->format('Y/m/d');
         $createdAtTime = $createdAtObj->format('H:i');
+
+        // 3. Calcular la edad del paciente
+        $birthDateObj = new DateTime($birthDate);
+        $procedureDateObj = new DateTime($createdAtDate);
+        $edadPaciente = $birthDateObj->diff($procedureDateObj)->y;
 
         $cirujano_data = buscarUsuarioPorNombre($doctor, $mysqli);
     }
