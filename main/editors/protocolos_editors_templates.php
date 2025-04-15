@@ -66,6 +66,30 @@ $stmt->close();
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/skin_color.css">
 
+    <style>
+        .autocomplete-box {
+            position: absolute;
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            z-index: 9999;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+            padding: 4px 0;
+        }
+
+        .autocomplete-box .suggestion {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+
+        .autocomplete-box .suggestion:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+
 </head>
 <body class="layout-top-nav light-skin theme-primary fixed">
 
@@ -231,6 +255,7 @@ $stmt->close();
                                                 <textarea rows="5" name="operatorio" id="operatorio"
                                                           class="form-control"
                                                           rows="4"><?= htmlspecialchars($protocolo['operatorio']) ?></textarea>
+                                                <div id="autocomplete-insumos" class="autocomplete-box"></div>
                                             </div>
                                             <h4 class="box-title text-info mb-0 mt-20"><i
                                                         class="ti-pencil-alt me-15"></i>
@@ -294,7 +319,7 @@ $stmt->close();
                                                 Kardex
                                             </h4>
                                             <hr class="my-15"> <?php
-                                            // Obtener los insumos del JSON desde la tabla `insumos_pack` (ajusta según tu esquema)
+                                            // Obtener los medicamentos del JSON desde la tabla `kardex`
                                             $sql = "SELECT medicamentos FROM kardex WHERE procedimiento_id = ?";
                                             $stmt = $mysqli->prepare($sql);
                                             $stmt->bind_param('s', $idPrimaria);
@@ -308,16 +333,19 @@ $stmt->close();
                                                 die("Error al decodificar el JSON: " . json_last_error_msg());
                                             }
 
-                                            // Consulta para obtener opciones de medicamentos desde la tabla medicamentos
-                                            $sqlOpciones = "SELECT DISTINCT medicamento FROM medicamentos ORDER BY medicamento";
+                                            // Obtener los medicamentos disponibles
+                                            $sqlOpciones = "SELECT id, medicamento FROM medicamentos ORDER BY medicamento";
                                             $resultOpciones = $mysqli->query($sqlOpciones);
 
                                             $opcionesMedicamentos = [];
                                             while ($rowOpciones = $resultOpciones->fetch_assoc()) {
-                                                $opcionesMedicamentos[] = $rowOpciones['medicamento'];
+                                                $opcionesMedicamentos[] = [
+                                                    'id' => $rowOpciones['id'],
+                                                    'nombre' => $rowOpciones['medicamento']
+                                                ];
                                             }
 
-                                            // Opciones estáticas para Vías de Administración y Responsables
+                                            // Opciones estáticas
                                             $vias = ['INTRAVENOSA', 'VIA INFILTRATIVA', 'SUBCONJUNTIVAL', 'TOPICA', 'INTRAVITREA'];
                                             $responsables = ['Asistente', 'Anestesiólogo', 'Cirujano Principal'];
                                             ?>
@@ -337,40 +365,44 @@ $stmt->close();
                                                     </thead>
                                                     <tbody>
                                                     <?php
-                                                    // Rellenar filas con datos de medicamentos o una fila vacía si no hay datos
                                                     if (!empty($medicamentos)) {
                                                         foreach ($medicamentos as $item) {
                                                             echo '<tr>';
-                                                            // Columna Medicamento
+
+                                                            // Medicamento (con ID)
                                                             echo '<td><select class="form-control medicamento-select" name="medicamento[]">';
                                                             foreach ($opcionesMedicamentos as $opcion) {
-                                                                $selected = ($opcion === $item['medicamento']) ? 'selected' : '';
-                                                                echo '<option value="' . htmlspecialchars($opcion) . '" ' . $selected . '>' . htmlspecialchars($opcion) . '</option>';
+                                                                $selected = (isset($item['id']) && $opcion['id'] == $item['id']) ? 'selected' : '';
+                                                                echo '<option value="' . htmlspecialchars($opcion['id']) . '" ' . $selected . '>' . htmlspecialchars($opcion['nombre']) . '</option>';
                                                             }
                                                             echo '</select></td>';
 
-                                                            // Columnas Dosis y Frecuencia
+                                                            // Dosis
                                                             echo '<td contenteditable="true" data-dosis="' . htmlspecialchars($item['dosis'] ?? '') . '">' . htmlspecialchars($item['dosis'] ?? '') . '</td>';
+
+                                                            // Frecuencia
                                                             echo '<td contenteditable="true" data-frecuencia="' . htmlspecialchars($item['frecuencia'] ?? '') . '">' . htmlspecialchars($item['frecuencia'] ?? '') . '</td>';
 
-                                                            // Columna Vía de Administración
+                                                            // Vía de administración
                                                             echo '<td><select class="form-control via-select" name="via_administracion[]">';
                                                             foreach ($vias as $via) {
-                                                                $selected = ($via === $item['via_administracion']) ? 'selected' : '';
+                                                                $selected = ($via === ($item['via_administracion'] ?? '')) ? 'selected' : '';
                                                                 echo '<option value="' . htmlspecialchars($via) . '" ' . $selected . '>' . htmlspecialchars($via) . '</option>';
                                                             }
                                                             echo '</select></td>';
 
-                                                            // Columna Responsable
+                                                            // Responsable
                                                             echo '<td><select class="form-control responsable-select" name="responsable[]">';
                                                             foreach ($responsables as $responsable) {
-                                                                $selected = ($responsable === $item['responsable']) ? 'selected' : '';
+                                                                $selected = ($responsable === ($item['responsable'] ?? '')) ? 'selected' : '';
                                                                 echo '<option value="' . htmlspecialchars($responsable) . '" ' . $selected . '>' . htmlspecialchars($responsable) . '</option>';
                                                             }
                                                             echo '</select></td>';
 
-                                                            // Columna Acciones
-                                                            echo '<td><button class="delete-btn btn btn-danger"><i class="fa fa-minus"></i></button> <button class="add-row-btn btn btn-success"><i class="fa fa-plus"></i></button></td>';
+                                                            // Acciones
+                                                            echo '<td><button class="delete-btn btn btn-danger"><i class="fa fa-minus"></i></button> ';
+                                                            echo '<button class="add-row-btn btn btn-success"><i class="fa fa-plus"></i></button></td>';
+
                                                             echo '</tr>';
                                                         }
                                                     } else {
@@ -378,7 +410,7 @@ $stmt->close();
                                                         echo '<tr>';
                                                         echo '<td><select class="form-control medicamento-select" name="medicamento[]">';
                                                         foreach ($opcionesMedicamentos as $opcion) {
-                                                            echo '<option value="' . htmlspecialchars($opcion) . '">' . htmlspecialchars($opcion) . '</option>';
+                                                            echo '<option value="' . htmlspecialchars($opcion['id']) . '">' . htmlspecialchars($opcion['nombre']) . '</option>';
                                                         }
                                                         echo '</select></td>';
                                                         echo '<td contenteditable="true" data-dosis=""></td>';
@@ -414,11 +446,14 @@ $stmt->close();
                                                 $categorias[] = $row['categoria'];
                                             }
 
-                                            $sqlInsumos = "SELECT nombre, categoria FROM insumos order by nombre";
+                                            $sqlInsumos = "SELECT id, nombre, categoria FROM insumos ORDER BY nombre";
                                             $resultInsumos = $mysqli->query($sqlInsumos);
                                             $insumosDisponibles = [];
                                             while ($row = $resultInsumos->fetch_assoc()) {
-                                                $insumosDisponibles[$row['categoria']][] = $row['nombre'];
+                                                $insumosDisponibles[$row['categoria']][] = [
+                                                    'id' => $row['id'],
+                                                    'nombre' => $row['nombre']
+                                                ];
                                             }
 
                                             // Obtener los insumos del JSON desde la tabla `insumos_pack` (ajusta según tu esquema)
@@ -460,9 +495,9 @@ $stmt->close();
                                                                     echo '</select></td>';
                                                                     echo '<td><select class="form-control nombre-select" name="nombre" data-nombre="' . htmlspecialchars($item['nombre']) . '">';
                                                                     if (isset($insumosDisponibles[$categoriaOrdenada])) {
-                                                                        foreach ($insumosDisponibles[$categoriaOrdenada] as $nombre) {
-                                                                            $selected = ($nombre == $item['nombre']) ? 'selected' : '';
-                                                                            echo '<option value="' . htmlspecialchars($nombre) . '" ' . $selected . '>' . htmlspecialchars($nombre) . '</option>';
+                                                                        foreach ($insumosDisponibles[$categoriaOrdenada] as $insumo) {
+                                                                            $selected = (isset($item['id']) && $insumo['id'] == $item['id']) ? 'selected' : '';
+                                                                            echo '<option value="' . $insumo['id'] . '" data-nombre="' . htmlspecialchars($insumo['nombre']) . '" ' . $selected . '>' . htmlspecialchars($insumo['nombre']) . '</option>';
                                                                         }
                                                                     } else {
                                                                         echo '<option value="">Seleccione una categoría primero</option>';
@@ -539,240 +574,71 @@ $stmt->close();
 <script src="../js/menus.js"></script>
 <script src="../js/template.js"></script>
 <script>
-    $(document).ready(function () {
-        $('form').on('submit', function (e) {
-            e.preventDefault();
-
-            const form = this;
-            const formData = new FormData(form);
-
-            fetch('guardar_protocolo.php', {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => response.text()) // Usar .text() para depurar el texto completo
-                .then(text => {
-                    try {
-                        console.log("Respuesta completa del servidor:", text); // Verificar respuesta completa
-                        const data = JSON.parse(text); // Intentar analizar como JSON
-
-                        if (data.success) {
-                            Swal.fire("Datos Actualizados!", data.message, "success");
-                        } else {
-                            Swal.fire("Error", data.message, "error");
-                        }
-                    } catch (error) {
-                        console.error("Error al analizar el JSON:", error, text);
-                        Swal.fire("Error", "Respuesta inesperada del servidor.", "error");
-                    }
-                })
-                .catch(error => {
-                    console.error('Error al actualizar los datos:', error);
-                    Swal.fire("Error", "Ocurrió un error al actualizar los datos. Por favor, intenta nuevamente.", "error");
-                });
-        });
-    });
+    const insumosDisponibles = <?= json_encode($insumosDisponibles); ?>;
+    const opcionesMedicamentos = <?= json_encode($opcionesMedicamentos); ?>;
+    const vias = <?= json_encode($vias); ?>;
+    const responsables = <?= json_encode($responsables); ?>;
 </script>
 <script>
-    $(function () {
-        "use strict";
+    const operatorioTextarea = document.getElementById("operatorio");
+    const autocompleteBox = document.getElementById("autocomplete-insumos");
+    const listaInsumos = Object.values(insumosDisponibles).flat();
 
-        // Inicializar DataTable
-        var table = $('#medicamentosTable').DataTable({
-            "paging": false // Desactivar la paginación
-        });
+    operatorioTextarea.addEventListener("input", function () {
+        const cursor = operatorioTextarea.selectionStart;
+        const textoAntes = operatorioTextarea.value.substring(0, cursor);
+        const match = textoAntes.match(/@([a-zA-Z0-9 ]*)$/);
 
-        // Agregar evento para eliminar filas
-        $('#medicamentosTable').on('click', '.delete-btn', function () {
-            table.row($(this).parents('tr')).remove().draw();
-            actualizarMedicamentos();
-        });
-
-        // Evento para agregar una nueva fila justo debajo de la actual
-        $('#medicamentosTable').on('click', '.add-row-btn', function (event) {
-            event.preventDefault();
-            var medicamentoOptions = '<?php foreach ($opcionesMedicamentos as $medicamento) {
-                echo "<option value=\"" . htmlspecialchars($medicamento) . "\">" . htmlspecialchars($medicamento) . "</option>";
-            } ?>';
-            var viaOptions = '<?php foreach ($vias as $via) {
-                echo "<option value=\"" . htmlspecialchars($via) . "\">" . htmlspecialchars($via) . "</option>";
-            } ?>';
-            var responsableOptions = '<?php foreach ($responsables as $responsable) {
-                echo "<option value=\"" . htmlspecialchars($responsable) . "\">" . htmlspecialchars($responsable) . "</option>";
-            } ?>';
-
-            var currentRow = $(this).closest('tr');
-            var newRow = $(
-                '<tr>' +
-                '<td><select class="form-control medicamento-select" name="medicamento[]">' + medicamentoOptions + '</select></td>' +
-                '<td contenteditable="true"></td>' +
-                '<td contenteditable="true"></td>' +
-                '<td><select class="form-control via-select" name="via_administracion[]">' + viaOptions + '</select></td>' +
-                '<td><select class="form-control responsable-select" name="responsable[]">' + responsableOptions + '</select></td>' +
-                '<td><button class="delete-btn btn btn-danger"><i class="fa fa-minus"></i></button> <button class="add-row-btn btn btn-success"><i class="fa fa-plus"></i></button></td>' +
-                '</tr>'
+        if (match) {
+            const searchTerm = match[1].toLowerCase();
+            const sugerencias = listaInsumos.filter(i =>
+                i.nombre.toLowerCase().includes(searchTerm)
             );
-            newRow.insertAfter(currentRow); // Insertar nueva fila justo después de la actual
-            actualizarMedicamentos();
-        });
 
-        // Actualizar el campo oculto con el JSON de los medicamentos
-        function actualizarMedicamentos() {
-            var medicamentosArray = [];
-            $('#medicamentosTable tbody tr').each(function () {
-                var medicamento = $(this).find('select[name="medicamento[]"]').val();
-                var dosis = $(this).find('td:eq(1)').text().trim(); // Captura texto editable
-                var frecuencia = $(this).find('td:eq(2)').text().trim(); // Captura texto editable
-                var via_administracion = $(this).find('select[name="via_administracion[]"]').val();
-                var responsable = $(this).find('select[name="responsable[]"]').val();
-
-                if (medicamento || dosis || frecuencia || via_administracion || responsable) {
-                    medicamentosArray.push({
-                        medicamento: medicamento,
-                        dosis: dosis,
-                        frecuencia: frecuencia,
-                        via_administracion: via_administracion,
-                        responsable: responsable
-                    });
-                }
-            });
-            var jsonMedicamentos = JSON.stringify(medicamentosArray);
-            $('#medicamentosInput').val(jsonMedicamentos);
-            console.log("Actualizado JSON medicamentos: ", jsonMedicamentos);
+            mostrarSugerenciasOperatorio(sugerencias, cursor);
+        } else {
+            autocompleteBox.style.display = "none";
         }
-
-        // Cambiar el fondo de la fila según el valor del responsable
-        function cambiarColorFila() {
-            $('#medicamentosTable tbody tr').each(function () {
-                var responsable = $(this).find('select[name="responsable[]"]').val();
-                $(this).css('background-color', ''); // Restablecer el color antes de aplicar el nuevo
-                if (responsable === 'Anestesiólogo') {
-                    $(this).css('background-color', '#f8d7da'); // Rojo claro
-                } else if (responsable === 'Cirujano Principal') {
-                    $(this).css('background-color', '#cce5ff'); // Azul claro
-                } else if (responsable === 'Asistente') {
-                    $(this).css('background-color', '#d4edda'); // Verde claro
-                }
-            });
-        }
-
-        // Aplicar el color al cambiar el valor del responsable
-        $('#medicamentosTable').on('change', 'select[name="responsable[]"]', function () {
-            cambiarColorFila();
-            actualizarMedicamentos();
-        });
-
-        // Aplicar colores iniciales al cargar la tabla
-        cambiarColorFila();
-
-        // Asegurarse de que se actualicen los medicamentos al editar la tabla
-        $('#medicamentosTable').on('input change', 'td[contenteditable="true"], select', function () {
-            actualizarMedicamentos();
-        });
     });
+
+    function mostrarSugerenciasOperatorio(items, cursorPos) {
+        autocompleteBox.innerHTML = "";
+        items.forEach(item => {
+            const div = document.createElement("div");
+            div.classList.add("suggestion");
+            div.textContent = item.nombre;
+            div.onclick = () => insertarCodigoOperatorio(item.id, cursorPos);
+            autocompleteBox.appendChild(div);
+        });
+        autocompleteBox.style.display = "block";
+        const { offsetLeft, offsetTop } = operatorioTextarea;
+        const lineHeight = 24; // approximate line height in pixels
+        const cursorIndex = operatorioTextarea.selectionStart;
+        const lines = operatorioTextarea.value.substr(0, cursorIndex).split('\n');
+        const topOffset = lineHeight * lines.length;
+
+        autocompleteBox.style.position = "absolute";
+        autocompleteBox.style.left = offsetLeft + "px";
+        autocompleteBox.style.top = (offsetTop + topOffset) + "px";
+        autocompleteBox.style.width = operatorioTextarea.offsetWidth + "px";
+    }
+
+    function insertarCodigoOperatorio(id, cursorPos) {
+        const texto = operatorioTextarea.value;
+        const match = texto.substring(0, cursorPos).match(/@([a-zA-Z0-9 ]*)$/);
+        if (!match) return;
+
+        const inicio = match.index;
+        const nuevoTexto =
+            texto.substring(0, inicio) + `[[INS:${id}]] ` + texto.substring(cursorPos);
+        operatorioTextarea.value = nuevoTexto;
+        operatorioTextarea.setSelectionRange(inicio + `[[INS:${id}]] `.length, inicio + `[[INS:${id}]] `.length);
+        operatorioTextarea.focus();
+        autocompleteBox.style.display = "none";
+    }
 </script>
-<script>
-    $(function () {
-        "use strict";
-
-        // Inicializar DataTable
-        var table = $('#insumosTable').DataTable({
-            "paging": false // Desactivar la paginación
-        });
-
-        // Hacer la tabla editable (editableTableWidget)
-        $('#insumosTable').editableTableWidget();
-
-        // Agregar evento para eliminar filas
-        $('#insumosTable').on('click', '.delete-btn', function () {
-            table.row($(this).parents('tr')).remove().draw();
-            actualizarInsumos();
-        });
-
-        // Evento para agregar una nueva fila debajo de la actual
-        $('#insumosTable').on('click', '.add-row-btn', function (event) {
-            event.preventDefault(); // Prevenir el envío del formulario
-            console.log("Botón de agregar fila fue presionado");
-            var categoriaOptions = '<?php foreach ($categorias as $cat) {
-                echo "<option value=\"" . htmlspecialchars($cat) . "\">" . htmlspecialchars(str_replace("_", " ", $cat)) . "</option>";
-            } ?>';
-            var newData = [
-                '<select class="form-control categoria-select" name="categoria">' + categoriaOptions + '</select>', // Categoría por defecto
-                '<select class="form-control nombre-select" name="nombre" data-nombre=""><option value="">Seleccione una categoría primero</option></select>',  // Nombre por defecto
-                '1',             // Cantidad por defecto
-                '<button class="delete-btn btn btn-danger"><i class="fa fa-minus"></i></button> <button class="add-row-btn btn btn-success"><i class="fa fa-plus"></i></button>'
-            ];
-            var currentRow = $(this).parents('tr');
-            var rowIndex = table.row(currentRow).index();
-            table.row.add(newData).draw(false); // Agregar la nueva fila debajo de la actual
-            var newRow = table.row(rowIndex + 1).nodes().to$();
-            newRow.insertAfter(currentRow);
-            console.log("Nueva fila agregada: ", newData);
-            actualizarInsumos();
-        });
-
-        // Actualizar los insumos disponibles según la categoría seleccionada
-        var insumosDisponibles = <?php echo json_encode($insumosDisponibles); ?>;
-        $('#insumosTable').on('change', '.categoria-select', function () {
-            var categoriaSeleccionada = $(this).val();
-            var nombreSelect = $(this).closest('tr').find('.nombre-select');
-            nombreSelect.empty();
-            if (categoriaSeleccionada && insumosDisponibles[categoriaSeleccionada]) {
-                $.each(insumosDisponibles[categoriaSeleccionada], function (index, value) {
-                    nombreSelect.append('<option value="' + value + '">' + value + '</option>');
-                });
-                // Seleccionar el valor correspondiente del insumo si ya existe
-                var nombreActual = nombreSelect.data('nombre');
-                if (nombreActual) {
-                    nombreSelect.val(nombreActual);
-                }
-            } else {
-                nombreSelect.append('<option value="">Seleccione una categoría primero</option>');
-            }
-        }).trigger('change');
-
-        // Colorear las filas según la categoría
-        $('#insumosTable tbody tr').each(function () {
-            var categoria = $(this).find('select[name="categoria"]').val().toLowerCase();
-            if (categoria === 'equipos') {
-                $(this).css('background-color', '#d4edda'); // Verde claro
-            } else if (categoria === 'anestesia') {
-                $(this).css('background-color', '#fff3cd'); // Amarillo claro
-            } else if (categoria === 'quirurgicos') {
-                $(this).css('background-color', '#cce5ff'); // Azul claro
-            }
-        });
-
-        // Actualizar el campo oculto con el JSON de los insumos
-        function actualizarInsumos() {
-            var insumosObject = {
-                equipos: [],
-                anestesia: [],
-                quirurgicos: []
-            };
-            $('#insumosTable tbody tr').each(function () {
-                var categoria = $(this).find('select[name="categoria"]').val().toLowerCase();
-                var nombre = $(this).find('select[name="nombre"]').val();
-                var cantidad = $(this).find('td:eq(2)').text();
-
-                if (categoria && nombre && cantidad) {
-                    insumosObject[categoria].push({
-                        nombre: nombre,
-                        cantidad: parseInt(cantidad)
-                    });
-                }
-            });
-            var jsonInsumos = JSON.stringify(insumosObject);
-            $('#insumosInput').val(jsonInsumos);
-            console.log("Actualizado JSON insumos: ", jsonInsumos); // Depurar el valor actualizado
-        }
-
-        // Asegurarse de que se actualicen los insumos al editar la tabla
-        $('#insumosTable').on('change', 'td', function () {
-            actualizarInsumos();
-        });
-    });
-</script>
+<script src="js/editor-protocolos.js"></script>
+<script src="../js/editor-protocolos.js"></script>
 
 </body>
 </html>

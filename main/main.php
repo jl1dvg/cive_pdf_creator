@@ -56,26 +56,6 @@ $stmt->close();
             <section class="content">
                 <div class="row">
                     <div class="col-xxxl-9 col-xl-8 col-12">
-                        <div class="box">
-                            <div class="box-body">
-                                <div class="d-md-flex align-items-center text-md-start text-center">
-                                    <div class="me-md-30">
-                                        <img src="../images/svg-icon/color-svg/custom-21.svg" alt="" class="w-150"/>
-                                    </div>
-                                    <div class="d-lg-flex w-p100 align-items-center justify-content-between">
-                                        <div class="me-lg-10 mb-lg-0 mb-10">
-                                            <h3 class="mb-0">Today - 20% Discount on Lung Examinations</h3>
-                                            <p class="mb-0 fs-16">The Package price includes: consultoin of a
-                                                pulmonolgist, spirogrphy, cardiogram</p>
-                                        </div>
-                                        <div>
-                                            <a href="#" class="waves-effect waves-light btn btn-primary text-nowrap">Know
-                                                More</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         <div class="row">
                             <div class="col-lg-4 col-12">
                                 <div class="box">
@@ -216,7 +196,7 @@ $stmt->close();
                             <div class="col-12">
                                 <div class="box">
                                     <div class="box-header with-border">
-                                        <h4 class="box-title">Admitted Patient</h4>
+                                        <h4 class="box-title">Cirugías Recientes</h4>
                                         <div class="box-controls pull-right">
                                             <div class="lookup lookup-circle lookup-right">
                                                 <input type="text" name="s">
@@ -1185,11 +1165,16 @@ $procedimientos_dia_json = json_encode($procedimientos_por_dia);
 $current_month = date('m');
 $current_year = date('Y');
 
-$sql = "SELECT REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(LOWER(membrete), ' en ojo derecho', ''), ' ojo derecho', ''), ' en ojo izquierdo', ''), ' ojo izquierdo', ''), ' en ojo no especificado', ''), ' en ambos ojos', ''), ' ambos ojos', '') as membrete_simplificado, 
-               COUNT(*) as total_procedimientos 
+//MONTH(fecha_inicio) = '$current_month' AND
+
+$sql = "SELECT procedimiento_id, COUNT(*) as total_procedimientos 
         FROM protocolo_data 
-        WHERE MONTH(fecha_inicio) = '$current_month' AND YEAR(fecha_inicio) = '$current_year'
-        GROUP BY membrete_simplificado";
+        WHERE YEAR(fecha_inicio) = '$current_year' 
+          AND procedimiento_id IS NOT NULL 
+          AND procedimiento_id != ''
+        GROUP BY procedimiento_id
+        ORDER BY total_procedimientos DESC
+        LIMIT 5";
 
 $result = $mysqli->query($sql);
 
@@ -1198,8 +1183,8 @@ $procedimientos_por_membrete = [];
 
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-        $membretes[] = ucfirst($row['membrete_simplificado']);  // Convierte la primera letra a mayúscula si lo prefieres
-        $procedimientos_por_membrete[] = $row['total_procedimientos'];
+        $membretes[] = $row['procedimiento_id'];  // Lista de IDs de procedimientos
+        $procedimientos_por_membrete[] = $row['total_procedimientos']; // Total por procedimiento
     }
 } else {
     $membretes = ['No data'];

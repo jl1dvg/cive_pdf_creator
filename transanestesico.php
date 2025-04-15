@@ -12,7 +12,7 @@ if ($form_id && $hc_number) {
             pr.form_id, pr.fecha_inicio, pr.hora_inicio, pr.fecha_fin, pr.hora_fin, pr.cirujano_1, pr.instrumentista, 
             pr.cirujano_2, pr.circulante, pr.primer_ayudante, pr.anestesiologo, pr.segundo_ayudante, 
             pr.ayudante_anestesia, pr.tercer_ayudante, pr.membrete, pr.dieresis, pr.exposicion, pr.hallazgo, 
-            pr.operatorio, pr.complicaciones_operatorio, pr.datos_cirugia, pr.procedimientos, pr.lateralidad, 
+            pr.operatorio, pr.complicaciones_operatorio, pr.datos_cirugia, pr.procedimientos, pr.procedimiento_id, pr.lateralidad, 
             pr.tipo_anestesia, pr.diagnosticos, pp.procedimiento_proyectado
         FROM patient_data p 
         INNER JOIN protocolo_data pr ON p.hc_number = pr.hc_number
@@ -48,6 +48,7 @@ if ($form_id && $hc_number) {
 
         // Asignar los datos de `protocolo_data`
         $form_id = $protocol_data['form_id'];
+        $procedimiento_id = $protocol_data['procedimiento_id'];
         $fechaInicio = $protocol_data['fecha_inicio'];
         $horaInicio = $protocol_data['hora_inicio'];
         $fechaFin = $protocol_data['fecha_fin'];
@@ -107,6 +108,7 @@ if ($form_id && $hc_number) {
 
     }
 }
+$cirujano_data = buscarUsuarioPorNombre($mainSurgeon, $mysqli);
 
 // 3. Calcular la edad del paciente
 $birthDateObj = new DateTime($birthDate);
@@ -144,8 +146,12 @@ $interval = $horaInicioAnestesia->diff($horaFinAnestesia);
 // Convertir la diferencia a un formato amigable para obtener el total de horas
 $totalHoras = $interval->format('%h horas y %i minutos');
 
-// Calcular el total de horas menos 15 minutos
-$horaFinAnestesia2->sub(new DateInterval('PT15M')); // Restar 15 minutos de la hora de fin
+// Ajustar el intervalo según el valor de $procedimientoId
+if ($procedimiento_id === 'avastin') {
+    $horaFinAnestesia2->sub(new DateInterval('PT10M')); // Restar 10 minutos si es 'avastin'
+} else {
+    $horaFinAnestesia2->sub(new DateInterval('PT10M')); // Restar 15 minutos en otros casos
+}
 
 // Calcular nuevamente la diferencia con la hora de inicio
 $intervalConDescuento = $horaInicioAnestesia->diff($horaFinAnestesia2);
@@ -161,9 +167,12 @@ $formattedRealizedProcedure = implode('<br>', $realizedProceduresArray);
 $sistolica = rand(110, 130);
 $diastolica = rand(70, 83);
 $fc = rand(75, 100);
+// Llamada a la función
+if (empty($procedimiento_id)) {
+    $procedimiento_id = obtenerIdProcedimiento($realizedProcedure, $mysqli);
+}
 
-$idProcedimiento = obtenerIdProcedimiento($realizedProcedure, $mysqli);
-$diagnosticosPrevios = obtenerDiagnosticosAnteriores($hc_number, $form_id, $mysqli, $idProcedimiento);
+$diagnosticosPrevios = obtenerDiagnosticosAnteriores($hc_number, $form_id, $mysqli, $procedimiento_id);
 ?>
 <body>
 <table class="trans">
@@ -5415,7 +5424,7 @@ $diagnosticosPrevios = obtenerDiagnosticosAnteriores($hc_number, $form_id, $mysq
         // Buscar en la tabla kardex con el procedimiento_id obtenido
         $sql_kardex = "SELECT medicamentos FROM kardex WHERE procedimiento_id = ?";
         if ($stmt_kardex = $mysqli->prepare($sql_kardex)) {
-            $stmt_kardex->bind_param("s", $idProcedimiento);
+            $stmt_kardex->bind_param("s", $procedimiento_id);
             $stmt_kardex->execute();
             $result_kardex = $stmt_kardex->get_result();
 

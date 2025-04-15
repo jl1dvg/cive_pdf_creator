@@ -520,25 +520,46 @@ $stmt->close();
                             <!-- Sección 5: Insumos -->
                             <h6>Insumos</h6>
                             <section>
-                                <!-- Procedimiento Proyectado -->
                                 <?php
-                                // Obtener las categorías y los insumos de la tabla `insumos`
-                                $sqlCategorias = "SELECT DISTINCT categoria FROM insumos order by categoria";
+                                // Obtener categorias unicas
+                                $sqlCategorias = "SELECT DISTINCT categoria FROM insumos ORDER BY categoria";
                                 $resultCategorias = $mysqli->query($sqlCategorias);
                                 $categorias = [];
                                 while ($row = $resultCategorias->fetch_assoc()) {
                                     $categorias[] = $row['categoria'];
                                 }
 
-                                $sqlInsumos = "SELECT nombre, categoria FROM insumos order by nombre";
+                                // CORRECCION: incluir los codigos por afiliacion
+                                $afiliacion = strtolower($data['afiliacion']);
+                                $sqlInsumos = "
+                                                SELECT 
+                                                    id, categoria,
+                                                    IF('$afiliacion' LIKE '%issfa%' AND producto_issfa <> '', producto_issfa, nombre) AS nombre_final,
+                                                    codigo_isspol, codigo_issfa, codigo_iess, codigo_msp
+                                                FROM insumos
+                                                GROUP BY id
+                                                ORDER BY nombre_final
+                                            ";
+
                                 $resultInsumos = $mysqli->query($sqlInsumos);
                                 $insumosDisponibles = [];
+
+
                                 while ($row = $resultInsumos->fetch_assoc()) {
-                                    $insumosDisponibles[$row['categoria']][] = $row['nombre'];
+                                    $categoria = $row['categoria'];
+                                    $id = $row['id'];
+                                    $insumosDisponibles[$categoria][$id] = [
+                                        'id' => $id,
+                                        'nombre' => trim($row['nombre_final']),
+                                        'codigo_isspol' => $row['codigo_isspol'],
+                                        'codigo_issfa' => $row['codigo_issfa'],
+                                        'codigo_iess' => $row['codigo_iess'],
+                                        'codigo_msp' => $row['codigo_msp']
+                                    ];
                                 }
 
-                                // Obtener los insumos del JSON desde la tabla `insumos_pack` (ajusta según tu esquema)
-                                $procedimiento_id = $data['procedimiento_id']; // Ejemplo de ID
+                                // Cargar JSON de insumos desde protocolo_data o insumos_pack
+                                $procedimiento_id = $data['procedimiento_id'];
                                 $sql = "SELECT insumos FROM insumos_pack WHERE procedimiento_id = ?";
                                 $stmt = $mysqli->prepare($sql);
                                 $stmt->bind_param('s', $procedimiento_id);
@@ -563,37 +584,44 @@ $stmt->close();
                                         </thead>
                                         <tbody>
                                         <?php
-                                        // Iterar sobre las categorías del JSON y agregar filas a la tabla
-                                        foreach (['equipos', 'quirurgicos', 'anestesia'] as $categoriaOrdenada) {
-                                            if (isset($insumos[$categoriaOrdenada])) {
-                                                foreach ($insumos[$categoriaOrdenada] as $item) {
-                                                    echo '<tr class="categoria-' . htmlspecialchars($categoriaOrdenada) . '">';
-                                                    echo '<td><select class="form-control categoria-select" name="categoria">';
-                                                    foreach ($categorias as $cat) {
-                                                        $selected = ($cat == $categoriaOrdenada) ? 'selected' : '';
-                                                        echo '<option value="' . htmlspecialchars($cat) . '" ' . $selected . '>' . htmlspecialchars(str_replace('_', ' ', $cat)) . '</option>';
-                                                    }
-                                                    echo '</select></td>';
-                                                    echo '<td><select class="form-control nombre-select" name="nombre" data-nombre="' . htmlspecialchars($item['nombre']) . '">';
-                                                    if (isset($insumosDisponibles[$categoriaOrdenada])) {
-                                                        foreach ($insumosDisponibles[$categoriaOrdenada] as $nombre) {
-                                                            $selected = ($nombre == $item['nombre']) ? 'selected' : '';
-                                                            echo '<option value="' . htmlspecialchars($nombre) . '" ' . $selected . '>' . htmlspecialchars($nombre) . '</option>';
-                                                        }
-                                                    } else {
-                                                        echo '<option value="">Seleccione una categoría primero</option>';
-                                                    }
-                                                    echo '</select></td>';
-                                                    echo '<td contenteditable="true" data-cantidad="' . htmlspecialchars($item['cantidad']) . '">' . htmlspecialchars($item['cantidad']) . '</td>';
-                                                    echo '<td><button class="delete-btn btn btn-danger"><i class="fa fa-minus"></i></button> <button class="add-row-btn btn btn-success"><i class="fa fa-plus"></i></button></td>';
-                                                    echo '</tr>';
-                                                }
-                                            }
-                                        }
-                                        ?>
+                                        foreach (['equipos', 'quirurgicos', 'anestesia'] as $categoriaOrdenada):
+                                            if (!empty($insumos[$categoriaOrdenada])):
+                                                foreach ($insumos[$categoriaOrdenada] as $item):
+                                                    $idInsumo = $item['id'];
+                                                    ?>
+                                                    <tr class="categoria-<?= htmlspecialchars($categoriaOrdenada) ?>">
+                                                        <td>
+                                                            <select class="form-control categoria-select"
+                                                                    name="categoria">
+                                                                <?php foreach ($categorias as $cat): ?>
+                                                                    <option value="<?= htmlspecialchars($cat) ?>" <?= ($cat == $categoriaOrdenada) ? 'selected' : '' ?>>
+                                                                        <?= htmlspecialchars(str_replace('_', ' ', $cat)) ?>
+                                                                    </option>
+                                                                <?php endforeach; ?>
+                                                            </select>
+                                                        </td>
+                                                        <td>
+                                                            <select class="form-control nombre-select" name="id">
+                                                                <?php foreach ($insumosDisponibles[$categoriaOrdenada] as $id => $insumo): ?>
+                                                                    <option value="<?= htmlspecialchars($id) ?>" <?= ($id == $idInsumo) ? 'selected' : '' ?>>
+                                                                        <?= htmlspecialchars($insumo['nombre']) ?>
+                                                                    </option>
+                                                                <?php endforeach; ?>
+                                                            </select>
+                                                        </td>
+                                                        <td contenteditable="true"><?= htmlspecialchars($item['cantidad']) ?></td>
+                                                        <td>
+                                                            <button class="delete-btn btn btn-danger"><i
+                                                                        class="fa fa-minus"></i></button>
+                                                            <button class="add-row-btn btn btn-success"><i
+                                                                        class="fa fa-plus"></i></button>
+                                                        </td>
+                                                    </tr>
+                                                <?php endforeach;
+                                            endif;
+                                        endforeach; ?>
                                         </tbody>
                                     </table>
-                                    <!-- Campo oculto para almacenar los insumos como JSON -->
                                     <input type="hidden" id="insumosInput" name="insumos"
                                            value='<?= htmlspecialchars(json_encode($insumos)) ?>'>
                                 </div>
@@ -609,276 +637,6 @@ $stmt->close();
     <!-- /.content-wrapper -->
 
     <?php include 'footer.php'; ?>
-
-    <!-- Control Sidebar -->
-    <aside class="control-sidebar">
-
-        <div class="rpanel-title"><span class="pull-right btn btn-circle btn-danger" data-toggle="control-sidebar"><i
-                        class="ion ion-close text-white"></i></span></div>  <!-- Create the tabs -->
-        <ul class="nav nav-tabs control-sidebar-tabs">
-            <li class="nav-item"><a href="#control-sidebar-home-tab" data-bs-toggle="tab" class="active"><i
-                            class="mdi mdi-message-text"></i></a></li>
-            <li class="nav-item"><a href="#control-sidebar-settings-tab" data-bs-toggle="tab"><i
-                            class="mdi mdi-playlist-check"></i></a></li>
-        </ul>
-        <!-- Tab panes -->
-        <div class="tab-content">
-            <!-- Home tab content -->
-            <div class="tab-pane active" id="control-sidebar-home-tab">
-                <div class="flexbox">
-                    <a href="javascript:void(0)" class="text-grey">
-                        <i class="ti-more"></i>
-                    </a>
-                    <p>Users</p>
-                    <a href="javascript:void(0)" class="text-end text-grey"><i class="ti-plus"></i></a>
-                </div>
-                <div class="lookup lookup-sm lookup-right d-none d-lg-block">
-                    <input type="text" name="s" placeholder="Search" class="w-p100">
-                </div>
-                <div class="media-list media-list-hover mt-20">
-                    <div class="media py-10 px-0">
-                        <a class="avatar avatar-lg status-success" href="#">
-                            <img src="../images/avatar/1.jpg" alt="...">
-                        </a>
-                        <div class="media-body">
-                            <p class="fs-16">
-                                <a class="hover-primary" href="#"><strong>Tyler</strong></a>
-                            </p>
-                            <p>Praesent tristique diam...</p>
-                            <span>Just now</span>
-                        </div>
-                    </div>
-
-                    <div class="media py-10 px-0">
-                        <a class="avatar avatar-lg status-danger" href="#">
-                            <img src="../images/avatar/2.jpg" alt="...">
-                        </a>
-                        <div class="media-body">
-                            <p class="fs-16">
-                                <a class="hover-primary" href="#"><strong>Luke</strong></a>
-                            </p>
-                            <p>Cras tempor diam ...</p>
-                            <span>33 min ago</span>
-                        </div>
-                    </div>
-
-                    <div class="media py-10 px-0">
-                        <a class="avatar avatar-lg status-warning" href="#">
-                            <img src="../images/avatar/3.jpg" alt="...">
-                        </a>
-                        <div class="media-body">
-                            <p class="fs-16">
-                                <a class="hover-primary" href="#"><strong>Evan</strong></a>
-                            </p>
-                            <p>In posuere tortor vel...</p>
-                            <span>42 min ago</span>
-                        </div>
-                    </div>
-
-                    <div class="media py-10 px-0">
-                        <a class="avatar avatar-lg status-primary" href="#">
-                            <img src="../images/avatar/4.jpg" alt="...">
-                        </a>
-                        <div class="media-body">
-                            <p class="fs-16">
-                                <a class="hover-primary" href="#"><strong>Evan</strong></a>
-                            </p>
-                            <p>In posuere tortor vel...</p>
-                            <span>42 min ago</span>
-                        </div>
-                    </div>
-
-                    <div class="media py-10 px-0">
-                        <a class="avatar avatar-lg status-success" href="#">
-                            <img src="../images/avatar/1.jpg" alt="...">
-                        </a>
-                        <div class="media-body">
-                            <p class="fs-16">
-                                <a class="hover-primary" href="#"><strong>Tyler</strong></a>
-                            </p>
-                            <p>Praesent tristique diam...</p>
-                            <span>Just now</span>
-                        </div>
-                    </div>
-
-                    <div class="media py-10 px-0">
-                        <a class="avatar avatar-lg status-danger" href="#">
-                            <img src="../images/avatar/2.jpg" alt="...">
-                        </a>
-                        <div class="media-body">
-                            <p class="fs-16">
-                                <a class="hover-primary" href="#"><strong>Luke</strong></a>
-                            </p>
-                            <p>Cras tempor diam ...</p>
-                            <span>33 min ago</span>
-                        </div>
-                    </div>
-
-                    <div class="media py-10 px-0">
-                        <a class="avatar avatar-lg status-warning" href="#">
-                            <img src="../images/avatar/3.jpg" alt="...">
-                        </a>
-                        <div class="media-body">
-                            <p class="fs-16">
-                                <a class="hover-primary" href="#"><strong>Evan</strong></a>
-                            </p>
-                            <p>In posuere tortor vel...</p>
-                            <span>42 min ago</span>
-                        </div>
-                    </div>
-
-                    <div class="media py-10 px-0">
-                        <a class="avatar avatar-lg status-primary" href="#">
-                            <img src="../images/avatar/4.jpg" alt="...">
-                        </a>
-                        <div class="media-body">
-                            <p class="fs-16">
-                                <a class="hover-primary" href="#"><strong>Evan</strong></a>
-                            </p>
-                            <p>In posuere tortor vel...</p>
-                            <span>42 min ago</span>
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-            <!-- /.tab-pane -->
-            <!-- Settings tab content -->
-            <div class="tab-pane" id="control-sidebar-settings-tab">
-                <div class="flexbox">
-                    <a href="javascript:void(0)" class="text-grey">
-                        <i class="ti-more"></i>
-                    </a>
-                    <p>Todo List</p>
-                    <a href="javascript:void(0)" class="text-end text-grey"><i class="ti-plus"></i></a>
-                </div>
-                <ul class="todo-list mt-20">
-                    <li class="py-15 px-5 by-1">
-                        <!-- checkbox -->
-                        <input type="checkbox" id="basic_checkbox_1" class="filled-in">
-                        <label for="basic_checkbox_1" class="mb-0 h-15"></label>
-                        <!-- todo text -->
-                        <span class="text-line">Nulla vitae purus</span>
-                        <!-- Emphasis label -->
-                        <small class="badge bg-danger"><i class="fa fa-clock-o"></i> 2 mins</small>
-                        <!-- General tools such as edit or delete-->
-                        <div class="tools">
-                            <i class="fa fa-edit"></i>
-                            <i class="fa fa-trash-o"></i>
-                        </div>
-                    </li>
-                    <li class="py-15 px-5">
-                        <!-- checkbox -->
-                        <input type="checkbox" id="basic_checkbox_2" class="filled-in">
-                        <label for="basic_checkbox_2" class="mb-0 h-15"></label>
-                        <span class="text-line">Phasellus interdum</span>
-                        <small class="badge bg-info"><i class="fa fa-clock-o"></i> 4 hours</small>
-                        <div class="tools">
-                            <i class="fa fa-edit"></i>
-                            <i class="fa fa-trash-o"></i>
-                        </div>
-                    </li>
-                    <li class="py-15 px-5 by-1">
-                        <!-- checkbox -->
-                        <input type="checkbox" id="basic_checkbox_3" class="filled-in">
-                        <label for="basic_checkbox_3" class="mb-0 h-15"></label>
-                        <span class="text-line">Quisque sodales</span>
-                        <small class="badge bg-warning"><i class="fa fa-clock-o"></i> 1 day</small>
-                        <div class="tools">
-                            <i class="fa fa-edit"></i>
-                            <i class="fa fa-trash-o"></i>
-                        </div>
-                    </li>
-                    <li class="py-15 px-5">
-                        <!-- checkbox -->
-                        <input type="checkbox" id="basic_checkbox_4" class="filled-in">
-                        <label for="basic_checkbox_4" class="mb-0 h-15"></label>
-                        <span class="text-line">Proin nec mi porta</span>
-                        <small class="badge bg-success"><i class="fa fa-clock-o"></i> 3 days</small>
-                        <div class="tools">
-                            <i class="fa fa-edit"></i>
-                            <i class="fa fa-trash-o"></i>
-                        </div>
-                    </li>
-                    <li class="py-15 px-5 by-1">
-                        <!-- checkbox -->
-                        <input type="checkbox" id="basic_checkbox_5" class="filled-in">
-                        <label for="basic_checkbox_5" class="mb-0 h-15"></label>
-                        <span class="text-line">Maecenas scelerisque</span>
-                        <small class="badge bg-primary"><i class="fa fa-clock-o"></i> 1 week</small>
-                        <div class="tools">
-                            <i class="fa fa-edit"></i>
-                            <i class="fa fa-trash-o"></i>
-                        </div>
-                    </li>
-                    <li class="py-15 px-5">
-                        <!-- checkbox -->
-                        <input type="checkbox" id="basic_checkbox_6" class="filled-in">
-                        <label for="basic_checkbox_6" class="mb-0 h-15"></label>
-                        <span class="text-line">Vivamus nec orci</span>
-                        <small class="badge bg-info"><i class="fa fa-clock-o"></i> 1 month</small>
-                        <div class="tools">
-                            <i class="fa fa-edit"></i>
-                            <i class="fa fa-trash-o"></i>
-                        </div>
-                    </li>
-                    <li class="py-15 px-5 by-1">
-                        <!-- checkbox -->
-                        <input type="checkbox" id="basic_checkbox_7" class="filled-in">
-                        <label for="basic_checkbox_7" class="mb-0 h-15"></label>
-                        <!-- todo text -->
-                        <span class="text-line">Nulla vitae purus</span>
-                        <!-- Emphasis label -->
-                        <small class="badge bg-danger"><i class="fa fa-clock-o"></i> 2 mins</small>
-                        <!-- General tools such as edit or delete-->
-                        <div class="tools">
-                            <i class="fa fa-edit"></i>
-                            <i class="fa fa-trash-o"></i>
-                        </div>
-                    </li>
-                    <li class="py-15 px-5">
-                        <!-- checkbox -->
-                        <input type="checkbox" id="basic_checkbox_8" class="filled-in">
-                        <label for="basic_checkbox_8" class="mb-0 h-15"></label>
-                        <span class="text-line">Phasellus interdum</span>
-                        <small class="badge bg-info"><i class="fa fa-clock-o"></i> 4 hours</small>
-                        <div class="tools">
-                            <i class="fa fa-edit"></i>
-                            <i class="fa fa-trash-o"></i>
-                        </div>
-                    </li>
-                    <li class="py-15 px-5 by-1">
-                        <!-- checkbox -->
-                        <input type="checkbox" id="basic_checkbox_9" class="filled-in">
-                        <label for="basic_checkbox_9" class="mb-0 h-15"></label>
-                        <span class="text-line">Quisque sodales</span>
-                        <small class="badge bg-warning"><i class="fa fa-clock-o"></i> 1 day</small>
-                        <div class="tools">
-                            <i class="fa fa-edit"></i>
-                            <i class="fa fa-trash-o"></i>
-                        </div>
-                    </li>
-                    <li class="py-15 px-5">
-                        <!-- checkbox -->
-                        <input type="checkbox" id="basic_checkbox_10" class="filled-in">
-                        <label for="basic_checkbox_10" class="mb-0 h-15"></label>
-                        <span class="text-line">Proin nec mi porta</span>
-                        <small class="badge bg-success"><i class="fa fa-clock-o"></i> 3 days</small>
-                        <div class="tools">
-                            <i class="fa fa-edit"></i>
-                            <i class="fa fa-trash-o"></i>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-            <!-- /.tab-pane -->
-        </div>
-    </aside>
-    <!-- /.control-sidebar -->
-
-    <!-- Add the sidebar's background. This div must be placed immediately after the control sidebar -->
-    <div class="control-sidebar-bg"></div>
 </div>
 <!-- ./wrapper -->
 
@@ -906,102 +664,132 @@ $stmt->close();
     $(function () {
         "use strict";
 
-        // Inicializar DataTable
-        var table = $('#insumosTable').DataTable({
-            "paging": false // Desactivar la paginación
+        var afiliacion = "<?php echo strtolower($data['afiliacion']); ?>";
+
+        var table = $('#insumosTable').DataTable({"paging": false});
+        $('#insumosTable').editableTableWidget().on('change', function (evt, newValue) {
+            actualizarInsumos(); // se ejecuta inmediatamente después de editar la celda
         });
+        var insumosDisponibles = <?php echo json_encode($insumosDisponibles); ?>;
 
-        // Hacer la tabla editable (editableTableWidget)
-        $('#insumosTable').editableTableWidget();
-
-        // Agregar evento para eliminar filas
+        // Eliminar fila
         $('#insumosTable').on('click', '.delete-btn', function () {
-            table.row($(this).parents('tr')).remove().draw();
+            table.row($(this).closest('tr')).remove().draw(false);
             actualizarInsumos();
         });
 
-        // Evento para agregar una nueva fila debajo de la actual
+        // Añadir nueva fila debajo de la actual (✅ Corregido)
         $('#insumosTable').on('click', '.add-row-btn', function (event) {
-            event.preventDefault(); // Prevenir el envío del formulario
-            console.log("Botón de agregar fila fue presionado");
+            event.preventDefault();
             var categoriaOptions = '<?php foreach ($categorias as $cat) {
                 echo "<option value=\"" . htmlspecialchars($cat) . "\">" . htmlspecialchars(str_replace("_", " ", $cat)) . "</option>";
             } ?>';
-            var newData = [
-                '<select class="form-control categoria-select" name="categoria">' + categoriaOptions + '</select>', // Categoría por defecto
-                '<select class="form-control nombre-select" name="nombre" data-nombre=""><option value="">Seleccione una categoría primero</option></select>',  // Nombre por defecto
-                '1',             // Cantidad por defecto
+
+            var newRowHtml = [
+                '<select class="form-control categoria-select" name="categoria">' + categoriaOptions + '</select>',
+                '<select class="form-control nombre-select" name="id"><option value="">Seleccione una categoría primero</option></select>',
+                '<td contenteditable="true">1</td>',
                 '<button class="delete-btn btn btn-danger"><i class="fa fa-minus"></i></button> <button class="add-row-btn btn btn-success"><i class="fa fa-plus"></i></button>'
             ];
-            var currentRow = $(this).parents('tr');
-            var rowIndex = table.row(currentRow).index();
-            table.row.add(newData).draw(false); // Agregar la nueva fila debajo de la actual
-            var newRow = table.row(rowIndex + 1).nodes().to$();
-            newRow.insertAfter(currentRow);
-            console.log("Nueva fila agregada: ", newData);
+
+            var currentRow = $(this).closest('tr');
+            var newRow = table.row.add(newRowHtml).draw(false).node();
+            $(newRow).insertAfter(currentRow);
+
             actualizarInsumos();
         });
 
-        // Actualizar los insumos disponibles según la categoría seleccionada
-        var insumosDisponibles = <?php echo json_encode($insumosDisponibles); ?>;
+        // Actualizar opciones según categoría (✅ Corregido, limpio, afiliación ya considerada)
         $('#insumosTable').on('change', '.categoria-select', function () {
             var categoriaSeleccionada = $(this).val();
             var nombreSelect = $(this).closest('tr').find('.nombre-select');
             nombreSelect.empty();
+
             if (categoriaSeleccionada && insumosDisponibles[categoriaSeleccionada]) {
-                $.each(insumosDisponibles[categoriaSeleccionada], function (index, value) {
-                    nombreSelect.append('<option value="' + value + '">' + value + '</option>');
+                var idsAgregados = []; // esto evita duplicados
+                $.each(insumosDisponibles[categoriaSeleccionada], function (id, insumo) {
+                    if (!idsAgregados.includes(id)) {
+                        nombreSelect.append('<option value="' + id + '">' + insumo.nombre + '</option>');
+                        idsAgregados.push(id);
+                    }
                 });
-                // Seleccionar el valor correspondiente del insumo si ya existe
-                var nombreActual = nombreSelect.data('nombre');
-                if (nombreActual) {
-                    nombreSelect.val(nombreActual);
+
+                // Opcional: Selección automática si tiene valor previo guardado
+                var idActual = nombreSelect.data('id');
+                if (idActual) {
+                    nombreSelect.val(idActual);
                 }
             } else {
                 nombreSelect.append('<option value="">Seleccione una categoría primero</option>');
             }
-        }).trigger('change');
 
-        // Colorear las filas según la categoría
-        $('#insumosTable tbody tr').each(function () {
-            var categoria = $(this).find('select[name="categoria"]').val().toLowerCase();
-            if (categoria === 'equipos') {
-                $(this).css('background-color', '#d4edda'); // Verde claro
-            } else if (categoria === 'anestesia') {
-                $(this).css('background-color', '#fff3cd'); // Amarillo claro
-            } else if (categoria === 'quirurgicos') {
-                $(this).css('background-color', '#cce5ff'); // Azul claro
-            }
-        });
-
-        // Actualizar el campo oculto con el JSON de los insumos
-        function actualizarInsumos() {
-            var insumosObject = {
-                equipos: [],
-                anestesia: [],
-                quirurgicos: []
-            };
-            $('#insumosTable tbody tr').each(function () {
-                var categoria = $(this).find('select[name="categoria"]').val().toLowerCase();
-                var nombre = $(this).find('select[name="nombre"]').val();
-                var cantidad = $(this).find('td:eq(2)').text();
-
-                if (categoria && nombre && cantidad) {
-                    insumosObject[categoria].push({
-                        nombre: nombre,
-                        cantidad: parseInt(cantidad)
-                    });
-                }
-            });
-            var jsonInsumos = JSON.stringify(insumosObject);
-            $('#insumosInput').val(jsonInsumos);
-            console.log("Actualizado JSON insumos: ", jsonInsumos); // Depurar el valor actualizado
-        }
-
-        // Asegurarse de que se actualicen los insumos al editar la tabla
-        $('#insumosTable').on('change', 'td', function () {
             actualizarInsumos();
         });
+
+        // Pintar filas por categoría (✅ Restaurado)
+        function pintarFilas() {
+            $('#insumosTable tbody tr').each(function () {
+                var categoria = $(this).find('select[name="categoria"]').val().toLowerCase();
+                if (categoria === 'equipos') {
+                    $(this).css('background-color', '#d4edda');
+                } else if (categoria === 'anestesia') {
+                    $(this).css('background-color', '#fff3cd');
+                } else if (categoria === 'quirurgicos') {
+                    $(this).css('background-color', '#cce5ff');
+                } else {
+                    $(this).css('background-color', '');
+                }
+            });
+        }
+
+        // Actualizar el JSON oculto correctamente (✅ Mejorado)
+        function actualizarInsumos() {
+            const afiliacion = "<?php echo strtolower($data['afiliacion']); ?>";
+            const insumosDisponibles = <?php echo json_encode($insumosDisponibles); ?>;
+
+            const insumosObject = {equipos: [], anestesia: [], quirurgicos: []};
+
+            $('#insumosTable tbody tr').each(function () {
+                const categoria = $(this).find('.categoria-select').val().toLowerCase();
+                const id = $(this).find('.nombre-select').val();
+                const nombre = $(this).find('.nombre-select option:selected').text().trim();
+                const cantidad = parseInt($(this).find('td:eq(2)').text()) || 0;
+
+                if (categoria && id && cantidad > 0) {
+                    const insumo = insumosDisponibles[categoria][id];
+                    let codigo = "";
+
+                    if (afiliacion.includes('issfa') && insumo.codigo_issfa) {
+                        codigo = insumo.codigo_issfa;
+                    } else if (afiliacion.includes('isspol') && insumo.codigo_isspol) {
+                        codigo = insumo.codigo_isspol;
+                    } else if (afiliacion.includes('msp') && insumo.codigo_msp) {
+                        codigo = insumo.codigo_msp;
+                    } else if ([
+                        'contribuyente voluntario', 'conyuge', 'conyuge pensionista', 'seguro campesino',
+                        'seguro campesino jubilado', 'seguro general', 'seguro general jubilado',
+                        'seguro general por montepío', 'seguro general tiempo parcial', 'iess'
+                    ].some(iess => afiliacion.includes(iess)) && insumo.codigo_iess) {
+                        codigo = insumo.codigo_iess;
+                    }
+
+                    const obj = {id: parseInt(id), nombre, cantidad};
+                    if (codigo) obj.codigo = codigo;
+                    insumosObject[categoria].push(obj);
+                }
+            });
+
+            $('#insumosInput').val(JSON.stringify(insumosObject));
+            pintarFilas();
+            console.log("Actualizado JSON insumos con códigos:", insumosObject);
+        }
+
+        // Eventos para actualizar insumos y colores
+        $('#insumosTable').on('change', 'select', actualizarInsumos);
+        $('#insumosTable').on('blur', 'td', actualizarInsumos);
+
+        // Pintado inicial
+        pintarFilas();
     });
 </script>
 

@@ -228,7 +228,10 @@ $patientData = getPatientData($mysqli, $hc_number);
                         // Suponiendo que ya tienes la conexión a la base de datos establecida en $mysqli
 
                         // Consulta para obtener la lista de procedimientos
-                        $sql = "SELECT procedimiento, fecha, tipo FROM solicitud_procedimiento WHERE hc_number = ? ORDER BY fecha DESC";
+                        $sql = "SELECT procedimiento, created_at, tipo 
+                                FROM solicitud_procedimiento 
+                                WHERE hc_number = ? AND procedimiento != 'SELECCIONE'
+                                ORDER BY created_at DESC";
                         $stmt = $mysqli->prepare($sql);
                         $stmt->bind_param('s', $hc_number);
                         $stmt->execute();
@@ -240,7 +243,7 @@ $patientData = getPatientData($mysqli, $hc_number);
                         while ($row = $result->fetch_assoc()) {
                             $procedimiento = [
                                 'nombre' => $row['procedimiento'],
-                                'fecha' => $row['fecha'],
+                                'fecha' => $row['created_at'],
                                 'tipo' => strtolower($row['tipo'])
                             ];
                             $procedimientos[] = $procedimiento;
@@ -266,8 +269,7 @@ $patientData = getPatientData($mysqli, $hc_number);
                                 </ul>
                             </div>
                             <div class="box-body">
-                                <?php foreach ($procedimientos as $procedimientoData): ?>
-                                    <?php
+                                <?php foreach ($procedimientos as $procedimientoData):
                                     // Determinar el color en función del tipo de procedimiento
                                     $bulletColor = 'bg-info'; // Valor predeterminado
                                     if ($procedimientoData['tipo'] === 'cirugia') {
@@ -428,25 +430,33 @@ $patientData = getPatientData($mysqli, $hc_number);
                                     exit;
                                 }
 
-                                // Obtener la primera fila para verificar si hay resultados
-                                $row = $result->fetch_assoc();
-                                if ($row): ?>
+                                $eventos = [];
+                                while ($row = $result->fetch_assoc()) {
+                                    if (!empty($row['fecha']) && strtotime($row['fecha'])) {
+                                        $eventos[] = $row;
+                                    }
+                                }
+
+                                if (!empty($eventos)): ?>
                                     <section class="cd-horizontal-timeline">
                                         <div class="timeline">
                                             <div class="events-wrapper">
                                                 <div class="events">
                                                     <ol>
-                                                        <?php $isFirst = true;
-                                                        do { ?>
+                                                        <?php foreach ($eventos as $index => $row): ?>
                                                             <li>
+                                                                <?php
+                                                                $fecha_raw = $row['fecha'];
+                                                                $fecha_valida = strtotime($fecha_raw) ? date('d/m/Y', strtotime($fecha_raw)) : '01/01/2000';
+                                                                $texto_fecha = strtotime($fecha_raw) ? date('d M', strtotime($fecha_raw)) : '01 Jan';
+                                                                ?>
                                                                 <a href="#0"
-                                                                   data-date="<?php echo date('d/m/Y', strtotime($row['fecha'])); ?>"
-                                                                   class="<?php echo $isFirst ? 'selected' : ''; ?>">
-                                                                    <?php echo date('d M', strtotime($row['fecha'])); ?>
+                                                                   data-date="<?php echo $fecha_valida; ?>"
+                                                                   class="<?php echo $index === 0 ? 'selected' : ''; ?>">
+                                                                    <?php echo $texto_fecha; ?>
                                                                 </a>
                                                             </li>
-                                                            <?php $isFirst = false; ?>
-                                                        <?php } while ($row = $result->fetch_assoc()); ?>
+                                                        <?php endforeach; ?>
                                                     </ol>
                                                     <span class="filling-line" aria-hidden="true"></span>
                                                 </div>
@@ -462,25 +472,18 @@ $patientData = getPatientData($mysqli, $hc_number);
                                         <!-- .timeline -->
                                         <div class="events-content">
                                             <ol>
-                                                <?php
-                                                // Reiniciamos el puntero del resultado para iterar nuevamente
-                                                $result->data_seek(0);
-                                                $isFirst = true;
-                                                while ($row = $result->fetch_assoc()):
+                                                <?php foreach ($eventos as $index => $row):
                                                     $procedimiento_parts = explode(' - ', $row['procedimiento_proyectado']);
                                                     $nombre_procedimiento = implode(' - ', array_slice($procedimiento_parts, 2));
                                                     ?>
                                                     <li data-date="<?php echo date('d/m/Y', strtotime($row['fecha'])); ?>"
-                                                        class="<?php echo $isFirst ? 'selected' : ''; ?>">
+                                                        class="<?php echo $index === 0 ? 'selected' : ''; ?>">
                                                         <h2><?php echo htmlspecialchars($nombre_procedimiento); ?></h2>
                                                         <small><?php echo date('F jS, Y', strtotime($row['fecha'])); ?></small>
                                                         <hr class="my-30">
-                                                        <p class="pb-30">
-                                                            <?php echo nl2br(htmlspecialchars($row['contenido'])); ?>
-                                                        </p>
+                                                        <p class="pb-30"><?php echo nl2br(htmlspecialchars($row['contenido'])); ?></p>
                                                     </li>
-                                                    <?php $isFirst = false; ?>
-                                                <?php endwhile; ?>
+                                                <?php endforeach; ?>
                                             </ol>
                                         </div>
                                         <!-- .events-content -->
@@ -516,7 +519,9 @@ $patientData = getPatientData($mysqli, $hc_number);
                                 }
 
                                 // Consulta para obtener las solicitudes quirúrgicas
-                                $sql = "SELECT form_id, hc_number, procedimiento, created_at FROM solicitud_procedimiento WHERE hc_number = ?";
+                                $sql = "SELECT form_id, hc_number, procedimiento, created_at 
+                                        FROM solicitud_procedimiento 
+                                        WHERE hc_number = ? AND procedimiento != 'SELECCIONE'";
                                 $stmt = $mysqli->prepare($sql);
                                 $stmt->bind_param('s', $hc_number);
                                 $stmt->execute();

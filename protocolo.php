@@ -524,7 +524,6 @@ $diagnosticosPrevios = obtenerDiagnosticosAnteriores($hc_number, $form_id, $mysq
             <TD colspan='3' ALIGN=RIGHT VALIGN=TOP><B><FONT SIZE=3 COLOR='#000000'>PROTOCOLO QUIRÚRGICO (2)</FONT></B>
             </TD>
         </TR>
-        ]
     </TABLE>
 </pagebreak>
 </BODY>

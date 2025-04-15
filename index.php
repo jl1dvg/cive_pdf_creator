@@ -8,7 +8,7 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 } else {
     // Si está autenticado, redirige al index en la carpeta main
-    header('Location: /main/main.html');
+    header('Location: /main/main.php');
     exit();
 }
 ?>

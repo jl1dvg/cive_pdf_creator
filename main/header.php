@@ -192,5 +192,13 @@ define('BASE_URL', 'https://cive.consulmed.me/');
         <li><a href="<?php echo BASE_URL; ?>main/editors/protocolos_templates_list.php"><i class="icon-Air-ballon"><span
                             class="path1"></span><span class="path2"></span></i>Editor de Protocolos</a>
         </li>
+        <li><a href="<?php echo BASE_URL; ?>main/insumos/insumos.php"><i class="icon-Settings-1"><span
+                            class="path1"></span><span class="path2"></span></i>Insumos</a>
+            <uL>
+                <li><a href="<?php echo BASE_URL; ?>main/insumos/insumos.php"><i class="icon-Commit"><span
+                                    class="path1"></span><span
+                                    class="path2"></span></i>Insumos</a></li>
+            </uL>
+        </li>
     </ul>
 </nav>

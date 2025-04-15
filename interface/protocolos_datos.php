@@ -27,7 +27,7 @@ if (isset($data['hcNumber'], $data['form_id'])) {
     $ciudad = $data['ciudad'] ?? null;
 
     // SQL para insertar o actualizar `patient_data`
-    $sql = "INSERT INTO patient_data (hc_number, fecha_nacimiento, sexo, celular, ciudad) 
+        $sql = "INSERT INTO patient_data (hc_number, fecha_nacimiento, sexo, celular, ciudad) 
             VALUES (?, ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE 
             fecha_nacimiento = VALUES(fecha_nacimiento),
