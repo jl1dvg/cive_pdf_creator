@@ -179,7 +179,7 @@ $stmt->close();
                                     FROM patient_data p 
                                     INNER JOIN protocolo_data pr ON p.hc_number = pr.hc_number
                                     ORDER BY pr.fecha_inicio DESC, pr.id DESC
-                                    LIMIT 6";
+                                    LIMIT 8";
                             $result = $mysqli->query($sql);
 
                             if ($result->num_rows > 0) {
@@ -275,115 +275,70 @@ $stmt->close();
                                 <div class="box">
                                     <div class="box-body px-0 pb-0">
                                         <div class="px-20 bb-1 pb-15 d-flex align-items-center justify-content-between">
-                                            <h4 class="mb-0">Recent que..</h4>
+                                            <h4 class="mb-0">Plantillas Recientes</h4>
                                             <div class="d-flex align-items-center justify-content-end">
                                                 <button type="button"
-                                                        class="waves-effect waves-light btn btn-sm btn-primary-light">
+                                                        class="waves-effect waves-light btn btn-sm btn-primary-light btn-filter active"
+                                                        data-filter="all">
                                                     All
                                                 </button>
                                                 <button type="button"
-                                                        class="waves-effect waves-light mx-10 btn btn-sm btn-primary">
-                                                    Unread
+                                                        class="waves-effect waves-light mx-10 btn btn-sm btn-primary-light btn-filter"
+                                                        data-filter="creado">
+                                                    Creado
                                                 </button>
                                                 <button type="button"
-                                                        class="waves-effect waves-light btn btn-sm btn-primary-light">
-                                                    New
+                                                        class="waves-effect waves-light btn btn-sm btn-primary-light btn-filter"
+                                                        data-filter="modificado">
+                                                    Modificado
                                                 </button>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="box-body">
-                                        <div class="inner-user-div4">
-                                            <div class="d-flex justify-content-between align-items-center pb-20 mb-10 bb-dashed border-bottom">
-                                                <div class="pe-20">
-                                                    <p class="fs-12 text-fade">14 Jun 2021 <span class="mx-10">/</span>
-                                                        01:05PM</p>
-                                                    <h4>Addiction blood bank bone marrow contagious disinfectants?</h4>
-                                                    <div class="d-flex align-items-center">
-                                                        <button type="button"
-                                                                class="waves-effect waves-light btn me-10 btn-xs btn-primary-light">
-                                                            Read more
-                                                        </button>
-                                                        <button type="button"
-                                                                class="waves-effect waves-light btn btn-xs btn-primary-light">
-                                                            Reply
-                                                        </button>
+                                        <div class="inner-user-div4" id="plantilla-container">
+                                            <?php
+                                            $sql = "SELECT id, membrete, cirugia, 
+                                                   COALESCE(fecha_actualizacion, fecha_creacion) AS fecha,
+                                                   CASE 
+                                                       WHEN fecha_actualizacion IS NOT NULL THEN 'Modificado'
+                                                       ELSE 'Creado'
+                                                   END AS tipo
+                                            FROM procedimientos
+                                            ORDER BY fecha DESC
+                                            LIMIT 20";
+                                            $result = $mysqli->query($sql);
+
+                                            if ($result && $result->num_rows > 0):
+                                                while ($row = $result->fetch_assoc()):
+                                                    ?>
+                                                    <div class="d-flex justify-content-between align-items-center pb-20 mb-10 bb-dashed border-bottom plantilla-card"
+                                                         data-tipo="<?= $row['tipo'] ?>">
+                                                        <div class="pe-20">
+                                                            <p class="fs-12 text-fade"><?= date('d M Y', strtotime($row['fecha'])) ?>
+                                                                <span class="mx-10">/</span> <?= $row['tipo'] ?></p>
+                                                            <h4><?= $row['membrete'] ?></h4>
+                                                            <p class="text-fade mb-5"><?= $row['cirugia'] ?></p>
+                                                            <div class="d-flex align-items-center">
+                                                                <a href="editors/protocolos_editors_templates.php?id=<?= $row['id'] ?>"
+                                                                   class="waves-effect waves-light btn me-10 btn-xs btn-primary-light">Ver</a>
+                                                                <a href="../generate_pdf.php?id=<?= $row['id'] ?>"
+                                                                   class="waves-effect waves-light btn btn-xs btn-primary-light">PDF</a>
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            <a href="edit_protocol.php?id=<?= $row['id'] ?>"
+                                                               class="waves-effect waves-circle btn btn-circle btn-outline btn-light btn-lg">
+                                                                <i class="fa fa-pencil"></i>
+                                                            </a>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div>
-                                                    <a href="#"
-                                                       class="waves-effect waves-circle btn btn-circle btn-outline btn-light btn-lg"><i
-                                                                class="fa fa-comments"></i></a>
-                                                </div>
-                                            </div>
-                                            <div class="d-flex justify-content-between align-items-center pb-20 bb-dashed border-bottom">
-                                                <div class="pe-20">
-                                                    <p class="fs-12 text-fade">17 Jun 2021 <span class="mx-10">/</span>
-                                                        02:05PM</p>
-                                                    <h4>Triggered asthma anesthesia blood type bone marrow
-                                                        cartilage?</h4>
-                                                    <div class="d-flex align-items-center">
-                                                        <button type="button"
-                                                                class="waves-effect waves-light btn me-10 btn-xs btn-primary-light">
-                                                            Read more
-                                                        </button>
-                                                        <button type="button"
-                                                                class="waves-effect waves-light btn btn-xs btn-primary-light">
-                                                            Reply
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <a href="#"
-                                                       class="waves-effect waves-circle btn btn-circle btn-outline btn-light btn-lg"><i
-                                                                class="fa fa-comments"></i></a>
-                                                </div>
-                                            </div>
-                                            <div class="d-flex justify-content-between align-items-center pb-20 mb-10 bb-dashed border-bottom">
-                                                <div class="pe-20">
-                                                    <p class="fs-12 text-fade">14 Jun 2021 <span class="mx-10">/</span>
-                                                        01:05PM</p>
-                                                    <h4>Addiction blood bank bone marrow contagious disinfectants?</h4>
-                                                    <div class="d-flex align-items-center">
-                                                        <button type="button"
-                                                                class="waves-effect waves-light btn me-10 btn-xs btn-primary-light">
-                                                            Read more
-                                                        </button>
-                                                        <button type="button"
-                                                                class="waves-effect waves-light btn btn-xs btn-primary-light">
-                                                            Reply
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <a href="#"
-                                                       class="waves-effect waves-circle btn btn-circle btn-outline btn-light btn-lg"><i
-                                                                class="fa fa-comments"></i></a>
-                                                </div>
-                                            </div>
-                                            <div class="d-flex justify-content-between align-items-center pb-20 bb-dashed border-bottom">
-                                                <div class="pe-20">
-                                                    <p class="fs-12 text-fade">17 Jun 2021 <span class="mx-10">/</span>
-                                                        02:05PM</p>
-                                                    <h4>Triggered asthma anesthesia blood type bone marrow
-                                                        cartilage?</h4>
-                                                    <div class="d-flex align-items-center">
-                                                        <button type="button"
-                                                                class="waves-effect waves-light btn me-10 btn-xs btn-primary-light">
-                                                            Read more
-                                                        </button>
-                                                        <button type="button"
-                                                                class="waves-effect waves-light btn btn-xs btn-primary-light">
-                                                            Reply
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <a href="#"
-                                                       class="waves-effect waves-circle btn btn-circle btn-outline btn-light btn-lg"><i
-                                                                class="fa fa-comments"></i></a>
-                                                </div>
-                                            </div>
+                                                <?php endwhile; else: ?>
+                                                <p class="text-muted">No hay protocolos recientes.</p>
+                                            <?php endif; ?>
+                                        </div>
+                                        <div class="text-end mt-2 fs-12 text-fade">
+                                            <span id="plantilla-count">Mostrando <?= $result->num_rows ?> plantillas</span>
                                         </div>
                                     </div>
                                 </div>
@@ -391,139 +346,86 @@ $stmt->close();
                             <div class="col-xl-6 col-12">
                                 <div class="box">
                                     <div class="box-header">
-                                        <h4 class="box-title">Laboratory test</h4>
+                                        <h4 class="box-title">Diagnósticos más frecuentes</h4>
                                     </div>
                                     <div class="box-body">
                                         <div class="news-slider owl-carousel owl-sl">
-                                            <div>
-                                                <div class="d-flex align-items-center mb-10">
-                                                    <div class="d-flex flex-column flex-grow-1 fw-500">
-                                                        <p class="hover-primary text-fade mb-1 fs-14"><i
-                                                                    class="fa fa-link"></i> Shawn Hampton</p>
-                                                        <span class="text-dark fs-16">Beta 2 Microglobulin</span>
-                                                        <p class="mb-0 fs-14">Marker Test <span
-                                                                    class="badge badge-dot badge-primary"></span></p>
-                                                    </div>
+                                            <?php
+                                            $sql = "SELECT hc_number, diagnosticos FROM consulta_data WHERE diagnosticos IS NOT NULL AND diagnosticos != ''";
+                                            $result = $mysqli->query($sql);
+
+                                            $conteoDiagnosticos = [];
+
+                                            if ($result && $result->num_rows > 0) {
+                                                while ($row = $result->fetch_assoc()) {
+                                                    $hc = $row['hc_number'];
+                                                    $diagnosticos = json_decode($row['diagnosticos'], true);
+
+                                                    if (is_array($diagnosticos)) {
+                                                        foreach ($diagnosticos as $dx) {
+                                                            $id = strtoupper(str_replace('.', '', $dx['idDiagnostico']));
+                                                            $desc = $dx['descripcion'];
+                                                            if (stripos($id, 'Z') === 0) continue; // Excluir diagnósticos tipo Z
+
+                                                            // Agrupación específica: unificar H25 y H251 como un solo diagnóstico
+                                                            if ($id === 'H25' || $id === 'H251') {
+                                                                $key = 'H25 | Catarata senil';
+                                                            } else {
+                                                                $key = $id . ' | ' . $desc;
+                                                            }
+
+                                                            $conteoDiagnosticos[$key][$hc] = true;
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            // Calcular cuántos pacientes únicos por diagnóstico
+                                            $prevalencias = [];
+                                            foreach ($conteoDiagnosticos as $key => $pacientes) {
+                                                $prevalencias[$key] = count($pacientes);
+                                            }
+
+                                            // Calcular total de pacientes únicos con al menos un diagnóstico
+                                            $totalPacientes = [];
+                                            foreach ($conteoDiagnosticos as $pacientes) {
+                                                foreach ($pacientes as $hc => $v) {
+                                                    $totalPacientes[$hc] = true;
+                                                }
+                                            }
+                                            $totalPacientesCount = count($totalPacientes);
+
+                                            // Ordenar y tomar los 4 más frecuentes
+                                            arsort($prevalencias);
+                                            $top = array_slice($prevalencias, 0, 9, true);
+
+                                            if ($totalPacientesCount > 0):
+                                                foreach ($top as $key => $cantidad):
+                                                    $porcentaje = round(($cantidad / $totalPacientesCount) * 100, 1);
+                                                    ?>
                                                     <div>
-                                                        <div class="dropdown">
-                                                            <a data-bs-toggle="dropdown" href="#"
-                                                               class="base-font mx-30"><i
-                                                                        class="ti-more-alt text-muted"></i></a>
-                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                <a class="dropdown-item" href="#"><i
-                                                                            class="ti-import"></i> Import</a>
-                                                                <a class="dropdown-item" href="#"><i
-                                                                            class="ti-export"></i> Export</a>
-                                                                <a class="dropdown-item" href="#"><i
-                                                                            class="ti-printer"></i> Print</a>
-                                                                <div class="dropdown-divider"></div>
-                                                                <a class="dropdown-item" href="#"><i
-                                                                            class="ti-settings"></i> Settings</a>
+                                                        <div class="d-flex align-items-center mb-10">
+                                                            <div class="d-flex flex-column flex-grow-1 fw-500">
+                                                                <p class="hover-primary text-fade mb-1 fs-14"><i
+                                                                            class="fa fa-stethoscope"></i> Diagnóstico
+                                                                </p>
+                                                                <span class="text-dark fs-16"><?= $key ?></span>
+                                                                <p class="mb-0 fs-14"><?= $porcentaje ?>% de pacientes
+                                                                    <span class="badge badge-dot badge-primary"></span>
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="progress progress-xs mt-5">
+                                                            <div class="progress-bar bg-success" role="progressbar"
+                                                                 style="width: <?= $porcentaje ?>%"
+                                                                 aria-valuenow="<?= $porcentaje ?>" aria-valuemin="0"
+                                                                 aria-valuemax="100">
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="d-flex justify-content-between align-items-end py-10">
-                                                    <div>
-                                                        <a href="#"
-                                                           class="waves-effect waves-light btn btn-sm btn-primary-light">Details</a>
-                                                        <a href="#"
-                                                           class="waves-effect waves-light btn btn-sm btn-primary-light">Contact
-                                                            Patient</a>
-                                                    </div>
-                                                    <div>
-                                                        <a href="#"
-                                                           class="waves-effect waves-light btn btn-sm btn-primary-light"><i
-                                                                    class="fa fa-check"></i> Archive</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <div class="d-flex align-items-center mb-10">
-                                                    <div class="d-flex flex-column flex-grow-1 fw-500">
-                                                        <p class="hover-primary text-fade mb-1 fs-14"><i
-                                                                    class="fa fa-link"></i> Johen Doe</p>
-                                                        <span class="text-dark fs-16">Keeping pregnant</span>
-                                                        <p class="mb-0 fs-14">Prga Test <span
-                                                                    class="badge badge-dot badge-primary"></span></p>
-                                                    </div>
-                                                    <div>
-                                                        <div class="dropdown">
-                                                            <a data-bs-toggle="dropdown" href="#"
-                                                               class="base-font mx-30"><i
-                                                                        class="ti-more-alt text-muted"></i></a>
-                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                <a class="dropdown-item" href="#"><i
-                                                                            class="ti-import"></i> Import</a>
-                                                                <a class="dropdown-item" href="#"><i
-                                                                            class="ti-export"></i> Export</a>
-                                                                <a class="dropdown-item" href="#"><i
-                                                                            class="ti-printer"></i> Print</a>
-                                                                <div class="dropdown-divider"></div>
-                                                                <a class="dropdown-item" href="#"><i
-                                                                            class="ti-settings"></i> Settings</a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="d-flex justify-content-between align-items-end py-10">
-                                                    <div>
-                                                        <a href="#"
-                                                           class="waves-effect waves-light btn btn-sm btn-primary-light">Details</a>
-                                                        <a href="#"
-                                                           class="waves-effect waves-light btn btn-sm btn-primary-light">Contact
-                                                            Patient</a>
-                                                    </div>
-                                                    <div>
-                                                        <a href="#"
-                                                           class="waves-effect waves-light btn btn-sm btn-primary-light"><i
-                                                                    class="fa fa-check"></i> Archive</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <div class="d-flex align-items-center mb-10">
-                                                    <div class="d-flex flex-column flex-grow-1 fw-500">
-                                                        <p class="hover-primary text-fade mb-1 fs-14"><i
-                                                                    class="fa fa-link"></i> Polly Paul</p>
-                                                        <span class="text-dark fs-16">USG + Consultation</span>
-                                                        <p class="mb-0 fs-14">Marker Test <span
-                                                                    class="badge badge-dot badge-primary"></span></p>
-                                                    </div>
-                                                    <div>
-                                                        <div class="dropdown">
-                                                            <a data-bs-toggle="dropdown" href="#"
-                                                               class="base-font mx-30"><i
-                                                                        class="ti-more-alt text-muted"></i></a>
-                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                <a class="dropdown-item" href="#"><i
-                                                                            class="ti-import"></i> Import</a>
-                                                                <a class="dropdown-item" href="#"><i
-                                                                            class="ti-export"></i> Export</a>
-                                                                <a class="dropdown-item" href="#"><i
-                                                                            class="ti-printer"></i> Print</a>
-                                                                <div class="dropdown-divider"></div>
-                                                                <a class="dropdown-item" href="#"><i
-                                                                            class="ti-settings"></i> Settings</a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="d-flex justify-content-between align-items-end py-10">
-                                                    <div>
-                                                        <a href="#"
-                                                           class="waves-effect waves-light btn btn-sm btn-primary-light">Details</a>
-                                                        <a href="#"
-                                                           class="waves-effect waves-light btn btn-sm btn-primary-light">Contact
-                                                            Patient</a>
-                                                    </div>
-                                                    <div>
-                                                        <a href="#"
-                                                           class="waves-effect waves-light btn btn-sm btn-primary-light"><i
-                                                                    class="fa fa-check"></i> Archive</a>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                                <?php endforeach; else: ?>
+                                                <p class="text-muted">No hay diagnósticos registrados.</p>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                 </div>
@@ -541,197 +443,84 @@ $stmt->close();
                         </div>
                         <div class="box">
                             <div class="box-header">
-                                <h4 class="box-title">Report</h4>
+                                <h4 class="box-title">Últimas Solicitudes Quirúrgicas</h4>
                             </div>
                             <div class="box-body">
-                                <div class="box no-shadow">
-                                    <div class="box-body">
-                                        <div class="d-flex align-items-center">
-                                            <div class="me-15">
-                                                <img src="../images/svg-icon/color-svg/custom-22.svg" alt=""
-                                                     class="w-100"/>
-                                            </div>
-                                            <div>
-                                                <h5 class="mb-5">2nd floor Bathroom had a broken door</h5>
-                                                <p class="text-fade">10 minutes ago</p>
-                                            </div>
+                                <?php
+                                $sql = "SELECT sp.id, sp.fecha, sp.procedimiento, p.fname, p.lname, p.hc_number
+                                        FROM solicitud_procedimiento sp
+                                        JOIN patient_data p ON sp.hc_number = p.hc_number
+                                        WHERE sp.procedimiento IS NOT NULL AND sp.procedimiento != '' AND sp.procedimiento != 'SELECCIONE'
+                                        ORDER BY sp.fecha DESC
+                                        LIMIT 5";
+                                $result = $mysqli->query($sql);
+
+                                if ($result->num_rows > 0): while ($row = $result->fetch_assoc()): ?>
+                                    <div class="d-flex justify-content-between align-items-start mb-10 border-bottom pb-10">
+                                        <div>
+                                            <strong><?= $row['fname'] . ' ' . $row['lname'] ?></strong><br>
+                                            <span class="text-fade"><?= $row['procedimiento'] ?> | <?= date('d/m/Y', strtotime($row['fecha'])) ?></span>
+                                        </div>
+                                        <div>
+                                            <a href="ver_solicitud.php?id=<?= $row['id'] ?>"
+                                               class="btn btn-xs btn-primary-light">
+                                                Ver
+                                            </a>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="box no-shadow">
-                                    <div class="box-body">
-                                        <div class="d-flex align-items-center">
-                                            <div class="me-15">
-                                                <img src="../images/svg-icon/color-svg/custom-23.svg" alt=""
-                                                     class="w-100"/>
-                                            </div>
-                                            <div>
-                                                <h5 class="mb-5">Brownout In the Administration Room</h5>
-                                                <p class="text-fade">15 minutes ago</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="box no-shadow">
-                                    <div class="box-body">
-                                        <div class="d-flex align-items-center">
-                                            <div class="me-15">
-                                                <img src="../images/svg-icon/color-svg/custom-22.svg" alt=""
-                                                     class="w-100"/>
-                                            </div>
-                                            <div>
-                                                <h5 class="mb-5">1nd floor Bathroom had a broken Tap</h5>
-                                                <p class="text-fade">20 minutes ago</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <?php endwhile; else: ?>
+                                    <p class="text-muted">No hay solicitudes registradas.</p>
+                                <?php endif; ?>
+
+                                <hr>
+                                <?php
+                                $sqlTotal = "SELECT COUNT(*) as total 
+                                   FROM solicitud_procedimiento 
+                                   WHERE procedimiento IS NOT NULL 
+                                     AND procedimiento != '' 
+                                     AND procedimiento != 'SELECCIONE'";
+                                $resTotal = $mysqli->query($sqlTotal);
+                                $total = $resTotal->fetch_assoc()['total'];
+                                ?>
+                                <p class="mb-0 text-end"><strong>Total:</strong> <?= $total ?> solicitud(es)</p>
                             </div>
                         </div>
                         <div class="box">
                             <div class="box-header with-border">
                                 <h4 class="box-title">Doctor List</h4>
-                                <p class="mb-0 pull-right">Today</p>
+                                <p class="mb-0 pull-right">Últimos 3 meses</p>
                             </div>
                             <div class="box-body">
                                 <div class="inner-user-div3">
-                                    <div class="d-flex align-items-center mb-30">
-                                        <div class="me-15">
-                                            <img src="../images/avatar/avatar-1.png"
-                                                 class="avatar avatar-lg rounded10 bg-primary-light" alt=""/>
-                                        </div>
-                                        <div class="d-flex flex-column flex-grow-1 fw-500">
-                                            <a href="#" class="text-dark hover-primary mb-1 fs-16">Dr. Jaylon
-                                                Stanton</a>
-                                            <span class="text-fade">Dentist</span>
-                                        </div>
-                                        <div class="dropdown">
-                                            <a class="px-10 pt-5" href="#" data-bs-toggle="dropdown"><i
-                                                        class="ti-more-alt"></i></a>
-                                            <div class="dropdown-menu dropdown-menu-end">
-                                                <a class="dropdown-item flexbox" href="#">
-                                                    <span>Inbox</span>
-                                                    <span class="badge badge-pill badge-info">5</span>
-                                                </a>
-                                                <a class="dropdown-item" href="#">Sent</a>
-                                                <a class="dropdown-item" href="#">Spam</a>
-                                                <div class="dropdown-divider"></div>
-                                                <a class="dropdown-item flexbox" href="#">
-                                                    <span>Draft</span>
-                                                    <span class="badge badge-pill badge-default">1</span>
-                                                </a>
+                                    <?php
+                                    $sql = "SELECT cirujano_1, COUNT(*) as total
+                    FROM protocolo_data
+                    WHERE cirujano_1 IS NOT NULL 
+                      AND cirujano_1 != ''
+                      AND fecha_inicio >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)
+                    GROUP BY cirujano_1
+                    ORDER BY total DESC
+                    LIMIT 5";
+                                    $result = $mysqli->query($sql);
+
+                                    if ($result && $result->num_rows > 0):
+                                        while ($row = $result->fetch_assoc()):
+                                            $doctorName = $row['cirujano_1'];
+                                            $totalCirugias = $row['total'];
+                                            ?>
+                                            <div class="d-flex align-items-center mb-30">
+                                                <div class="me-15">
+                                                    <img src="../images/avatar/avatar-<?= rand(1, 15) ?>.png"
+                                                         class="avatar avatar-lg rounded10 bg-primary-light" alt=""/>
+                                                </div>
+                                                <div class="d-flex flex-column flex-grow-1 fw-500">
+                                                    <span class="text-dark mb-1 fs-16"><?= $doctorName ?></span>
+                                                    <span class="text-fade">Cirugías: <?= $totalCirugias ?></span>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex align-items-center mb-30">
-                                        <div class="me-15">
-                                            <img src="../images/avatar/avatar-10.png"
-                                                 class="avatar avatar-lg rounded10 bg-primary-light" alt=""/>
-                                        </div>
-                                        <div class="d-flex flex-column flex-grow-1 fw-500">
-                                            <a href="#" class="text-dark hover-danger mb-1 fs-16">Dr. Carla
-                                                Schleifer</a>
-                                            <span class="text-fade">Oculist</span>
-                                        </div>
-                                        <div class="dropdown">
-                                            <a class="px-10 pt-5" href="#" data-bs-toggle="dropdown"><i
-                                                        class="ti-more-alt"></i></a>
-                                            <div class="dropdown-menu dropdown-menu-end">
-                                                <a class="dropdown-item flexbox" href="#">
-                                                    <span>Inbox</span>
-                                                    <span class="badge badge-pill badge-info">5</span>
-                                                </a>
-                                                <a class="dropdown-item" href="#">Sent</a>
-                                                <a class="dropdown-item" href="#">Spam</a>
-                                                <div class="dropdown-divider"></div>
-                                                <a class="dropdown-item flexbox" href="#">
-                                                    <span>Draft</span>
-                                                    <span class="badge badge-pill badge-default">1</span>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex align-items-center mb-30">
-                                        <div class="me-15">
-                                            <img src="../images/avatar/avatar-11.png"
-                                                 class="avatar avatar-lg rounded10 bg-primary-light" alt=""/>
-                                        </div>
-                                        <div class="d-flex flex-column flex-grow-1 fw-500">
-                                            <a href="#" class="text-dark hover-success mb-1 fs-16">Dr. Hanna Geidt</a>
-                                            <span class="text-fade">Surgeon</span>
-                                        </div>
-                                        <div class="dropdown">
-                                            <a class="px-10 pt-5" href="#" data-bs-toggle="dropdown"><i
-                                                        class="ti-more-alt"></i></a>
-                                            <div class="dropdown-menu dropdown-menu-end">
-                                                <a class="dropdown-item flexbox" href="#">
-                                                    <span>Inbox</span>
-                                                    <span class="badge badge-pill badge-info">5</span>
-                                                </a>
-                                                <a class="dropdown-item" href="#">Sent</a>
-                                                <a class="dropdown-item" href="#">Spam</a>
-                                                <div class="dropdown-divider"></div>
-                                                <a class="dropdown-item flexbox" href="#">
-                                                    <span>Draft</span>
-                                                    <span class="badge badge-pill badge-default">1</span>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex align-items-center mb-30">
-                                        <div class="me-15">
-                                            <img src="../images/avatar/avatar-12.png"
-                                                 class="avatar avatar-lg rounded10 bg-primary-light" alt=""/>
-                                        </div>
-                                        <div class="d-flex flex-column flex-grow-1 fw-500">
-                                            <a href="#" class="text-dark hover-info mb-1 fs-16">Dr. Roger George</a>
-                                            <span class="text-fade">General Practitioners</span>
-                                        </div>
-                                        <div class="dropdown">
-                                            <a class="px-10 pt-5" href="#" data-bs-toggle="dropdown"><i
-                                                        class="ti-more-alt"></i></a>
-                                            <div class="dropdown-menu dropdown-menu-end">
-                                                <a class="dropdown-item flexbox" href="#">
-                                                    <span>Inbox</span>
-                                                    <span class="badge badge-pill badge-info">5</span>
-                                                </a>
-                                                <a class="dropdown-item" href="#">Sent</a>
-                                                <a class="dropdown-item" href="#">Spam</a>
-                                                <div class="dropdown-divider"></div>
-                                                <a class="dropdown-item flexbox" href="#">
-                                                    <span>Draft</span>
-                                                    <span class="badge badge-pill badge-default">1</span>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex align-items-center">
-                                        <div class="me-15">
-                                            <img src="../images/avatar/avatar-15.png"
-                                                 class="avatar avatar-lg rounded10 bg-primary-light" alt=""/>
-                                        </div>
-                                        <div class="d-flex flex-column flex-grow-1 fw-500">
-                                            <a href="#" class="text-dark hover-warning mb-1 fs-16">Dr. Natalie doe</a>
-                                            <span class="text-fade">Physician</span>
-                                        </div>
-                                        <div class="dropdown">
-                                            <a class="px-10 pt-5" href="#" data-bs-toggle="dropdown"><i
-                                                        class="ti-more-alt"></i></a>
-                                            <div class="dropdown-menu dropdown-menu-end">
-                                                <a class="dropdown-item flexbox" href="#">
-                                                    <span>Inbox</span>
-                                                    <span class="badge badge-pill badge-info">5</span>
-                                                </a>
-                                                <a class="dropdown-item" href="#">Sent</a>
-                                                <a class="dropdown-item" href="#">Spam</a>
-                                                <div class="dropdown-divider"></div>
-                                                <a class="dropdown-item flexbox" href="#">
-                                                    <span>Draft</span>
-                                                    <span class="badge badge-pill badge-default">1</span>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
+                                        <?php endwhile; else: ?>
+                                        <p class="text-muted">No hay datos disponibles.</p>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -759,252 +548,12 @@ $stmt->close();
         <div class="tab-content">
             <!-- Home tab content -->
             <div class="tab-pane active" id="control-sidebar-home-tab">
-                <div class="flexbox">
-                    <a href="javascript:void(0)" class="text-grey">
-                        <i class="ti-more"></i>
-                    </a>
-                    <p>Users</p>
-                    <a href="javascript:void(0)" class="text-end text-grey"><i class="ti-plus"></i></a>
-                </div>
-                <div class="lookup lookup-sm lookup-right d-none d-lg-block">
-                    <input type="text" name="s" placeholder="Search" class="w-p100">
-                </div>
-                <div class="media-list media-list-hover mt-20">
-                    <div class="media py-10 px-0">
-                        <a class="avatar avatar-lg status-success" href="#">
-                            <img src="../images/avatar/1.jpg" alt="...">
-                        </a>
-                        <div class="media-body">
-                            <p class="fs-16">
-                                <a class="hover-primary" href="#"><strong>Tyler</strong></a>
-                            </p>
-                            <p>Praesent tristique diam...</p>
-                            <span>Just now</span>
-                        </div>
-                    </div>
-
-                    <div class="media py-10 px-0">
-                        <a class="avatar avatar-lg status-danger" href="#">
-                            <img src="../images/avatar/2.jpg" alt="...">
-                        </a>
-                        <div class="media-body">
-                            <p class="fs-16">
-                                <a class="hover-primary" href="#"><strong>Luke</strong></a>
-                            </p>
-                            <p>Cras tempor diam ...</p>
-                            <span>33 min ago</span>
-                        </div>
-                    </div>
-
-                    <div class="media py-10 px-0">
-                        <a class="avatar avatar-lg status-warning" href="#">
-                            <img src="../images/avatar/3.jpg" alt="...">
-                        </a>
-                        <div class="media-body">
-                            <p class="fs-16">
-                                <a class="hover-primary" href="#"><strong>Evan</strong></a>
-                            </p>
-                            <p>In posuere tortor vel...</p>
-                            <span>42 min ago</span>
-                        </div>
-                    </div>
-
-                    <div class="media py-10 px-0">
-                        <a class="avatar avatar-lg status-primary" href="#">
-                            <img src="../images/avatar/4.jpg" alt="...">
-                        </a>
-                        <div class="media-body">
-                            <p class="fs-16">
-                                <a class="hover-primary" href="#"><strong>Evan</strong></a>
-                            </p>
-                            <p>In posuere tortor vel...</p>
-                            <span>42 min ago</span>
-                        </div>
-                    </div>
-
-                    <div class="media py-10 px-0">
-                        <a class="avatar avatar-lg status-success" href="#">
-                            <img src="../images/avatar/1.jpg" alt="...">
-                        </a>
-                        <div class="media-body">
-                            <p class="fs-16">
-                                <a class="hover-primary" href="#"><strong>Tyler</strong></a>
-                            </p>
-                            <p>Praesent tristique diam...</p>
-                            <span>Just now</span>
-                        </div>
-                    </div>
-
-                    <div class="media py-10 px-0">
-                        <a class="avatar avatar-lg status-danger" href="#">
-                            <img src="../images/avatar/2.jpg" alt="...">
-                        </a>
-                        <div class="media-body">
-                            <p class="fs-16">
-                                <a class="hover-primary" href="#"><strong>Luke</strong></a>
-                            </p>
-                            <p>Cras tempor diam ...</p>
-                            <span>33 min ago</span>
-                        </div>
-                    </div>
-
-                    <div class="media py-10 px-0">
-                        <a class="avatar avatar-lg status-warning" href="#">
-                            <img src="../images/avatar/3.jpg" alt="...">
-                        </a>
-                        <div class="media-body">
-                            <p class="fs-16">
-                                <a class="hover-primary" href="#"><strong>Evan</strong></a>
-                            </p>
-                            <p>In posuere tortor vel...</p>
-                            <span>42 min ago</span>
-                        </div>
-                    </div>
-
-                    <div class="media py-10 px-0">
-                        <a class="avatar avatar-lg status-primary" href="#">
-                            <img src="../images/avatar/4.jpg" alt="...">
-                        </a>
-                        <div class="media-body">
-                            <p class="fs-16">
-                                <a class="hover-primary" href="#"><strong>Evan</strong></a>
-                            </p>
-                            <p>In posuere tortor vel...</p>
-                            <span>42 min ago</span>
-                        </div>
-                    </div>
-
-                </div>
-
+                <?php include 'components/notifications_placeholder.php' ?>
             </div>
             <!-- /.tab-pane -->
             <!-- Settings tab content -->
             <div class="tab-pane" id="control-sidebar-settings-tab">
-                <div class="flexbox">
-                    <a href="javascript:void(0)" class="text-grey">
-                        <i class="ti-more"></i>
-                    </a>
-                    <p>Todo List</p>
-                    <a href="javascript:void(0)" class="text-end text-grey"><i class="ti-plus"></i></a>
-                </div>
-                <ul class="todo-list mt-20">
-                    <li class="py-15 px-5 by-1">
-                        <!-- checkbox -->
-                        <input type="checkbox" id="basic_checkbox_1" class="filled-in">
-                        <label for="basic_checkbox_1" class="mb-0 h-15"></label>
-                        <!-- todo text -->
-                        <span class="text-line">Nulla vitae purus</span>
-                        <!-- Emphasis label -->
-                        <small class="badge bg-danger"><i class="fa fa-clock-o"></i> 2 mins</small>
-                        <!-- General tools such as edit or delete-->
-                        <div class="tools">
-                            <i class="fa fa-edit"></i>
-                            <i class="fa fa-trash-o"></i>
-                        </div>
-                    </li>
-                    <li class="py-15 px-5">
-                        <!-- checkbox -->
-                        <input type="checkbox" id="basic_checkbox_2" class="filled-in">
-                        <label for="basic_checkbox_2" class="mb-0 h-15"></label>
-                        <span class="text-line">Phasellus interdum</span>
-                        <small class="badge bg-info"><i class="fa fa-clock-o"></i> 4 hours</small>
-                        <div class="tools">
-                            <i class="fa fa-edit"></i>
-                            <i class="fa fa-trash-o"></i>
-                        </div>
-                    </li>
-                    <li class="py-15 px-5 by-1">
-                        <!-- checkbox -->
-                        <input type="checkbox" id="basic_checkbox_3" class="filled-in">
-                        <label for="basic_checkbox_3" class="mb-0 h-15"></label>
-                        <span class="text-line">Quisque sodales</span>
-                        <small class="badge bg-warning"><i class="fa fa-clock-o"></i> 1 day</small>
-                        <div class="tools">
-                            <i class="fa fa-edit"></i>
-                            <i class="fa fa-trash-o"></i>
-                        </div>
-                    </li>
-                    <li class="py-15 px-5">
-                        <!-- checkbox -->
-                        <input type="checkbox" id="basic_checkbox_4" class="filled-in">
-                        <label for="basic_checkbox_4" class="mb-0 h-15"></label>
-                        <span class="text-line">Proin nec mi porta</span>
-                        <small class="badge bg-success"><i class="fa fa-clock-o"></i> 3 days</small>
-                        <div class="tools">
-                            <i class="fa fa-edit"></i>
-                            <i class="fa fa-trash-o"></i>
-                        </div>
-                    </li>
-                    <li class="py-15 px-5 by-1">
-                        <!-- checkbox -->
-                        <input type="checkbox" id="basic_checkbox_5" class="filled-in">
-                        <label for="basic_checkbox_5" class="mb-0 h-15"></label>
-                        <span class="text-line">Maecenas scelerisque</span>
-                        <small class="badge bg-primary"><i class="fa fa-clock-o"></i> 1 week</small>
-                        <div class="tools">
-                            <i class="fa fa-edit"></i>
-                            <i class="fa fa-trash-o"></i>
-                        </div>
-                    </li>
-                    <li class="py-15 px-5">
-                        <!-- checkbox -->
-                        <input type="checkbox" id="basic_checkbox_6" class="filled-in">
-                        <label for="basic_checkbox_6" class="mb-0 h-15"></label>
-                        <span class="text-line">Vivamus nec orci</span>
-                        <small class="badge bg-info"><i class="fa fa-clock-o"></i> 1 month</small>
-                        <div class="tools">
-                            <i class="fa fa-edit"></i>
-                            <i class="fa fa-trash-o"></i>
-                        </div>
-                    </li>
-                    <li class="py-15 px-5 by-1">
-                        <!-- checkbox -->
-                        <input type="checkbox" id="basic_checkbox_7" class="filled-in">
-                        <label for="basic_checkbox_7" class="mb-0 h-15"></label>
-                        <!-- todo text -->
-                        <span class="text-line">Nulla vitae purus</span>
-                        <!-- Emphasis label -->
-                        <small class="badge bg-danger"><i class="fa fa-clock-o"></i> 2 mins</small>
-                        <!-- General tools such as edit or delete-->
-                        <div class="tools">
-                            <i class="fa fa-edit"></i>
-                            <i class="fa fa-trash-o"></i>
-                        </div>
-                    </li>
-                    <li class="py-15 px-5">
-                        <!-- checkbox -->
-                        <input type="checkbox" id="basic_checkbox_8" class="filled-in">
-                        <label for="basic_checkbox_8" class="mb-0 h-15"></label>
-                        <span class="text-line">Phasellus interdum</span>
-                        <small class="badge bg-info"><i class="fa fa-clock-o"></i> 4 hours</small>
-                        <div class="tools">
-                            <i class="fa fa-edit"></i>
-                            <i class="fa fa-trash-o"></i>
-                        </div>
-                    </li>
-                    <li class="py-15 px-5 by-1">
-                        <!-- checkbox -->
-                        <input type="checkbox" id="basic_checkbox_9" class="filled-in">
-                        <label for="basic_checkbox_9" class="mb-0 h-15"></label>
-                        <span class="text-line">Quisque sodales</span>
-                        <small class="badge bg-warning"><i class="fa fa-clock-o"></i> 1 day</small>
-                        <div class="tools">
-                            <i class="fa fa-edit"></i>
-                            <i class="fa fa-trash-o"></i>
-                        </div>
-                    </li>
-                    <li class="py-15 px-5">
-                        <!-- checkbox -->
-                        <input type="checkbox" id="basic_checkbox_10" class="filled-in">
-                        <label for="basic_checkbox_10" class="mb-0 h-15"></label>
-                        <span class="text-line">Proin nec mi porta</span>
-                        <small class="badge bg-success"><i class="fa fa-clock-o"></i> 3 days</small>
-                        <div class="tools">
-                            <i class="fa fa-edit"></i>
-                            <i class="fa fa-trash-o"></i>
-                        </div>
-                    </li>
-                </ul>
+                <?php include 'components/settings_placeholder.php' ?>
             </div>
             <!-- /.tab-pane -->
         </div>
@@ -1020,118 +569,7 @@ $stmt->close();
 <!-- Sidebar -->
 
 <div id="chat-box-body">
-    <div id="chat-circle" class="waves-effect waves-circle btn btn-circle btn-sm btn-warning l-h-50">
-        <div id="chat-overlay"></div>
-        <span class="icon-Group-chat fs-18"><span class="path1"></span><span class="path2"></span></span>
-    </div>
-
-    <div class="chat-box">
-        <div class="chat-box-header p-15 d-flex justify-content-between align-items-center">
-            <div class="btn-group">
-                <button class="waves-effect waves-circle btn btn-circle btn-primary-light h-40 w-40 rounded-circle l-h-45"
-                        type="button" data-bs-toggle="dropdown">
-                    <span class="icon-Add-user fs-22"><span class="path1"></span><span class="path2"></span></span>
-                </button>
-                <div class="dropdown-menu min-w-200">
-                    <a class="dropdown-item fs-16" href="#">
-                        <span class="icon-Color me-15"></span>
-                        New Group</a>
-                    <a class="dropdown-item fs-16" href="#">
-                        <span class="icon-Clipboard me-15"><span class="path1"></span><span class="path2"></span><span
-                                    class="path3"></span><span class="path4"></span></span>
-                        Contacts</a>
-                    <a class="dropdown-item fs-16" href="#">
-                        <span class="icon-Group me-15"><span class="path1"></span><span class="path2"></span></span>
-                        Groups</a>
-                    <a class="dropdown-item fs-16" href="#">
-                        <span class="icon-Active-call me-15"><span class="path1"></span><span
-                                    class="path2"></span></span>
-                        Calls</a>
-                    <a class="dropdown-item fs-16" href="#">
-                        <span class="icon-Settings1 me-15"><span class="path1"></span><span class="path2"></span></span>
-                        Settings</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item fs-16" href="#">
-                        <span class="icon-Question-circle me-15"><span class="path1"></span><span class="path2"></span></span>
-                        Help</a>
-                    <a class="dropdown-item fs-16" href="#">
-                        <span class="icon-Notifications me-15"><span class="path1"></span><span
-                                    class="path2"></span></span>
-                        Privacy</a>
-                </div>
-            </div>
-            <div class="text-center flex-grow-1">
-                <div class="text-dark fs-18">Mayra Sibley</div>
-                <div>
-                    <span class="badge badge-sm badge-dot badge-primary"></span>
-                    <span class="text-muted fs-12">Active</span>
-                </div>
-            </div>
-            <div class="chat-box-toggle">
-                <button id="chat-box-toggle"
-                        class="waves-effect waves-circle btn btn-circle btn-danger-light h-40 w-40 rounded-circle l-h-45"
-                        type="button">
-                    <span class="icon-Close fs-22"><span class="path1"></span><span class="path2"></span></span>
-                </button>
-            </div>
-        </div>
-        <div class="chat-box-body">
-            <div class="chat-box-overlay">
-            </div>
-            <div class="chat-logs">
-                <div class="chat-msg user">
-                    <div class="d-flex align-items-center">
-                            <span class="msg-avatar">
-                                <img src="../images/avatar/2.jpg" class="avatar avatar-lg">
-                            </span>
-                        <div class="mx-10">
-                            <a href="#" class="text-dark hover-primary fw-bold">Mayra Sibley</a>
-                            <p class="text-muted fs-12 mb-0">2 Hours</p>
-                        </div>
-                    </div>
-                    <div class="cm-msg-text">
-                        Hi there, I'm Jesse and you?
-                    </div>
-                </div>
-                <div class="chat-msg self">
-                    <div class="d-flex align-items-center justify-content-end">
-                        <div class="mx-10">
-                            <a href="#" class="text-dark hover-primary fw-bold">You</a>
-                            <p class="text-muted fs-12 mb-0">3 minutes</p>
-                        </div>
-                        <span class="msg-avatar">
-                                <img src="../images/avatar/3.jpg" class="avatar avatar-lg">
-                            </span>
-                    </div>
-                    <div class="cm-msg-text">
-                        My name is Anne Clarc.
-                    </div>
-                </div>
-                <div class="chat-msg user">
-                    <div class="d-flex align-items-center">
-                            <span class="msg-avatar">
-                                <img src="../images/avatar/2.jpg" class="avatar avatar-lg">
-                            </span>
-                        <div class="mx-10">
-                            <a href="#" class="text-dark hover-primary fw-bold">Mayra Sibley</a>
-                            <p class="text-muted fs-12 mb-0">40 seconds</p>
-                        </div>
-                    </div>
-                    <div class="cm-msg-text">
-                        Nice to meet you Anne.<br>How can i help you?
-                    </div>
-                </div>
-            </div><!--chat-log -->
-        </div>
-        <div class="chat-input">
-            <form>
-                <input type="text" id="chat-input" placeholder="Send a message..."/>
-                <button type="submit" class="chat-submit" id="chat-submit">
-                    <span class="icon-Send fs-22"></span>
-                </button>
-            </form>
-        </div>
-    </div>
+    <?php include 'components/chat.php' ?>
 </div>
 
 <?php
@@ -1323,6 +761,41 @@ $no_revisados_json = json_encode($no_revisados);
     var revisados = <?php echo $revisados_json; ?>;
     var no_revisados = <?php echo $no_revisados_json; ?>;</script>
 <script src="js/pages/dashboard3.js?v=<?php echo time(); ?>"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const filterButtons = document.querySelectorAll('.btn-filter');
+        const cards = document.querySelectorAll('.plantilla-card');
+        const countSpan = document.getElementById('plantilla-count');
+
+        function updateCount() {
+            const visibles = [...cards].filter(c => c.style.display !== 'none').length;
+            countSpan.textContent = `Mostrando ${visibles} plantilla${visibles !== 1 ? 's' : ''}`;
+        }
+
+        function filterCards(type) {
+            cards.forEach(card => {
+                const tipo = card.dataset.tipo.toLowerCase();
+                if (type === 'all' || tipo === type) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            updateCount();
+        }
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                filterButtons.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                const type = this.dataset.filter;
+                filterCards(type);
+            });
+        });
+
+        updateCount(); // Inicial
+    });
+</script>
 </body>
 </html>
 
