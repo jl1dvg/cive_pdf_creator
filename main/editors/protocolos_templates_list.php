@@ -76,40 +76,69 @@ while ($row = $result->fetch_assoc()) {
             <!-- Main content -->
             <section class="content">
                 <div class="row">
-                    <?php foreach ($procedimientosPorCategoria as $categoria => $procedimientos): ?>
-                        <div class="col-12 col-xl-4">
-                            <div class="box">
-                                <div class="box-header with-border">
-                                    <h4 class="box-title text-primary"><?= htmlspecialchars($categoria) ?></h4>
-                                </div>
-                                <div class="box-body">
-                                    <?php foreach ($procedimientos as $procedimiento): ?>
-                                        <div class="d-flex align-items-center mb-30">
-                                            <div class="me-15">
-                                                <img src="<?= htmlspecialchars($procedimiento['imagen_link']) ?>"
-                                                     class="avatar avatar-lg rounded10 bg-primary-light" alt=""/>
-                                            </div>
-                                            <div class="d-flex flex-column flex-grow-1 fw-500">
-                                                <a href="#"
-                                                   class="text-dark hover-primary mb-1 fs-16"><?= htmlspecialchars($procedimiento['membrete']) ?></a>
-                                                <span class="text-fade"><?= htmlspecialchars($procedimiento['cirugia']) ?></span>
-                                            </div>
-                                            <div class="dropdown">
-                                                <a class="px-10 pt-5" href="#" data-bs-toggle="dropdown"><i
-                                                            class="ti-more-alt"></i></a>
-                                                <div class="dropdown-menu dropdown-menu-end">
-                                                    <a class="dropdown-item"
-                                                       href="protocolos_editors_templates.php?id=<?= urlencode($procedimiento['id']) ?>">Editar</a>
-                                                    <a class="dropdown-item"
-                                                       href="eliminar_protocolo.php?id=<?= urlencode($procedimiento['id']) ?>">Eliminar</a>
+                    <div class="d-flex justify-content-between align-items-center mb-20 flex-wrap">
+                        <h4 class="text-dark fw-bold mb-10 me-10">Protocolos Disponibles</h4>
+                        <a href="protocolos_editors_templates.php" class="btn btn-primary">
+                            <i class="mdi mdi-plus-circle-outline me-5"></i> Nuevo Protocolo
+                        </a>
+                    </div>
+                    <div class="accordion" id="accordionProtocolos">
+                        <?php foreach ($procedimientosPorCategoria as $categoria => $procedimientos): ?>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header d-flex justify-content-between align-items-center px-3"
+                                    id="heading-<?= md5($categoria) ?>">
+                                    <div class="d-flex flex-grow-1 align-items-center">
+                                        <button class="accordion-button collapsed flex-grow-1 text-start" type="button"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#collapse-<?= md5($categoria) ?>" aria-expanded="false"
+                                                aria-controls="collapse-<?= md5($categoria) ?>">
+                                            <?= htmlspecialchars($categoria) ?>
+                                        </button>
+                                    </div>
+                                    <div class="ms-3">
+                                        <a href="protocolos_editors_templates.php?categoria=<?= urlencode($categoria) ?>"
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="mdi mdi-plus-circle-outline me-5"></i> Agregar
+                                        </a>
+                                    </div>
+                                </h2>
+                                <div id="collapse-<?= md5($categoria) ?>" class="accordion-collapse collapse"
+                                     aria-labelledby="heading-<?= md5($categoria) ?>"
+                                     data-bs-parent="#accordionProtocolos">
+                                    <div class="accordion-body">
+                                        <?php foreach ($procedimientos as $procedimiento): ?>
+                                            <div class="d-flex align-items-center mb-30 border-bottom pb-15">
+                                                <div class="me-15">
+                                                    <img src="<?= htmlspecialchars($procedimiento['imagen_link']) ?>"
+                                                         class="avatar avatar-lg rounded10 bg-primary-light"
+                                                         alt="Imagen protocolo"/>
+                                                </div>
+                                                <div class="d-flex flex-column flex-grow-1 fw-500">
+                                                    <a href="#"
+                                                       class="text-dark hover-primary mb-1 fs-16"><?= htmlspecialchars($procedimiento['membrete']) ?></a>
+                                                    <span class="text-fade"><?= htmlspecialchars($procedimiento['cirugia']) ?></span>
+                                                </div>
+                                                <div class="dropdown">
+                                                    <a class="px-10 pt-5" href="#" data-bs-toggle="dropdown"><i
+                                                                class="ti-more-alt"></i></a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <a class="dropdown-item"
+                                                           href="protocolos_editors_templates.php?id=<?= urlencode($procedimiento['id']) ?>">Editar</a>
+                                                        <a class="dropdown-item"
+                                                           href="protocolos_editors_templates.php?duplicar=<?= urlencode($procedimiento['id']) ?>">Duplicar</a>
+                                                        <a class="dropdown-item text-danger" href="#"
+                                                           onclick="if(confirm('¿Estás seguro de que deseas eliminar este protocolo?')) { window.location.href='eliminar_protocolo.php?id=<?= urlencode($procedimiento['id']) ?>'; }">
+                                                            Eliminar
+                                                        </a>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    <?php endforeach; ?>
+                                        <?php endforeach; ?>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    <?php endforeach; ?>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
             </section>
             <!-- /.content -->
